@@ -54,6 +54,8 @@ If imagery materially affects fidelity and the package does not provide a usable
 
 Implementation agents:
 
+Mode ownership and cascading follow [`COIN_MODE_FLOW.md`](./COIN_MODE_FLOW.md).
+
 - Use `jfs-components` and existing project patterns
 - Preserve Coin component semantics
 - Implement responsive layout behavior rather than screenshot-only fixed dimensions

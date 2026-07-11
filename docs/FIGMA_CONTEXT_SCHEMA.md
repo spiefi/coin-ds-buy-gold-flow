@@ -128,6 +128,8 @@ Subcomponents must be marked `public: false` so implementation agents can unders
 
 Better LLM context is authoritative for mode flow. The exporter must preserve selected and effective modes for the complete instance tree—not only the top-level component—so implementation can configure the owning public component and verify its documented cascade. For example, a glass Badge owns `Context4: Badge/glass` and should cascade that context to its slotted Icon; implementation configures Badge rather than assigning a mode or literal white color directly to Icon.
 
+The canonical ownership, multi-context, cascading, implementation, and QA rules are defined in [`COIN_MODE_FLOW.md`](./COIN_MODE_FLOW.md).
+
 ## Asset rules
 
 - Preserve original aspect ratio and transparency.

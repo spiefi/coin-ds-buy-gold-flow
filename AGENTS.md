@@ -9,10 +9,11 @@ Before designing, implementing, or reviewing a screen, read:
 1. [`COIN_DS_CONSUMER_GUIDE.md`](./COIN_DS_CONSUMER_GUIDE.md)
 2. [`docs/FIGMA_TO_CODE_WORKFLOW.md`](./docs/FIGMA_TO_CODE_WORKFLOW.md)
 3. [`docs/CODEX_QA_CHECKLIST.md`](./docs/CODEX_QA_CHECKLIST.md)
+4. [`docs/COIN_MODE_FLOW.md`](./docs/COIN_MODE_FLOW.md)
 
 When consuming an exported Figma context package, also read:
 
-4. [`docs/FIGMA_CONTEXT_SCHEMA.md`](./docs/FIGMA_CONTEXT_SCHEMA.md)
+5. [`docs/FIGMA_CONTEXT_SCHEMA.md`](./docs/FIGMA_CONTEXT_SCHEMA.md)
 
 ## Non-negotiable constraints
 
