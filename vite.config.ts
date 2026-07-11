@@ -8,6 +8,7 @@ export default defineConfig({
   base: './',
   define: {
     __DEV__: JSON.stringify(true),
+    global: 'globalThis',
   },
   plugins: [
     {
@@ -64,7 +65,7 @@ export default defineConfig({
     extensions: ['.web.tsx', '.web.ts', '.web.jsx', '.web.js', '.tsx', '.ts', '.jsx', '.js'],
   },
   optimizeDeps: {
-    include: ['hoist-non-react-statics'],
+    include: ['hoist-non-react-statics', 'invariant', 'invariant/browser'],
     exclude: [
       'jfs-components',
       'react-native',

@@ -41,7 +41,15 @@ export type CreditCardsRoute =
 
 export interface CreditCardsFlowProps {
   initialRoute?: CreditCardsRoute
+  onExitFlow?: () => void
 }
+
+export const CREDIT_CARD_ROUTES: readonly CreditCardsRoute[] = [
+  'credit-cards',
+  'credit-cards-expanded',
+  'pre-qualified',
+  'fuel',
+] as const
 
 type Category = {
   label: string
@@ -390,12 +398,14 @@ function CreditCardsHome({
   onSearchChange,
   onToggleCategories,
   onNavigate,
+  onExitFlow,
 }: {
   expanded: boolean
   search: string
   onSearchChange: (value: string) => void
   onToggleCategories: () => void
   onNavigate: (route: CreditCardsRoute) => void
+  onExitFlow?: () => void
 }) {
   const visibleProducts = useMemo(() => filterProducts(HOME_PRODUCTS, search), [search])
 
@@ -406,7 +416,7 @@ function CreditCardsHome({
         contentContainerStyle={{ paddingBottom: 104 }}
         keyboardShouldPersistTaps="handled"
       >
-        <AppBar type="SubPage" />
+        <AppBar type="SubPage" onLeadingPress={onExitFlow} />
         <HeroSection
           titleSlot={<Title title="Credit Cards" modes={{ context7: 'Page Hero' }} />}
           searchValue={search}
@@ -425,7 +435,7 @@ function CreditCardsHome({
         <ProductList products={visibleProducts} showUpgrade />
       </ScrollView>
       <BottomNav value="explore">
-        <BottomNav.Item value="home" iconName="ic_home" label="Home" />
+        <BottomNav.Item value="home" iconName="ic_home" label="Home" onPress={onExitFlow} />
         <BottomNav.Item value="finances" iconName="ic_rupee" label="Finances" />
         <BottomNav.Item value="pay" iconName="ic_scan" label="Pay" />
         <BottomNav.Item value="invest" iconName="ic_graph_increasing" label="Invest" />
@@ -472,7 +482,10 @@ function ResultsScreen({
   )
 }
 
-export function CreditCardsFlow({ initialRoute = 'credit-cards' }: CreditCardsFlowProps) {
+export function CreditCardsFlow({
+  initialRoute = 'credit-cards',
+  onExitFlow,
+}: CreditCardsFlowProps) {
   const [route, setRoute] = useState<CreditCardsRoute>(initialRoute)
   const [returnRoute, setReturnRoute] = useState<'credit-cards' | 'credit-cards-expanded'>(
     initialRoute === 'credit-cards-expanded' ? 'credit-cards-expanded' : 'credit-cards',
@@ -519,6 +532,7 @@ export function CreditCardsFlow({ initialRoute = 'credit-cards' }: CreditCardsFl
             setReturnRoute(isExpanded ? 'credit-cards-expanded' : 'credit-cards')
             setRoute(nextRoute)
           }}
+          onExitFlow={onExitFlow}
         />
       )}
     </Screen>
