@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   ScrollView,
-  View,
   type ImageSourcePropType,
 } from 'react-native'
 import {
@@ -187,40 +186,28 @@ function CategoryGrid({
   onNavigate: (route: CreditCardsRoute) => void
 }) {
   return (
-    <View
+    <Section.Bento
+      navSlot={CATEGORIES_EXPANDED.map((category) => (
+        <CategoryItem
+          key={category.label}
+          category={category}
+          onPress={category.route ? () => onNavigate(category.route!) : undefined}
+        />
+      ))}
+      collapsedCount={4}
+      expanded={expanded}
+      onExpandedChange={() => onExpand()}
+      toggleMoreLabel="More"
+      toggleLessLabel="Less"
+      modes={{ Context: 'ListItem', Emphasis: 'High', AppearanceBrand: 'Secondary' }}
       style={{
         alignSelf: 'stretch',
         marginHorizontal: -16,
-        overflow: 'hidden',
-        height: expanded ? 172 : 78,
-        transitionProperty: 'height',
-        transitionDuration: '420ms',
-        transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
-        willChange: 'height',
-      } as any}
-    >
-      <Section.Bento
-        navSlot={CATEGORIES_EXPANDED.map((category) => (
-          <CategoryItem
-            key={category.label}
-            category={category}
-            onPress={category.route ? () => onNavigate(category.route!) : undefined}
-          />
-        ))}
-        collapsedCount={4}
-        expanded={expanded}
-        onExpandedChange={() => onExpand()}
-        toggleMoreLabel="More"
-        toggleLessLabel="Less"
-        modes={{ Context: 'ListItem', Emphasis: 'High', AppearanceBrand: 'Secondary' }}
-        style={{
-          alignSelf: 'stretch',
-          paddingHorizontal: 16,
-          paddingVertical: 0,
-          backgroundColor: 'transparent',
-        }}
-      />
-    </View>
+        paddingHorizontal: 16,
+        paddingVertical: 0,
+        backgroundColor: 'transparent',
+      }}
+    />
   )
 }
 
@@ -407,25 +394,11 @@ function CreditCardsHome({
   onToggleCategories: () => void
   onNavigate: (route: CreditCardsRoute) => void
 }) {
-  const scrollRef = useRef<ScrollView>(null)
   const visibleProducts = useMemo(() => filterProducts(HOME_PRODUCTS, search), [search])
-
-  useEffect(() => {
-    // Section.Bento finishes its reveal animation before restoring the top.
-    // This also prevents the focused More/Less cell from scrolling the web
-    // preview back into view after the controlled state change.
-    const reset = setTimeout(
-      () => scrollRef.current?.scrollTo({ y: 0, animated: false }),
-      350,
-    )
-    return () => clearTimeout(reset)
-  }, [expanded])
 
   return (
     <>
       <ScrollView
-        ref={scrollRef}
-        key={expanded ? 'expanded' : 'collapsed'}
         style={{ flex: 1, width: '100%' }}
         contentContainerStyle={{ paddingBottom: 104 }}
         keyboardShouldPersistTaps="handled"

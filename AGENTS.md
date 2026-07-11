@@ -37,6 +37,8 @@ When consuming an exported Figma context package, also read:
 - Direct children in screen and stack slots default to Fill container horizontally unless the component contract requires Hug or Fixed.
 - Full-width CTAs use Button `Type=Default` and Fill container. Do not stretch a fixed button to a pixel width.
 - Treat missing capabilities as design-system/documentation gaps. Report them instead of bypassing Coin architecture.
+- Never add screen-level CSS, animation wrappers, recreated internals, or behavioral patches to compensate for a public Coin component that does not work as documented. Use the component as shipped, record the failure as a Coin component or platform-integration bug, and escalate it to the design-system team.
+- Public component properties, variants, modes, and documented slot configuration are allowed configuration, not custom fixes. Undocumented overrides are not allowed.
 
 ## Delivery gate
 
