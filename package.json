@@ -1,0 +1,24 @@
+{
+  "name": "coin-ds-screen-examples",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "jfs-components": "0.1.28",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-native": "^0.80.0",
+    "react-native-web": "^0.21.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.5.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "typescript": "^5.8.0",
+    "vite": "^6.1.0"
+  }
+}

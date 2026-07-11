@@ -1,0 +1,35 @@
+@font-face {
+  font-family: 'JioType Var';
+  src: url('/node_modules/jfs-components/src/assets/fonts/JioType%20Var.ttf') format('truetype');
+  font-display: swap;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #ececec;
+  overflow-x: hidden;
+}
+
+#root {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 32px 16px;
+}
+
+#root > div {
+  width: min(100%, 360px) !important;
+  max-width: 360px !important;
+  min-height: 640px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.14);
+}
