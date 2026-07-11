@@ -1,21 +1,6 @@
-import React, { useState } from 'react'
-import { ChooseGoldScreen, EnterAmountScreen } from './src/screens'
-
-type Route = 'choose-gold' | 'enter-amount'
+import React from 'react'
+import { CreditCardsFlow } from './src/screens'
 
 export default function App() {
-  const [route, setRoute] = useState<Route>('choose-gold')
-  const [note, setNote] = useState('')
-
-  if (route === 'enter-amount') {
-    return (
-      <EnterAmountScreen
-        note={note}
-        onNoteChange={setNote}
-        onBack={() => setRoute('choose-gold')}
-      />
-    )
-  }
-
-  return <ChooseGoldScreen onBuyGold={() => setRoute('enter-amount')} />
+  return <CreditCardsFlow />
 }

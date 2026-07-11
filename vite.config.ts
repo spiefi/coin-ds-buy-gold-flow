@@ -1,5 +1,8 @@
 import { defineConfig, transformWithEsbuild } from 'vite'
 import react from '@vitejs/plugin-react'
+import { fileURLToPath, URL } from 'node:url'
+
+const fromProject = (path: string) => fileURLToPath(new URL(path, import.meta.url))
 
 export default defineConfig({
   base: './',
@@ -11,7 +14,7 @@ export default defineConfig({
       name: 'jfs-static-require-imports',
       enforce: 'pre',
       transform(code, id) {
-        if (id.includes('/jfs-components/src/')) {
+        if (id.includes('/jfs-components/')) {
           return code.replace(
             /const\s+(\w+)\s*=\s*require\((['"])(\.[^'"]+)\2\);?/g,
             "import $1 from '$3'",
@@ -46,21 +49,28 @@ export default defineConfig({
     alias: [
       {
         find: /^react-native-svg$/,
-        replacement: '/src/web-stubs/svg.tsx',
+        replacement: fromProject('./src/web-stubs/svg.tsx'),
       },
       { find: /^react-native$/, replacement: 'react-native-web' },
       {
         find: /^react-native-reanimated$/,
-        replacement: '/src/web-stubs/reanimated.ts',
+        replacement: fromProject('./src/web-stubs/reanimated.ts'),
       },
       {
         find: /^@react-native-community\/blur$/,
-        replacement: '/src/web-stubs/blur.tsx',
+        replacement: fromProject('./src/web-stubs/blur.tsx'),
       },
     ],
     extensions: ['.web.tsx', '.web.ts', '.web.jsx', '.web.js', '.tsx', '.ts', '.jsx', '.js'],
   },
   optimizeDeps: {
-    exclude: ['react-native', 'react-native-reanimated', 'react-native-svg'],
+    include: ['hoist-non-react-statics'],
+    exclude: [
+      'jfs-components',
+      'react-native',
+      'react-native-reanimated',
+      'react-native-svg',
+      '@react-native-community/blur',
+    ],
   },
 })
