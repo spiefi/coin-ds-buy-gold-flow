@@ -67,6 +67,14 @@ Each screen record should include:
     "Page type": { "type": "VARIANT", "value": "SubPage" },
     "Color Mode": { "type": "VARIANT", "value": "Light" }
   },
+  "selectedModes": {
+    "Color Mode": "Light",
+    "Context4": "Badge/glass"
+  },
+  "effectiveModes": {
+    "Color Mode": { "value": "Light", "sourceNodeId": "987:1853" },
+    "Context4": { "value": "Badge/glass", "sourceNodeId": "987:1901" }
+  },
   "layout": {
     "mode": "VERTICAL",
     "horizontalSizing": "FIXED",
@@ -90,6 +98,8 @@ Each screen record should include:
 - Fill/Hug/Fixed behavior on both axes
 - Constraints, bounds, clipping, opacity, fills, strokes, effects, and radii where relevant
 - Explicit variable modes and variable bindings for read-only interpretation
+- Selected modes on every component instance, including nested instances and slotted components
+- Effective/inherited mode flow for every component instance, with the source node for each resolved mode, so implementation never has to infer or hardcode token-owned appearance
 - Export settings and asset references
 - Override information needed to distinguish defaults from screen-specific decisions
 
@@ -115,6 +125,8 @@ Each screen record should include:
 ```
 
 Subcomponents must be marked `public: false` so implementation agents can understand anatomy without importing them into product screens.
+
+Better LLM context is authoritative for mode flow. The exporter must preserve the selected and effective modes for the complete instance tree—not only the top-level component—because each nested Coin component resolves its own tokens. For example, a glass Badge and its slotted Icon must expose `Context4: Badge/glass`; implementation then passes that mode to the Icon instead of assigning a literal white color.
 
 ## Asset rules
 

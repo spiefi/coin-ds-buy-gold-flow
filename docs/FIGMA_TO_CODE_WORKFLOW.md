@@ -61,6 +61,7 @@ Implementation agents:
 - Use the exported Figma assets for screen-specific imagery instead of placeholders or unrelated component defaults
 - Avoid custom substitutes when Coin exposes the required component
 - Preserve approved copy and ordering exactly; do not invent product content to complete a component
+- Reproduce the selected/effective mode flow supplied by Better LLM context for every component and nested slot; never hardcode product colors that belong to Coin tokens
 - Verify composite component behavior before coding. For example, a carousel must contain enough items to reproduce pagination and side peeks, and its initial-state limitations must be documented before implementation
 - Inspect whether public component slots inherit modes. When a slot is rendered verbatim, pass appearance/emphasis modes directly to the slotted child and verify the resolved color in the rendered preview
 - Treat every slotted Coin component as responsible for its own tokens. Pass the appropriate host context mode to it (for example normal Badge versus Badge/glass) and do not replace mode resolution with hardcoded token colors.

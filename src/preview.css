@@ -14,7 +14,6 @@ body,
 }
 
 body {
-  background: #ececec;
   overflow: hidden;
 }
 
@@ -33,6 +32,4 @@ body {
   height: min(800px, calc(100vh - 64px));
   min-height: 640px;
   overflow: hidden;
-  background: white;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.14);
 }

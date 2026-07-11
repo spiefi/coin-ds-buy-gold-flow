@@ -205,7 +205,6 @@ function CategoryGrid({
         marginHorizontal: -16,
         paddingHorizontal: 16,
         paddingVertical: 0,
-        backgroundColor: 'transparent',
       }}
     />
   )

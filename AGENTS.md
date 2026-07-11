@@ -23,6 +23,7 @@ When consuming an exported Figma context package, also read:
 - Do not compose product screens from hidden Coin Subcomponents.
 - Do not detach Coin instances or recreate an existing Coin component manually.
 - Use exposed component properties, variants, slots, and modes to configure appearance.
+- Never hardcode product UI colors. Read the selected/effective mode flow for each Figma component and nested component from Better LLM context, then reproduce it with Coin component modes so fills, labels, icons, borders, and effects resolve from Coin tokens.
 - Obtain screen-specific images, logos, illustrations, and other visual assets from Figma when they are part of the approved design. Do not silently substitute placeholder or library-default imagery.
 - Do not begin fidelity implementation until required Figma imagery has a usable local file, downloadable URL, or exportable node ID. A layer named `Image` is not an asset handoff.
 - Preserve approved product copy and item ordering exactly. Never invent replacement copy merely to populate a component.
