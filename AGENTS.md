@@ -39,6 +39,7 @@ When consuming an exported Figma context package, also read:
 - Treat missing capabilities as design-system/documentation gaps. Report them instead of bypassing Coin architecture.
 - Never add screen-level CSS, animation wrappers, recreated internals, or behavioral patches to compensate for a public Coin component that does not work as documented. Use the component as shipped, record the failure as a Coin component or platform-integration bug, and escalate it to the design-system team.
 - Public component properties, variants, modes, and documented slot configuration are allowed configuration, not custom fixes. Undocumented overrides are not allowed.
+- Components resolve their own token values from their own modes. For a component placed in a slot, configure its contextual modes (for example `Icon` with `Context4: 'Badge'` or `Context4: 'Badge/glass'`) instead of hardcoding token-owned values such as icon color.
 
 ## Delivery gate
 

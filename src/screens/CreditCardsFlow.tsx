@@ -242,7 +242,11 @@ function CardHeader({ product }: { product: CreditCardProduct }) {
         leading={
           <Icon
             iconName="ic_card"
-            modes={{ Emphasis: 'Medium', AppearanceBrand: 'Secondary' }}
+            modes={{
+              Context4: 'Badge',
+              Emphasis: 'Medium',
+              AppearanceBrand: 'Secondary',
+            }}
           />
         }
         modes={{
@@ -332,7 +336,11 @@ function PromoCard({ configured = false }: { configured?: boolean }) {
           leading={
             <Icon
               iconName="ic_jewellery_diamond"
-              modes={{ Emphasis: 'Medium', AppearanceBrand: 'Secondary' }}
+              modes={{
+                Context4: 'Badge',
+                Emphasis: 'Medium',
+                AppearanceBrand: 'Secondary',
+              }}
             />
           }
           modes={{ Context4: 'Badge', Emphasis: 'Medium', AppearanceBrand: 'Secondary' }}
@@ -341,7 +349,16 @@ function PromoCard({ configured = false }: { configured?: boolean }) {
       specialBadgeLabel={
         configured ? 'Upgrade for ₹750 cashback with JioFinance+' : 'Badge'
       }
-      specialBadgeIcon={<Icon iconName="ic_card" color="#ffffff" />}
+      specialBadgeIcon={
+        <Icon
+          iconName="ic_card"
+          modes={{
+            Context4: 'Badge/glass',
+            Emphasis: 'Medium',
+            AppearanceBrand: 'Secondary',
+          }}
+        />
+      }
       ctaLabel={configured ? 'Apply' : 'CTA'}
       height={223}
       accessibilityLabel={
