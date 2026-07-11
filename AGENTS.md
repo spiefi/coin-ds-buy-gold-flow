@@ -27,6 +27,8 @@ When consuming an exported Figma context package, also read:
 - Do not begin fidelity implementation until required Figma imagery has a usable local file, downloadable URL, or exportable node ID. A layer named `Image` is not an asset handoff.
 - Preserve approved product copy and item ordering exactly. Never invent replacement copy merely to populate a component.
 - Map repeated and composite Figma regions to public Coin components before implementation. Do not manually recreate a category item, card, carousel, badge, or similar published composition.
+- Do not assume modes cascade through arbitrary component slots. Verify slot behavior in the Coin implementation and pass the intended modes directly to slotted icons/content when the host component renders them verbatim.
+- Prefer the correct public Coin pattern when an approved screen is visually correct but structurally mis-composed in Figma and the designer explicitly confirms the design-structure mistake. Preserve the visual result and document the structural correction.
 - Require a rendered Figma reference screenshot for every Ready-for-dev screen and use it for visual QA after implementation.
 - Never report visual QA as passed based only on build success, a running preview, or working navigation. Each state requires a matching-dimension implementation screenshot and direct comparison with its Figma reference.
 - Never implement a composed screen as one flattened screenshot. Reference screenshots are QA evidence; only genuine image/illustration nodes are implementation assets.

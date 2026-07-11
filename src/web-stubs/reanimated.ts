@@ -14,6 +14,8 @@ export const ReduceMotion = { System: 'system', Always: 'always', Never: 'never'
 export const Easing = {
   linear: (value: number) => value,
   ease: (value: number) => value,
+  cubic: (value: number) => value * value * value,
+  out: (fn: unknown) => fn,
   inOut: (fn: unknown) => fn,
   bezier: () => (value: number) => value,
 }

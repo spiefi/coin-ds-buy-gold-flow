@@ -22,6 +22,8 @@ Codex QA is a required preflight before Human QA. It is evidence, not final prod
 - [ ] No Coin instances are detached or manually recreated.
 - [ ] Component properties, variants, modes, and slots match Figma.
 - [ ] Repeated/composite regions have been mapped to their public Coin component before custom layout is considered.
+- [ ] Slotted icons and content resolve the intended modes; QA does not assume the host component cascades modes into slots.
+- [ ] Expandable action grids use the public semantic pattern (for example `Section.Bento`) when available, even when the source screen was manually composed from rows.
 - [ ] Carousel item count, pagination, peeking, and initial state match the approved reference or are recorded as a package/API gap.
 - [ ] No variables were modified.
 - [ ] Missing capabilities are reported as gaps rather than bypassed.

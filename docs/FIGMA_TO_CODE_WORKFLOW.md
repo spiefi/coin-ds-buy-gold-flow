@@ -62,6 +62,8 @@ Implementation agents:
 - Avoid custom substitutes when Coin exposes the required component
 - Preserve approved copy and ordering exactly; do not invent product content to complete a component
 - Verify composite component behavior before coding. For example, a carousel must contain enough items to reproduce pagination and side peeks, and its initial-state limitations must be documented before implementation
+- Inspect whether public component slots inherit modes. When a slot is rendered verbatim, pass appearance/emphasis modes directly to the slotted child and verify the resolved color in the rendered preview
+- When the designer confirms that a Figma screen uses the wrong structural building block, implement the correct public Coin pattern while retaining the approved visual behavior and recording the intentional structural deviation
 - Capture each implemented state themselves before handing work to independent QA
 
 ### 7. Codex QA

@@ -16,6 +16,7 @@ import {
   ListItem,
   ProductMerchandisingCard,
   Screen,
+  Section,
   Title,
   VStack,
 } from 'jfs-components'
@@ -168,7 +169,6 @@ function CategoryItem({ category, onPress }: { category: Category; onPress?: () 
       onPress={onPress}
       accessibilityLabel={category.label.replace(/\s/g, ' ')}
       modes={{ Context: 'ListItem' }}
-      style={{ width: '25%', flexGrow: 0, flexShrink: 0 }}
     />
   )
 }
@@ -182,29 +182,29 @@ function CategoryGrid({
   onExpand: () => void
   onNavigate: (route: CreditCardsRoute) => void
 }) {
-  const categories = expanded ? CATEGORIES_EXPANDED : CATEGORIES_COLLAPSED
-
   return (
-    <HStack
-      wrap
-      alignVertical="flex-start"
-      style={{ alignSelf: 'stretch', marginHorizontal: -16, columnGap: 0, rowGap: 0 }}
-    >
-      {categories.map((category) => (
+    <Section.Bento
+      navSlot={CATEGORIES_EXPANDED.map((category) => (
         <CategoryItem
           key={category.label}
           category={category}
           onPress={category.route ? () => onNavigate(category.route!) : undefined}
         />
       ))}
-      <CategoryItem
-        category={{
-          label: expanded ? 'Less' : 'More',
-          icon: expanded ? 'ic_chevron_up' : 'ic_chevron_down',
-        }}
-        onPress={onExpand}
-      />
-    </HStack>
+      collapsedCount={4}
+      expanded={expanded}
+      onExpandedChange={() => onExpand()}
+      toggleMoreLabel="More"
+      toggleLessLabel="Less"
+      modes={{ Context: 'ListItem', Emphasis: 'High', AppearanceBrand: 'Secondary' }}
+      style={{
+        alignSelf: 'stretch',
+        marginHorizontal: -16,
+        paddingHorizontal: 16,
+        paddingVertical: 0,
+        backgroundColor: 'transparent',
+      }}
+    />
   )
 }
 
@@ -236,7 +236,12 @@ function CardHeader({ product }: { product: CreditCardProduct }) {
       </HStack>
       <Badge
         label="Up to 2000 pts"
-        leading={<Icon iconName="ic_card" />}
+        leading={
+          <Icon
+            iconName="ic_card"
+            modes={{ Emphasis: 'Medium', AppearanceBrand: 'Secondary' }}
+          />
+        }
         modes={{
           Context4: 'Badge',
           'Badge Size': 'Small',
@@ -321,7 +326,12 @@ function PromoCard({ configured = false }: { configured?: boolean }) {
       badge={
         <Badge
           label={configured ? 'Up to 2000 pts' : 'Label'}
-          leading={<Icon iconName="ic_jewellery_diamond" />}
+          leading={
+            <Icon
+              iconName="ic_jewellery_diamond"
+              modes={{ Emphasis: 'Medium', AppearanceBrand: 'Secondary' }}
+            />
+          }
           modes={{ Context4: 'Badge', Emphasis: 'Medium', AppearanceBrand: 'Secondary' }}
         />
       }
@@ -385,7 +395,13 @@ function CreditCardsHome({
   const visibleProducts = useMemo(() => filterProducts(HOME_PRODUCTS, search), [search])
 
   useEffect(() => {
-    const reset = setTimeout(() => scrollRef.current?.scrollTo({ y: 0, animated: false }), 0)
+    // Section.Bento finishes its reveal animation before restoring the top.
+    // This also prevents the focused More/Less cell from scrolling the web
+    // preview back into view after the controlled state change.
+    const reset = setTimeout(
+      () => scrollRef.current?.scrollTo({ y: 0, animated: false }),
+      350,
+    )
     return () => clearTimeout(reset)
   }, [expanded])
 
