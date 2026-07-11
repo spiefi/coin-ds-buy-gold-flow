@@ -3,7 +3,6 @@ import {
   ScrollView,
   View,
   type ImageSourcePropType,
-  type LayoutChangeEvent,
 } from 'react-native'
 import {
   AppBar,
@@ -187,58 +186,18 @@ function CategoryGrid({
   onExpand: () => void
   onNavigate: (route: CreditCardsRoute) => void
 }) {
-  const [bentoHeight, setBentoHeight] = useState(0)
-  const bentoHeightRef = useRef(0)
-  const bentoTargetHeightRef = useRef(0)
-  const bentoAnimationRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const [hasMeasured, setHasMeasured] = useState(false)
-
-  useEffect(
-    () => () => {
-      if (bentoAnimationRef.current) clearInterval(bentoAnimationRef.current)
-    },
-    [],
-  )
-
-  const handleBentoLayout = (event: LayoutChangeEvent) => {
-    const nextHeight = event.nativeEvent.layout.height
-    if (!hasMeasured) {
-      bentoHeightRef.current = nextHeight
-      bentoTargetHeightRef.current = nextHeight
-      setBentoHeight(nextHeight)
-      setHasMeasured(true)
-      return
-    }
-
-    if (Math.abs(nextHeight - bentoTargetHeightRef.current) < 1) return
-    bentoTargetHeightRef.current = nextHeight
-    const startHeight = bentoHeightRef.current
-    if (Math.abs(nextHeight - startHeight) < 1) return
-    if (bentoAnimationRef.current) clearInterval(bentoAnimationRef.current)
-
-    const startedAt = Date.now()
-    bentoAnimationRef.current = setInterval(() => {
-      const progress = Math.min((Date.now() - startedAt) / 280, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      const height = startHeight + (nextHeight - startHeight) * eased
-      bentoHeightRef.current = height
-      setBentoHeight(height)
-
-      if (progress === 1 && bentoAnimationRef.current) {
-        clearInterval(bentoAnimationRef.current)
-        bentoAnimationRef.current = null
-      }
-    }, 16)
-  }
-
   return (
     <View
       style={{
         alignSelf: 'stretch',
         marginHorizontal: -16,
         overflow: 'hidden',
-        ...(hasMeasured ? { height: bentoHeight } : null),
-      }}
+        height: expanded ? 172 : 78,
+        transitionProperty: 'height',
+        transitionDuration: '420ms',
+        transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        willChange: 'height',
+      } as any}
     >
       <Section.Bento
         navSlot={CATEGORIES_EXPANDED.map((category) => (
@@ -254,7 +213,6 @@ function CategoryGrid({
         toggleMoreLabel="More"
         toggleLessLabel="Less"
         modes={{ Context: 'ListItem', Emphasis: 'High', AppearanceBrand: 'Secondary' }}
-        onLayout={handleBentoLayout}
         style={{
           alignSelf: 'stretch',
           paddingHorizontal: 16,
