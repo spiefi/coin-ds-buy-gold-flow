@@ -24,7 +24,7 @@ Each state has a Figma reference in [`reference/`](./reference/) and a rendered 
 - Public Coin `Screen`, `AppBar`, `HeroSection`, `Carousel`, `ProductMerchandisingCard`, `ListItem`, `IconCapsule`, `CcCard`, `CardCTA`, `BottomNav`, `VStack`, and `HStack` are used.
 - The category grid uses controlled Coin `Section.Bento` directly for collapsed/expanded layout, More/Less behavior, and accessibility state.
 - Badge leading icons receive explicit Secondary modes and resolve to Coin purple (`rgb(93, 0, 181)`) in the browser.
-- The featured glass badge icon uses `Context4: Badge/glass`; its white color resolves from Coin's `icon/color` token rather than a hardcoded value.
+- **Known component bug:** Badge owns the normal/glass context, but the installed package renders its `leading` slot verbatim and does not cascade Badge modes to the Icon child. The screen intentionally contains no duplicated Icon-mode or color workaround.
 - **Known platform-integration bug:** the React Native Web preview's Reanimated compatibility layer does not execute Coin `Section.Bento` motion. The screen intentionally contains no custom animation workaround; native/Expo validation and a Coin integration fix are required.
 - Exact approved card names, fee copy, ordering, repeated benefits, nudges, Best-for values, and bottom-nav labels are implemented.
 - Required promo, card, Travel-icon, and upgrade-CTA imagery was exported from Figma and added as individual assets.

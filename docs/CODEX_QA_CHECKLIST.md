@@ -22,7 +22,7 @@ Codex QA is a required preflight before Human QA. It is evidence, not final prod
 - [ ] No Coin instances are detached or manually recreated.
 - [ ] Component properties, variants, modes, and slots match Figma.
 - [ ] Repeated/composite regions have been mapped to their public Coin component before custom layout is considered.
-- [ ] Slotted icons and content resolve the intended modes; QA does not assume the host component cascades modes into slots.
+- [ ] Owning components receive the Figma-selected modes and their documented cascade resolves nested/slotted children without duplicated child-mode patches.
 - [ ] Token-owned colors are resolved through each component's contextual modes; no hardcoded color is used to imitate a Badge, glass Badge, Button, or other host context.
 - [ ] Every product color traces to a Coin mode/token from the Better LLM context; source code contains no literal product color substitutes.
 - [ ] Expandable action grids use the public semantic pattern (for example `Section.Bento`) when available, even when the source screen was manually composed from rows.
