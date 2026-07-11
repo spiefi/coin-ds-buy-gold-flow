@@ -29,7 +29,7 @@ When consuming an exported Figma context package, also read:
 - Do not begin fidelity implementation until required Figma imagery has a usable local file, downloadable URL, or exportable node ID. A layer named `Image` is not an asset handoff.
 - Preserve approved product copy and item ordering exactly. Never invent replacement copy merely to populate a component.
 - Map repeated and composite Figma regions to public Coin components before implementation. Do not manually recreate a category item, card, carousel, badge, or similar published composition.
-- Configure modes on the owning public Coin component and rely on its documented cascade to nested children. Do not duplicate owner modes on every child. If documented cascading fails, report a component bug instead of patching the child.
+- Configure modes on the owning public Coin component. When code accepts a supplied React-node slot and does not automatically propagate modes, forward the owner's same mode object to the slotted Coin child; this is the code equivalent of Figma cascading, not a child override.
 - Prefer the correct public Coin pattern when an approved screen is visually correct but structurally mis-composed in Figma and the designer explicitly confirms the design-structure mistake. Preserve the visual result and document the structural correction.
 - Require a rendered Figma reference screenshot for every Ready-for-dev screen and use it for visual QA after implementation.
 - Never report visual QA as passed based only on build success, a running preview, or working navigation. Each state requires a matching-dimension implementation screenshot and direct comparison with its Figma reference.
@@ -41,7 +41,7 @@ When consuming an exported Figma context package, also read:
 - Treat missing capabilities as design-system/documentation gaps. Report them instead of bypassing Coin architecture.
 - Never add screen-level CSS, animation wrappers, recreated internals, or behavioral patches to compensate for a public Coin component that does not work as documented. Use the component as shipped, record the failure as a Coin component or platform-integration bug, and escalate it to the design-system team.
 - Public component properties, variants, modes, and documented slot configuration are allowed configuration, not custom fixes. Undocumented overrides are not allowed.
-- Components resolve their own tokens within the owning component's mode context. For example, Badge owns `Context4` and should cascade normal or glass Badge context to its Icon child; consumers configure Badge, not the nested Icon.
+- Components resolve their own tokens within the owning component's mode context. For example, Badge owns `Context4`; if its `leading` React-node slot is rendered verbatim, pass Badge's same mode object to Icon so `Badge` or `Badge/glass` context reaches `icon/color`. Never invent a different child mode or literal color.
 
 ## Delivery gate
 

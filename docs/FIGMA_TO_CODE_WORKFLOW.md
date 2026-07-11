@@ -65,7 +65,7 @@ Mode ownership and cascading follow [`COIN_MODE_FLOW.md`](./COIN_MODE_FLOW.md).
 - Preserve approved copy and ordering exactly; do not invent product content to complete a component
 - Reproduce the selected/effective mode flow supplied by Better LLM context for every component and nested slot; never hardcode product colors that belong to Coin tokens
 - Verify composite component behavior before coding. For example, a carousel must contain enough items to reproduce pagination and side peeks, and its initial-state limitations must be documented before implementation
-- Configure selected modes on the owning public component and verify that its documented mode cascade reaches nested/slotted children. Do not duplicate owner modes on children; record a Coin component bug if cascading fails.
+- Configure selected modes on the owning public component. For verbatim React-node slots, forward the exact same owner mode object to the slotted Coin child when required to reproduce Figma cascading; do not invent child styling.
 - Treat the Figma instance's owner-mode flow as authoritative—for example normal Badge versus Badge/glass—and never replace it with hardcoded token colors.
 - When the designer confirms that a Figma screen uses the wrong structural building block, implement the correct public Coin pattern while retaining the approved visual behavior and recording the intentional structural deviation
 - Verify animated patterns in the actual target preview. Capture or measure an intermediate frame so a direct jump between correct end states cannot be mistaken for working motion. If Coin's animation fails on a target platform, report a Coin component or platform-integration bug; do not add a screen-level animation adapter.

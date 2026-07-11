@@ -13,21 +13,21 @@ A component's appearance is the resolved result of its complete mode flow—not 
 - Set a mode on the public component that owns that context.
 - Do not move a mode to a visually affected descendant merely to obtain the desired result.
 - Example: Badge owns `Context4`. A normal Badge uses `Context4: Badge`; a glass Badge uses `Context4: Badge/glass`.
-- Badge then cascades its context to internal or slotted children such as Icon. Icon color is an output of that Badge context, not an independently chosen color.
+- Badge then cascades its context to internal or slotted children such as Icon. In React, a supplied node may require the owner's same mode object to be forwarded explicitly when the slot implementation renders that node verbatim. Icon color remains an output of Badge context, not an independently chosen color.
 - Components may own several context collections simultaneously. Preserve all of them; do not collapse them into one generic context prop.
 
 ## Cascading
 
 Better LLM context must record both the mode selected on the owner and the effective mode received by every nested instance. This makes the cascade inspectable without exposing or modifying the variables library.
 
-Implementation configures the owning public component and relies on the Coin component's documented cascade. It must not:
+Implementation configures the owning public component. If a React-node slot does not inject modes automatically, implementation forwards the exact same owner mode object to the slotted Coin child to reproduce Figma's effective cascade. It must not:
 
-- repeat owner modes on children as a visual patch;
+- create a different child mode merely as a visual patch;
 - assign literal colors to reproduce resolved tokens;
 - recreate hidden subcomponent behavior;
 - add CSS or wrappers to compensate for a failed cascade.
 
-If an owner has the correct modes but a child resolves incorrectly, report a Coin component cascading bug.
+If the exact owner mode object has been forwarded through a verbatim React-node slot and the child still resolves incorrectly, report a Coin component cascading bug.
 
 ## Better LLM context requirements
 
@@ -49,7 +49,7 @@ The package must preserve multiple simultaneous contexts. An implementation agen
 1. Identify the public Coin component and its owner in Figma.
 2. Read all selected and effective modes from Better LLM context.
 3. Apply those modes to the owning public component using the Coin API.
-4. Keep nested components inside the documented slots so mode cascading remains intact.
+4. Keep nested components inside documented slots. If a supplied React node is not automatically cloned with modes, forward the owner's same mode object to that node.
 5. Render the screen and verify resolved outputs against the Figma screenshot.
 6. If the mode flow is correct but the output differs, record a Coin component or platform-integration bug. Do not patch the screen.
 

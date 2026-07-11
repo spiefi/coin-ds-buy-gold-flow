@@ -126,7 +126,7 @@ Each screen record should include:
 
 Subcomponents must be marked `public: false` so implementation agents can understand anatomy without importing them into product screens.
 
-Better LLM context is authoritative for mode flow. The exporter must preserve selected and effective modes for the complete instance tree—not only the top-level component—so implementation can configure the owning public component and verify its documented cascade. For example, a glass Badge owns `Context4: Badge/glass` and should cascade that context to its slotted Icon; implementation configures Badge rather than assigning a mode or literal white color directly to Icon.
+Better LLM context is authoritative for mode flow. The exporter must preserve selected and effective modes for the complete instance tree—not only the top-level component—so implementation can configure the owning public component and reproduce its cascade in code. For example, a glass Badge owns `Context4: Badge/glass`; if the code API accepts a verbatim Icon React node, implementation forwards Badge's same modes to Icon rather than inventing an Icon mode or literal white color.
 
 The canonical ownership, multi-context, cascading, implementation, and QA rules are defined in [`COIN_MODE_FLOW.md`](./COIN_MODE_FLOW.md).
 

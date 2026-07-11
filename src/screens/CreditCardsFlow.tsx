@@ -66,6 +66,23 @@ const SCREEN_MODES = {
   'Page type': 'MainPage',
 } as const
 
+const POINTS_BADGE_MODES = {
+  Context4: 'Badge',
+  'Badge Size': 'Small',
+  Emphasis: 'Medium',
+  AppearanceBrand: 'Secondary',
+} as const
+
+const MERCH_BADGE_MODES = {
+  Context4: 'Badge',
+  Emphasis: 'Medium',
+  AppearanceBrand: 'Secondary',
+} as const
+
+const GLASS_BADGE_MODES = {
+  Context4: 'Badge/glass',
+} as const
+
 const CONTENT_MODES = {
   Padding: 'Default',
   'Slot gap': 'S',
@@ -238,13 +255,8 @@ function CardHeader({ product }: { product: CreditCardProduct }) {
       </HStack>
       <Badge
         label="Up to 2000 pts"
-        leading={<Icon iconName="ic_card" />}
-        modes={{
-          Context4: 'Badge',
-          'Badge Size': 'Small',
-          Emphasis: 'Medium',
-          AppearanceBrand: 'Secondary',
-        }}
+        leading={<Icon iconName="ic_card" modes={POINTS_BADGE_MODES} />}
+        modes={POINTS_BADGE_MODES}
       />
     </HStack>
   )
@@ -323,14 +335,16 @@ function PromoCard({ configured = false }: { configured?: boolean }) {
       badge={
         <Badge
           label={configured ? 'Up to 2000 pts' : 'Label'}
-          leading={<Icon iconName="ic_jewellery_diamond" />}
-          modes={{ Context4: 'Badge', Emphasis: 'Medium', AppearanceBrand: 'Secondary' }}
+          leading={
+            <Icon iconName="ic_jewellery_diamond" modes={MERCH_BADGE_MODES} />
+          }
+          modes={MERCH_BADGE_MODES}
         />
       }
       specialBadgeLabel={
         configured ? 'Upgrade for ₹750 cashback with JioFinance+' : 'Badge'
       }
-      specialBadgeIcon={<Icon iconName="ic_card" />}
+      specialBadgeIcon={<Icon iconName="ic_card" modes={GLASS_BADGE_MODES} />}
       ctaLabel={configured ? 'Apply' : 'CTA'}
       height={223}
       accessibilityLabel={
