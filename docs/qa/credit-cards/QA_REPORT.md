@@ -24,6 +24,8 @@ Each state has a Figma reference in [`reference/`](./reference/) and a rendered 
 - Public Coin `Screen`, `AppBar`, `HeroSection`, `Carousel`, `ProductMerchandisingCard`, `ListItem`, `IconCapsule`, `CcCard`, `CardCTA`, `BottomNav`, `VStack`, and `HStack` are used.
 - The category grid uses controlled Coin `Section.Bento` for collapsed/expanded layout, More/Less behavior, animation, and accessibility state.
 - Badge leading icons receive explicit Secondary modes and resolve to Coin purple (`rgb(93, 0, 181)`) in the browser.
+- The featured glass badge passes its white icon color explicitly because its slot does not inherit the badge treatment.
+- The web preview wraps Coin `Section.Bento` in a measured 280ms height transition because the local React Native Reanimated compatibility layer does not execute the native Bento motion.
 - Exact approved card names, fee copy, ordering, repeated benefits, nudges, Best-for values, and bottom-nav labels are implemented.
 - Required promo, card, Travel-icon, and upgrade-CTA imagery was exported from Figma and added as individual assets.
 - Credit-card components use `width="100%"`; screen descendants are not fixed to 360px.

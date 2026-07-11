@@ -56,6 +56,8 @@ Codex QA is a required preflight before Human QA. It is evidence, not final prod
 
 - [ ] Navigation paths work in both directions where applicable.
 - [ ] Buttons, links, inputs, selectors, and gestures behave as designed.
+- [ ] Expand/collapse and other animated interactions show a visible intermediate state with the intended duration/easing; correct end states alone do not pass motion QA.
+- [ ] React Native Web compatibility shims have not converted required Coin motion into an immediate jump.
 - [ ] Loading, disabled, error, empty, and success states are covered when specified.
 - [ ] Shared state survives navigation as intended.
 - [ ] No interaction leads to a blank or unreachable screen.

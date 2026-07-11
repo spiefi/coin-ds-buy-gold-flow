@@ -1,5 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { ScrollView, type ImageSourcePropType } from 'react-native'
+import {
+  ScrollView,
+  View,
+  type ImageSourcePropType,
+  type LayoutChangeEvent,
+} from 'react-native'
 import {
   AppBar,
   Badge,
@@ -182,29 +187,82 @@ function CategoryGrid({
   onExpand: () => void
   onNavigate: (route: CreditCardsRoute) => void
 }) {
+  const [bentoHeight, setBentoHeight] = useState(0)
+  const bentoHeightRef = useRef(0)
+  const bentoTargetHeightRef = useRef(0)
+  const bentoAnimationRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [hasMeasured, setHasMeasured] = useState(false)
+
+  useEffect(
+    () => () => {
+      if (bentoAnimationRef.current) clearInterval(bentoAnimationRef.current)
+    },
+    [],
+  )
+
+  const handleBentoLayout = (event: LayoutChangeEvent) => {
+    const nextHeight = event.nativeEvent.layout.height
+    if (!hasMeasured) {
+      bentoHeightRef.current = nextHeight
+      bentoTargetHeightRef.current = nextHeight
+      setBentoHeight(nextHeight)
+      setHasMeasured(true)
+      return
+    }
+
+    if (Math.abs(nextHeight - bentoTargetHeightRef.current) < 1) return
+    bentoTargetHeightRef.current = nextHeight
+    const startHeight = bentoHeightRef.current
+    if (Math.abs(nextHeight - startHeight) < 1) return
+    if (bentoAnimationRef.current) clearInterval(bentoAnimationRef.current)
+
+    const startedAt = Date.now()
+    bentoAnimationRef.current = setInterval(() => {
+      const progress = Math.min((Date.now() - startedAt) / 280, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      const height = startHeight + (nextHeight - startHeight) * eased
+      bentoHeightRef.current = height
+      setBentoHeight(height)
+
+      if (progress === 1 && bentoAnimationRef.current) {
+        clearInterval(bentoAnimationRef.current)
+        bentoAnimationRef.current = null
+      }
+    }, 16)
+  }
+
   return (
-    <Section.Bento
-      navSlot={CATEGORIES_EXPANDED.map((category) => (
-        <CategoryItem
-          key={category.label}
-          category={category}
-          onPress={category.route ? () => onNavigate(category.route!) : undefined}
-        />
-      ))}
-      collapsedCount={4}
-      expanded={expanded}
-      onExpandedChange={() => onExpand()}
-      toggleMoreLabel="More"
-      toggleLessLabel="Less"
-      modes={{ Context: 'ListItem', Emphasis: 'High', AppearanceBrand: 'Secondary' }}
+    <View
       style={{
         alignSelf: 'stretch',
         marginHorizontal: -16,
-        paddingHorizontal: 16,
-        paddingVertical: 0,
-        backgroundColor: 'transparent',
+        overflow: 'hidden',
+        ...(hasMeasured ? { height: bentoHeight } : null),
       }}
-    />
+    >
+      <Section.Bento
+        navSlot={CATEGORIES_EXPANDED.map((category) => (
+          <CategoryItem
+            key={category.label}
+            category={category}
+            onPress={category.route ? () => onNavigate(category.route!) : undefined}
+          />
+        ))}
+        collapsedCount={4}
+        expanded={expanded}
+        onExpandedChange={() => onExpand()}
+        toggleMoreLabel="More"
+        toggleLessLabel="Less"
+        modes={{ Context: 'ListItem', Emphasis: 'High', AppearanceBrand: 'Secondary' }}
+        onLayout={handleBentoLayout}
+        style={{
+          alignSelf: 'stretch',
+          paddingHorizontal: 16,
+          paddingVertical: 0,
+          backgroundColor: 'transparent',
+        }}
+      />
+    </View>
   )
 }
 
@@ -338,7 +396,7 @@ function PromoCard({ configured = false }: { configured?: boolean }) {
       specialBadgeLabel={
         configured ? 'Upgrade for ₹750 cashback with JioFinance+' : 'Badge'
       }
-      specialBadgeIcon={<Icon iconName="ic_card" />}
+      specialBadgeIcon={<Icon iconName="ic_card" color="#ffffff" />}
       ctaLabel={configured ? 'Apply' : 'CTA'}
       height={223}
       accessibilityLabel={

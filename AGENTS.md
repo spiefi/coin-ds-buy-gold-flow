@@ -31,6 +31,7 @@ When consuming an exported Figma context package, also read:
 - Prefer the correct public Coin pattern when an approved screen is visually correct but structurally mis-composed in Figma and the designer explicitly confirms the design-structure mistake. Preserve the visual result and document the structural correction.
 - Require a rendered Figma reference screenshot for every Ready-for-dev screen and use it for visual QA after implementation.
 - Never report visual QA as passed based only on build success, a running preview, or working navigation. Each state requires a matching-dimension implementation screenshot and direct comparison with its Figma reference.
+- Interaction QA must verify motion between states, not only the final collapsed and expanded layouts. On React Native Web, confirm that compatibility shims do not silently reduce Coin animation APIs to immediate state changes.
 - Never implement a composed screen as one flattened screenshot. Reference screenshots are QA evidence; only genuine image/illustration nodes are implementation assets.
 - Start screens with Coin `Screen`; use Coin `VStack`, `HStack`, `Stack`, and `Section` for layout where applicable.
 - Direct children in screen and stack slots default to Fill container horizontally unless the component contract requires Hug or Fixed.
