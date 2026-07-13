@@ -1,9 +1,9 @@
 import React from 'react'
 import {
-  Avatar,
   Badge,
   Button,
   Carousel,
+  Icon,
   ProductMerchandisingCard,
 } from 'jfs-components'
 import cashbackImage from '../../assets/health-report-cashback.png'
@@ -11,9 +11,6 @@ import ackoImage from '../../assets/health-report-acko.png'
 import jioLogo from '../../assets/jio-logo.png'
 
 const CASHBACK_BADGE_MODES = {
-  'Color Mode': 'Light',
-  'Page type': 'SubPage',
-  'Avatar Size': 'XS',
   Context4: 'Badge/glass',
 } as const
 
@@ -30,9 +27,9 @@ function AckoCard({ index }: { index: number }) {
           label="₹100–₹5000 cashback"
           modes={CASHBACK_BADGE_MODES}
           leading={
-            <Avatar
-              style="Image"
-              imageSource={cashbackImage}
+            <Icon
+              source={cashbackImage}
+              size={14}
               modes={CASHBACK_BADGE_MODES}
             />
           }

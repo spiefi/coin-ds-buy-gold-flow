@@ -54,6 +54,12 @@ Moving Like/Dislike into the correct `CardCTA` footer slot fixed placement, but 
 
 **Lesson:** verify effective modes at the leaf that paints the pixel, especially across React-node slots.
 
+### Mode propagation must preserve the token-consuming child type
+
+The cashback Badge correctly owned `Context4=Badge/glass`, but its leading slot was implemented as an `Avatar` image. Passing the Badge mode object to Avatar could not resolve `icon/color`, so the raster stayed gold even though the mode string looked correct in source.
+
+**Lesson:** reproduce both the cascade and the public child component from Figma. For a Badge icon slot, render public `Icon` and forward the Badge's exact mode object to it; do not substitute `Avatar` or another component that does not consume the expected icon token. Verify the leaf token and the rendered pixel, not only the modes object.
+
 ### Carousel geometry affected the whole page
 
 Duplicate horizontal padding narrowed cards, wrapped titles/subtitles, increased card height, changed snap math, and pushed the More section outside the reference frame. Correct public item widths and plot height fixed downstream overflow without screen CSS.

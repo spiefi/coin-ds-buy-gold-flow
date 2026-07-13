@@ -42,7 +42,7 @@ Key resolved mode flow:
 - Health standalone insight Nudge owns `Context=Nudge&Alert` and `AppearanceBrand=Neutral`; its approved Hello Jio slot remains explicitly Primary.
 - Health rating cards own the CTA/Secondary and Section contexts. The neutral, low-emphasis S-size feedback mode is explicitly forwarded through `ButtonGroup` to both slotted `IconButton`s.
 - Product CTA slots use Secondary, Medium-emphasis, S-size Coin Buttons.
-- The merchandising cashback `Badge` owns `Context4=Badge/glass`; its exact mode object is forwarded to the slotted cashback `Avatar`.
+- The merchandising cashback `Badge` owns `Context4=Badge/glass`; its exact mode object is forwarded to the slotted cashback `Icon`, which resolves `icon/color` from the Badge context.
 - Spending insight cards retain their selected Brand/DataViz modes and `context 8=Section` for the approved shell.
 - Emergency `SavingsGoalSummary` owns `AppearanceBrand=Secondary`, producing the purple indicator and lavender track.
 - Spending's slotted score ring owns warning-system modes without leaking warning context into `CardAdvisory`.
@@ -50,15 +50,15 @@ Key resolved mode flow:
 ## Assets
 
 - `src/assets/health-report-acko.png` — approved Acko photograph, 1344×768, SHA-256 `c46360d84abf1218af9e9453914e19f48868c8097a6f73b5fabc7fe2666cde2b`.
-- `src/assets/health-report-cashback.png` — approved cashback artwork, 383×383, SHA-256 `c9d078f02a6e761897e93ae95a4b9d559575feab0c8c2f71fe0de33e2d82eba8`.
+- `src/assets/health-report-cashback.png` — approved cashback artwork, 383×383, SHA-256 `c9d078f02a6e761897e93ae95a4b9d559575feab0c8c2f71fe0de33e2d82eba8`; rendered through public `Icon` so Badge context supplies its tint.
 - Reused `src/assets/jio-logo.png` — approved Jio avatar, SHA-256 `c2042ba190f4ab9b382f8692f43db7c926feacb2d9ddf90a880b24c7e6474d03`.
 
 ## Visual evidence
 
 | Screen | Reference | Implementation | SSIM | Manual result |
 | --- | --- | --- | --- | --- |
-| Health Report | 360×2187 | 360×2187 | 0.674613 | Complete frame; neutral Nudge; full comparison card; contained neutral feedback actions; Badge/glass cashback slot; native five-dot pagination; complete More section |
-| Spending | 360×2054 | 360×2054 | 0.610233 | Complete frame; contained hero; grey insight shells; 8px rhythm; purple/lavender emergency progress; Badge/glass cashback slot; full-width product card; complete More section |
+| Health Report | 360×2187 | 360×2187 | 0.674581 | Complete frame; neutral Nudge; full comparison card; contained neutral feedback actions; Badge/glass cashback slot; native five-dot pagination; complete More section |
+| Spending | 360×2054 | 360×2054 | 0.610122 | Complete frame; contained hero; grey insight shells; 8px rhythm; purple/lavender emergency progress; Badge/glass cashback slot; full-width product card; complete More section |
 
 SSIM is a same-dimension diagnostic, not a substitute for the manual region comparison. Canonical evidence:
 
@@ -76,7 +76,7 @@ SSIM is a same-dimension diagnostic, not a substitute for the manual region comp
 | Spending CardInsight grey shells and 8px stack rhythm | Pass |
 | Emergency progress is purple/lavender and retains 50%, ₹3.6L and ₹4.8L | Pass |
 | Spending hero is fully contained; both merchandising carousels have native five-dot pagination | Pass |
-| Cashback Badge owns `Context4=Badge/glass` and forwards the same mode object to its leading Avatar | Pass |
+| Cashback Badge owns `Context4=Badge/glass` and forwards the same mode object to its leading Icon | Pass |
 | Approved copy/order, right-edge containment, and complete bottom content at exact reference dimensions | Pass |
 
 ## Validation
@@ -84,6 +84,7 @@ SSIM is a same-dimension diagnostic, not a substitute for the manual region comp
 - `npm run typecheck` — pass.
 - `npm run build` — pass; existing Vite oversized-chunk warning only.
 - `git diff --check` — pass.
+- Mode resolver check — `icon/color` resolves to `rgb(255, 255, 255)` for `Context4=Badge/glass`, versus the default gold `rgb(173, 132, 68)`.
 - Exact-dimension final PNGs — pass.
 - Health Insights dot 2 — pass; native horizontal position changed `0 → 324`, with pagination widths `[6,16,6,6,6]`.
 - Health merchandising dot 2 — pass; native horizontal position changed `0 → 304`, with pagination widths `[6,16,6,6,6]`.
