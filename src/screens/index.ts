@@ -12,3 +12,4 @@ export {
   type CreditCardsRoute,
 } from './CreditCardsFlow'
 export * from './zgredek'
+export * from './health-report'

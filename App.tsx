@@ -3,10 +3,13 @@ import {
   CREDIT_CARD_ROUTES,
   CreditCardsFlow,
   FlowDirectoryScreen,
+  HEALTH_REPORT_ROUTES,
+  HealthReportFlow,
   ZGREDEK_ROUTES,
   ZgredekFlow,
   type AppFlow,
   type CreditCardsRoute,
+  type HealthReportRoute,
   type ZgredekRoute,
 } from './src/screens'
 
@@ -14,11 +17,24 @@ type AppLocation =
   | { flow: 'directory' }
   | { flow: 'zgredek'; route: ZgredekRoute }
   | { flow: 'credit-cards'; route: CreditCardsRoute }
+  | { flow: 'health-report'; route: HealthReportRoute }
 
 function readAppLocation(): AppLocation {
   const params = new URLSearchParams(window.location.search)
   const requestedFlow = params.get('flow')
   const requestedRoute = params.get('route')
+
+  if (
+    requestedFlow === 'health-report' ||
+    HEALTH_REPORT_ROUTES.includes(requestedRoute as HealthReportRoute)
+  ) {
+    return {
+      flow: 'health-report',
+      route: HEALTH_REPORT_ROUTES.includes(requestedRoute as HealthReportRoute)
+        ? (requestedRoute as HealthReportRoute)
+        : 'health-report',
+    }
+  }
 
   if (
     requestedFlow === 'credit-cards' ||
@@ -57,13 +73,25 @@ export default function App() {
   }, [])
 
   const openFlow = (flow: AppFlow) => {
-    const route = flow === 'zgredek' ? 'explore' : 'credit-cards'
-    window.history.pushState({}, '', `?flow=${flow}&route=${route}`)
-    setLocation(
+    const route =
       flow === 'zgredek'
-        ? { flow, route: 'explore' }
-        : { flow, route: 'credit-cards' },
-    )
+        ? 'explore'
+        : flow === 'health-report'
+          ? 'health-report'
+          : 'credit-cards'
+    window.history.pushState({}, '', `?flow=${flow}&route=${route}`)
+
+    if (flow === 'zgredek') {
+      setLocation({ flow, route: 'explore' })
+      return
+    }
+
+    if (flow === 'health-report') {
+      setLocation({ flow, route: 'health-report' })
+      return
+    }
+
+    setLocation({ flow, route: 'credit-cards' })
   }
 
   const openDirectory = () => {
@@ -79,6 +107,16 @@ export default function App() {
     return (
       <CreditCardsFlow
         key={`credit-cards-${location.route}`}
+        initialRoute={location.route}
+        onExitFlow={openDirectory}
+      />
+    )
+  }
+
+  if (location.flow === 'health-report') {
+    return (
+      <HealthReportFlow
+        key={`health-report-${location.route}`}
         initialRoute={location.route}
         onExitFlow={openDirectory}
       />

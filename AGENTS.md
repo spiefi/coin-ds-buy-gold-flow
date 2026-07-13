@@ -65,11 +65,21 @@ Codex QA is not final approval. Human QA remains mandatory.
 
 ## Multi-agent coordination
 
+- Ready-for-dev screen implementation, revision, and QA batches must use multi-agent orchestration by default. The primary agent must not implement and self-certify the batch alone when sub-agents are available.
+- Use the highest reasoning effort available for screen work: prefer `xhigh` for context/component mapping and independent QA, and use at least `high` for implementation. If the runtime does not expose per-agent reasoning controls, use the strongest available agent configuration and record that limitation in the handoff.
+- Every screen batch requires, at minimum:
+  1. A bounded implementation agent that may edit only its assigned screen scope.
+  2. A separate independent QA agent that did not implement the screen and remains read-only while reporting findings.
+- Add a dedicated context/component-mapping agent before implementation when the batch contains ambiguous mode ownership, repeated composites, unfamiliar public Coin APIs, or asset-handoff uncertainty.
 - The primary agent owns architecture, navigation, shared state, integration, and the final report.
 - Group related screens into bounded implementation batches; do not create isolated architecture per screen.
 - Implementation agents must follow the required reading and may edit only their assigned scope.
-- QA should be independent of implementation when practical.
-- QA agents report findings; they do not silently reinterpret the design.
+- Independent QA must compare every state both as a matching-dimension full frame and region by region. It must explicitly check overflow/clipping, selected and effective modes, carousel swipe/peek/pagination behavior, responsive sizing, interaction and motion, accessibility, and runtime warnings.
+- QA agents report findings; they do not edit the implementation, silently reinterpret the design, or downgrade a visible mismatch to a design-system gap without verifying the public component API.
+- QA findings must be classified as implementation/configuration error, handoff ambiguity, approved design exception, or demonstrated Coin component/platform limitation.
+- Every implementation/configuration finding blocks delivery. The primary agent must fix it and return the affected state to independent QA for re-verification before handoff.
+- A low visual-similarity result or an obvious region-level mismatch blocks delivery even when typecheck, build, navigation, and accessibility checks pass.
+- If sub-agents are unavailable, the primary agent must state that before implementation, run a separate second-pass QA phase with fresh evidence, and record the exception in the handoff.
 - Shared files and components require coordination through the primary agent.
 - Never use multiple agents as a reason to duplicate components, styles, assets, or navigation logic.
 
@@ -88,3 +98,11 @@ Every implemented batch must include:
 - QA status per screen
 - Known differences, warnings, and unresolved gaps
 - Human-QA status
+
+## GitHub publishing
+
+- Treat the repository's persistent Git credentials and the connected GitHub app as the primary publishing access paths.
+- An invalid or expired `gh auth status` result alone is not a publishing blocker. First verify repository access with a read-only Git remote command such as `git ls-remote origin HEAD`, then verify the connected GitHub app's repository permissions.
+- Use local `git` for branch creation, commits, and pushes when the configured remote credentials work. Prefer the connected GitHub app for pull-request creation.
+- Ask the user to reauthenticate only after both the configured Git remote access and the connected GitHub app access have failed.
+- Never write access tokens, credentials, or authentication secrets into repository files.

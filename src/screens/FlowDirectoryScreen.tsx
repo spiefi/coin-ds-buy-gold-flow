@@ -9,7 +9,7 @@ import {
   VStack,
 } from 'jfs-components'
 
-export type AppFlow = 'zgredek' | 'credit-cards'
+export type AppFlow = 'zgredek' | 'credit-cards' | 'health-report'
 
 export interface FlowDirectoryScreenProps {
   onSelectFlow: (flow: AppFlow) => void
@@ -67,6 +67,17 @@ export function FlowDirectoryScreen({ onSelectFlow }: FlowDirectoryScreenProps) 
             navArrow
             onPress={() => onSelectFlow('credit-cards')}
             accessibilityLabel="Open Credit Cards flow"
+            modes={FLOW_ITEM_MODES}
+            disableTruncation
+          />
+          <ListItem
+            layout="Horizontal"
+            title="Health Report"
+            supportText="Health rating and spending insights"
+            showSupportText
+            navArrow
+            onPress={() => onSelectFlow('health-report')}
+            accessibilityLabel="Open Health Report flow"
             modes={FLOW_ITEM_MODES}
             disableTruncation
           />
