@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   Avatar,
+  Badge,
   Button,
   Carousel,
   ProductMerchandisingCard,
@@ -9,7 +10,7 @@ import cashbackImage from '../../assets/health-report-cashback.png'
 import ackoImage from '../../assets/health-report-acko.png'
 import jioLogo from '../../assets/jio-logo.png'
 
-const CASHBACK_ICON_MODES = {
+const CASHBACK_BADGE_MODES = {
   'Color Mode': 'Light',
   'Page type': 'SubPage',
   'Avatar Size': 'XS',
@@ -23,12 +24,18 @@ function AckoCard({ index }: { index: number }) {
       avatarSource={jioLogo}
       title="Acko Insurance"
       subtitle="Based on your Protection report"
-      specialBadgeLabel="₹100–₹5000 cashback"
-      specialBadgeIcon={
-        <Avatar
-          style="Image"
-          imageSource={cashbackImage}
-          modes={CASHBACK_ICON_MODES}
+      specialBadge={
+        <Badge
+          type="glass"
+          label="₹100–₹5000 cashback"
+          modes={CASHBACK_BADGE_MODES}
+          leading={
+            <Avatar
+              style="Image"
+              imageSource={cashbackImage}
+              modes={CASHBACK_BADGE_MODES}
+            />
+          }
         />
       }
       cta={

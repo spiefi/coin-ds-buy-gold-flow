@@ -42,6 +42,7 @@ Key resolved mode flow:
 - Health standalone insight Nudge owns `Context=Nudge&Alert` and `AppearanceBrand=Neutral`; its approved Hello Jio slot remains explicitly Primary.
 - Health rating cards own the CTA/Secondary and Section contexts. The neutral, low-emphasis S-size feedback mode is explicitly forwarded through `ButtonGroup` to both slotted `IconButton`s.
 - Product CTA slots use Secondary, Medium-emphasis, S-size Coin Buttons.
+- The merchandising cashback `Badge` owns `Context4=Badge/glass`; its exact mode object is forwarded to the slotted cashback `Avatar`.
 - Spending insight cards retain their selected Brand/DataViz modes and `context 8=Section` for the approved shell.
 - Emergency `SavingsGoalSummary` owns `AppearanceBrand=Secondary`, producing the purple indicator and lavender track.
 - Spending's slotted score ring owns warning-system modes without leaking warning context into `CardAdvisory`.
@@ -56,8 +57,8 @@ Key resolved mode flow:
 
 | Screen | Reference | Implementation | SSIM | Manual result |
 | --- | --- | --- | --- | --- |
-| Health Report | 360×2187 | 360×2187 | 0.667463 | Complete frame; neutral Nudge; full comparison card; contained neutral feedback actions; native five-dot pagination; complete More section |
-| Spending | 360×2054 | 360×2054 | 0.596860 | Complete frame; contained hero; grey insight shells; 8px rhythm; purple/lavender emergency progress; full-width product card; complete More section |
+| Health Report | 360×2187 | 360×2187 | 0.674613 | Complete frame; neutral Nudge; full comparison card; contained neutral feedback actions; Badge/glass cashback slot; native five-dot pagination; complete More section |
+| Spending | 360×2054 | 360×2054 | 0.610233 | Complete frame; contained hero; grey insight shells; 8px rhythm; purple/lavender emergency progress; Badge/glass cashback slot; full-width product card; complete More section |
 
 SSIM is a same-dimension diagnostic, not a substitute for the manual region comparison. Canonical evidence:
 
@@ -75,6 +76,7 @@ SSIM is a same-dimension diagnostic, not a substitute for the manual region comp
 | Spending CardInsight grey shells and 8px stack rhythm | Pass |
 | Emergency progress is purple/lavender and retains 50%, ₹3.6L and ₹4.8L | Pass |
 | Spending hero is fully contained; both merchandising carousels have native five-dot pagination | Pass |
+| Cashback Badge owns `Context4=Badge/glass` and forwards the same mode object to its leading Avatar | Pass |
 | Approved copy/order, right-edge containment, and complete bottom content at exact reference dimensions | Pass |
 
 ## Validation
