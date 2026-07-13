@@ -10,10 +10,11 @@ Before designing, implementing, or reviewing a screen, read:
 2. [`docs/FIGMA_TO_CODE_WORKFLOW.md`](./docs/FIGMA_TO_CODE_WORKFLOW.md)
 3. [`docs/CODEX_QA_CHECKLIST.md`](./docs/CODEX_QA_CHECKLIST.md)
 4. [`docs/COIN_MODE_FLOW.md`](./docs/COIN_MODE_FLOW.md)
+5. [`docs/SCREEN_IMPLEMENTATION_LESSONS.md`](./docs/SCREEN_IMPLEMENTATION_LESSONS.md)
 
 When consuming an exported Figma context package, also read:
 
-5. [`docs/FIGMA_CONTEXT_SCHEMA.md`](./docs/FIGMA_CONTEXT_SCHEMA.md)
+6. [`docs/FIGMA_CONTEXT_SCHEMA.md`](./docs/FIGMA_CONTEXT_SCHEMA.md)
 
 ## Non-negotiable constraints
 
@@ -63,25 +64,21 @@ Designer or AI agent builds in Figma
 
 Codex QA is not final approval. Human QA remains mandatory.
 
-## Multi-agent coordination
+## Orchestration mode
 
-- Ready-for-dev screen implementation, revision, and QA batches must use multi-agent orchestration by default. The primary agent must not implement and self-certify the batch alone when sub-agents are available.
-- Use the highest reasoning effort available for screen work: prefer `xhigh` for context/component mapping and independent QA, and use at least `high` for implementation. If the runtime does not expose per-agent reasoning controls, use the strongest available agent configuration and record that limitation in the handoff.
-- Every screen batch requires, at minimum:
-  1. A bounded implementation agent that may edit only its assigned screen scope.
-  2. A separate independent QA agent that did not implement the screen and remains read-only while reporting findings.
-- Add a dedicated context/component-mapping agent before implementation when the batch contains ambiguous mode ownership, repeated composites, unfamiliar public Coin APIs, or asset-handoff uncertainty.
-- The primary agent owns architecture, navigation, shared state, integration, and the final report.
-- Group related screens into bounded implementation batches; do not create isolated architecture per screen.
-- Implementation agents must follow the required reading and may edit only their assigned scope.
-- Independent QA must compare every state both as a matching-dimension full frame and region by region. It must explicitly check overflow/clipping, selected and effective modes, carousel swipe/peek/pagination behavior, responsive sizing, interaction and motion, accessibility, and runtime warnings.
-- QA agents report findings; they do not edit the implementation, silently reinterpret the design, or downgrade a visible mismatch to a design-system gap without verifying the public component API.
-- QA findings must be classified as implementation/configuration error, handoff ambiguity, approved design exception, or demonstrated Coin component/platform limitation.
-- Every implementation/configuration finding blocks delivery. The primary agent must fix it and return the affected state to independent QA for re-verification before handoff.
-- A low visual-similarity result or an obvious region-level mismatch blocks delivery even when typecheck, build, navigation, and accessibility checks pass.
-- If sub-agents are unavailable, the primary agent must state that before implementation, run a separate second-pass QA phase with fresh evidence, and record the exception in the handoff.
-- Shared files and components require coordination through the primary agent.
-- Never use multiple agents as a reason to duplicate components, styles, assets, or navigation logic.
+- Screen work is **solo/direct by default**. Do not spawn implementation, mapping, or QA sub-agents unless the user's opening screen request explicitly says `use harness`, `use sub-agents`, or `use multi-agent orchestration`.
+- Do not infer harness permission from requests such as `high quality`, `QA this`, `pixel perfect`, or `use xhigh`. If harness may materially help, propose it and wait for the user's approval before spawning agents.
+- When the user explicitly enables harness mode, use it for the **first implementation pass only**:
+  1. Add a context/component-mapping agent only when mode ownership, repeated composites, public APIs, or asset handoff are ambiguous.
+  2. Use one bounded implementation agent for the assigned screen batch.
+  3. Use a separate read-only QA agent for the first-pass structural, visual, interaction, and accessibility gate.
+- After the first pass is handed to the user, switch to the fast direct loop: user feedback → primary-agent fix → affected-region and full-frame verification → user feedback. Do not respawn harness agents during this debugging loop.
+- Run harness again only when the user explicitly says `rerun harness`, `rerun independent QA`, or otherwise asks for another delegated pass.
+- If harness is enabled and reasoning controls are available, prefer `xhigh` for mapping and independent QA and at least `high` for implementation. Otherwise use the strongest available configuration and record the limitation.
+- The primary agent always owns architecture, navigation, shared state, integration, final evidence, and the handoff report.
+- Regardless of orchestration mode, compare every state at matching dimensions both as a complete frame and region by region. Check overflow/clipping, selected and effective modes, carousel swipe/peek/pagination, responsive sizing, interaction and motion, accessibility, and runtime warnings.
+- Classify every finding as implementation/configuration error, handoff ambiguity, approved design exception, or demonstrated Coin component/platform limitation. A visible implementation/configuration mismatch blocks handoff.
+- Never downgrade a mismatch to a design-system gap without verifying the public component API or source. Never use multiple agents as a reason to duplicate components, styles, assets, or navigation logic.
 
 ## Evidence and handoff
 
