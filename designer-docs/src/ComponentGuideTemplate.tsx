@@ -76,6 +76,15 @@ export function ComponentGuideTemplate({
     }
   }, [metadata.name])
 
+  useEffect(() => {
+    const targetId = window.location.hash.slice(1) || 'overview'
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById(targetId)?.scrollIntoView({ block: 'start' })
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [metadata.slug])
+
   return (
     <div className="site-shell">
       <a className="skip-link" href="#main-content">
