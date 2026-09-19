@@ -1,0 +1,27 @@
+{
+  "name": "coin-designer-docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@react-native-community/blur": "4.4.1",
+    "jfs-components": "0.1.60",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "react-native": "0.80.2",
+    "react-native-web": "0.21.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.5.0",
+    "typescript": "^5.8.0",
+    "vite": "^6.1.0"
+  }
+}

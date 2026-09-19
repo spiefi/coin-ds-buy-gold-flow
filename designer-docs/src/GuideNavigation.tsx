@@ -1,0 +1,170 @@
+type GuideIconName =
+  | 'button'
+  | 'accordioncheckbox'
+  | 'hstack'
+  | 'vstack'
+  | 'stack'
+  | 'breadcrumbs'
+
+export const COMPONENT_NAV = [
+  { slug: 'button', label: 'Button', icon: 'button' },
+  {
+    slug: 'accordioncheckbox',
+    label: 'Accordion Checkbox',
+    icon: 'accordioncheckbox',
+  },
+  { slug: 'hstack', label: 'HStack', icon: 'hstack' },
+  { slug: 'vstack', label: 'VStack', icon: 'vstack' },
+  { slug: 'stack', label: 'Stack', icon: 'stack' },
+  { slug: 'breadcrumbs', label: 'Breadcrumbs', icon: 'breadcrumbs' },
+] as const satisfies ReadonlyArray<{
+  slug: string
+  label: string
+  icon: GuideIconName
+}>
+
+export type ComponentSlug = (typeof COMPONENT_NAV)[number]['slug']
+
+export const PAGE_NAV = [
+  ['overview', 'Overview'],
+  ['anatomy', 'Anatomy'],
+  ['configuration', 'Configuration'],
+  ['states', 'States'],
+  ['sizing', 'Sizing'],
+  ['content', 'Content'],
+  ['context', 'In context'],
+  ['dos-donts', "Do & Don’ts"],
+  ['sources', 'Sources'],
+] as const
+
+export function guideHref(slug: ComponentSlug) {
+  return slug === 'button' ? '/#overview' : `/?component=${slug}#overview`
+}
+
+function GuideIcon({ name }: { name: GuideIconName }) {
+  return (
+    <svg
+      className="component-icon-svg"
+      viewBox="0 0 18 18"
+      width="18"
+      height="18"
+      fill="none"
+      aria-hidden="true"
+    >
+      {name === 'button' ? (
+        <rect x="2.25" y="5" width="13.5" height="8" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
+      ) : name === 'accordioncheckbox' ? (
+        <>
+          <rect x="2.5" y="2.5" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+          <path d="m4.2 5.5 1.1 1.1 1.8-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M11.5 5.5h4M11.5 9h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </>
+      ) : name === 'hstack' ? (
+        <>
+          <rect x="2" y="6" width="3" height="6" rx="1" fill="currentColor" />
+          <rect x="7.5" y="6" width="3" height="6" rx="1" fill="currentColor" />
+          <rect x="13" y="6" width="3" height="6" rx="1" fill="currentColor" />
+        </>
+      ) : name === 'vstack' ? (
+        <>
+          <rect x="6" y="2" width="6" height="3" rx="1" fill="currentColor" />
+          <rect x="6" y="7.5" width="6" height="3" rx="1" fill="currentColor" />
+          <rect x="6" y="13" width="6" height="3" rx="1" fill="currentColor" />
+        </>
+      ) : name === 'stack' ? (
+        <>
+          <rect x="4" y="2.5" width="10" height="3" rx="1" stroke="currentColor" strokeWidth="1.5" />
+          <rect x="4" y="7.5" width="10" height="3" rx="1" stroke="currentColor" strokeWidth="1.5" />
+          <rect x="4" y="12.5" width="10" height="3" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        </>
+      ) : (
+        <>
+          <path d="M2.5 5.5h4M8.5 5.5h4M14.5 5.5h1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="m7 4 1.5 1.5L7 7M13 4l1.5 1.5L13 7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M2.5 12.5h13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </>
+      )}
+    </svg>
+  )
+}
+
+export function GuideSidebar({ active }: { active: ComponentSlug }) {
+  return (
+    <aside className="sidebar" aria-label="Documentation navigation">
+      <a className="brand" href={guideHref('button')} aria-label="Coin documentation home">
+        <span className="brand-mark" aria-hidden="true">C</span>
+        <span>
+          <strong>Coin</strong>
+          <small>Designer docs</small>
+        </span>
+      </a>
+
+      <div className="sidebar-group">
+        <p>Components</p>
+        {COMPONENT_NAV.map((item) => (
+          <a
+            className={'component-link ' + (item.slug === active ? 'is-active' : '')}
+            href={guideHref(item.slug)}
+            aria-current={item.slug === active ? 'page' : undefined}
+            key={item.slug}
+          >
+            <span className="component-icon" aria-hidden="true">
+              <GuideIcon name={item.icon} />
+            </span>
+            {item.label}
+          </a>
+        ))}
+      </div>
+
+      <nav className="page-nav" aria-label="On this page">
+        <p>On this page</p>
+        {PAGE_NAV.map(([id, label]) => (
+          <a href={'#' + id} key={id}>{label}</a>
+        ))}
+      </nav>
+      <p className="sidebar-version">Coin Components · 0.1.60</p>
+    </aside>
+  )
+}
+
+export function GuideMobileBar() {
+  return (
+    <div className="mobile-bar">
+      <a className="brand" href={guideHref('button')}>
+        <span className="brand-mark" aria-hidden="true">C</span>
+        <strong>Coin designer docs</strong>
+      </a>
+      <a href="#sources">Sources</a>
+    </div>
+  )
+}
+
+export function MobileComponentNav({ active }: { active: ComponentSlug }) {
+  return (
+    <nav className="mobile-component-toc" aria-label="Components">
+      <span className="mobile-component-toc-label">Components</span>
+      <div>
+        {COMPONENT_NAV.map((item) => (
+          <a
+            className={item.slug === active ? 'is-active' : ''}
+            href={guideHref(item.slug)}
+            aria-current={item.slug === active ? 'page' : undefined}
+            key={item.slug}
+          >
+            {item.label}
+          </a>
+        ))}
+      </div>
+    </nav>
+  )
+}
+
+export function MobilePageNav() {
+  return (
+    <nav className="mobile-toc" aria-label="Page sections">
+      {PAGE_NAV.map(([id, label]) => (
+        <a href={'#' + id} key={id}>{label}</a>
+      ))}
+    </nav>
+  )
+}
