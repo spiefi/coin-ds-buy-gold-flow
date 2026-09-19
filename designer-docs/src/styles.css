@@ -2259,27 +2259,61 @@ p {
   padding: 54px;
 }
 
-.action-anatomy-figure {
+.action-anatomy-live {
   position: relative;
+  display: grid;
+  width: min(100%, 540px);
+  min-height: 320px;
+  place-items: center;
+  padding: 72px;
 }
 
-.action-footer-anatomy-figure {
+.action-anatomy-component {
+  position: relative;
+  z-index: 2;
+}
+
+.action-footer-anatomy-component {
   width: min(100%, 390px);
-  padding-block: 38px;
 }
 
-.action-tile-anatomy-figure {
-  padding: 44px 54px;
+.action-tile-anatomy-live {
+  width: min(100%, 360px);
 }
 
-.additem-anatomy-figure {
-  padding: 52px 62px;
+.action-tile-anatomy-component {
+  width: 168px;
+}
+
+.additem-anatomy-live {
+  width: min(100%, 340px);
+  min-height: 250px;
+  padding-inline: 68px;
 }
 
 .additem-anatomy-pair {
   display: flex;
-  gap: 50px;
+  gap: 64px;
   align-items: center;
+}
+
+.action-anatomy-leaders {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.action-anatomy-leaders path {
+  fill: none;
+  stroke: var(--violet);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
 }
 
 .action-anatomy-pin {
@@ -2298,114 +2332,22 @@ p {
   font-weight: 700;
 }
 
-.action-anatomy-pin::after {
-  position: absolute;
-  z-index: -1;
-  width: 34px;
-  height: 1px;
+.action-anatomy-card .anatomy-list li {
+  grid-template-columns: 28px 100px 1fr;
+  align-items: start;
+}
+
+.anatomy-list .action-anatomy-key {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  color: #fff;
   background: var(--violet);
-  content: '';
-}
-
-.footer-pin-title {
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.footer-pin-title::after {
-  top: 30px;
-  left: 12px;
-  width: 1px;
-  height: 35px;
-}
-
-.footer-pin-actions {
-  right: -41px;
-  bottom: 67px;
-}
-
-.footer-pin-actions::after {
-  top: 12px;
-  right: 25px;
-}
-
-.footer-pin-surface {
-  bottom: 12px;
-  left: 24px;
-}
-
-.footer-pin-surface::after {
-  bottom: 25px;
-  left: 12px;
-  width: 1px;
-  height: 28px;
-}
-
-.tile-pin-icon {
-  top: 31px;
-  left: 18px;
-}
-
-.tile-pin-icon::after,
-.tile-pin-label::after {
-  top: 12px;
-  left: 25px;
-}
-
-.tile-pin-label {
-  bottom: 30px;
-  left: 18px;
-}
-
-.tile-pin-boundary {
-  right: 19px;
-  bottom: 25px;
-}
-
-.tile-pin-boundary::after {
-  top: -27px;
-  left: 12px;
-  width: 1px;
-  height: 30px;
-}
-
-.additem-pin-cell {
-  top: 22px;
-  left: 39px;
-}
-
-.additem-pin-cell::after,
-.additem-pin-thumbnail::after {
-  top: 25px;
-  left: 12px;
-  width: 1px;
-  height: 28px;
-}
-
-.additem-pin-icon {
-  bottom: 25px;
-  left: 25px;
-}
-
-.additem-pin-icon::after {
-  top: -13px;
-  left: 24px;
-}
-
-.additem-pin-thumbnail {
-  top: 22px;
-  right: 38px;
-}
-
-.additem-pin-remove {
-  right: 19px;
-  bottom: 25px;
-}
-
-.additem-pin-remove::after {
-  top: -12px;
-  right: 24px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .action-size-host {
@@ -2608,17 +2550,30 @@ p {
     padding: 22px;
   }
 
-  .action-footer-anatomy-figure {
-    width: calc(100% - 38px);
+  .action-anatomy-live {
+    min-height: 280px;
+    padding: 60px 44px;
   }
 
-  .action-tile-anatomy-figure,
-  .additem-anatomy-figure {
-    transform: scale(0.9);
+  .action-footer-anatomy-stage {
+    padding: 12px;
+  }
+
+  .action-footer-anatomy-live {
+    padding-inline: 8px;
+  }
+
+  .additem-anatomy-live {
+    min-height: 250px;
+    padding-inline: 50px;
+  }
+
+  .additem-anatomy-pair {
+    gap: 54px;
   }
 
   .action-anatomy-card .anatomy-list li {
-    grid-template-columns: 100px 1fr;
+    grid-template-columns: 28px 86px 1fr;
   }
 
   .action-size-host {

@@ -65,7 +65,7 @@ The code-rendered Breadcrumbs references link to these published stories:
 
 - Figma public node `1500:13351` exposes `Text` with default `Cards`. The tile is fixed at 168 × 90 with 12px horizontal and 16px vertical padding and an 8px gap.
 - Public `ActionTile` accepts `label`, `icon`, `modes`, and optional `onPress`. The supplied icon slot receives the owner’s modes. The guide does not style-patch the fixed dimensions or invent disabled/loading states.
-- The live Figma icon capsule resolves `Icon Capsule Size=M`, `AppearanceBrand=Neutral`, `Emphasis=High`, `Semantic Intent=Brand`, `Color Mode=Light`, `Context=Default`, and `Page type=MainPage`. The generic Storybook default starts from `AppearanceBrand=Primary`; the guide configures the owner to the Figma-resolved Neutral appearance.
+- The live Figma icon capsule was observed resolving `Icon Capsule Size=M`, `AppearanceBrand=Neutral`, `Emphasis=High`, `Semantic Intent=Brand`, `Color Mode=Light`, `Context=Default`, and `Page type=MainPage`. The supplied Storybook reference instead selects Primary appearance with Medium emphasis; the guide follows that reference and passes those owner modes to the icon capsule.
 - Canonical story IDs verified in the published index: `components-actiontile--default`, `--with-custom-icon`, and `--with-modes`.
 
 ## Additem guide evidence
