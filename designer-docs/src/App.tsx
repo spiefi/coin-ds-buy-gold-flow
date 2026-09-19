@@ -16,6 +16,12 @@ import {
   isAccordionCheckboxLocation,
 } from './AccordionCheckboxGuide'
 import {
+  ActionFooterGuide,
+  ActionTileGuide,
+  AddItemGuide,
+  getActionGuideFromLocation,
+} from './ActionGuides'
+import {
   GuideMobileBar,
   GuideSidebar,
   MobileComponentNav,
@@ -978,6 +984,16 @@ function ButtonGuide() {
 }
 
 function App() {
+  const actionGuide = getActionGuideFromLocation()
+  if (actionGuide === 'actionfooter') {
+    return <ActionFooterGuide />
+  }
+  if (actionGuide === 'actiontile') {
+    return <ActionTileGuide />
+  }
+  if (actionGuide === 'additem') {
+    return <AddItemGuide />
+  }
   if (isAccordionCheckboxLocation()) {
     return <AccordionCheckboxGuide />
   }

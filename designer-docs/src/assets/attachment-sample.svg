@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">Receipt sample</title>
+  <desc id="desc">A simple illustrated receipt on a purple background.</desc>
+  <rect width="160" height="160" rx="28" fill="#5d00b5"/>
+  <circle cx="128" cy="30" r="34" fill="#edcf97" opacity=".86"/>
+  <path d="M42 24h67a9 9 0 0 1 9 9v104l-10-7-10 7-10-7-10 7-10-7-10 7-10-7-10 7V33a9 9 0 0 1 9-9Z" fill="#fff"/>
+  <rect x="53" y="48" width="49" height="9" rx="4.5" fill="#5d00b5"/>
+  <rect x="53" y="70" width="39" height="6" rx="3" fill="#c9ceda"/>
+  <rect x="53" y="86" width="51" height="6" rx="3" fill="#c9ceda"/>
+  <rect x="53" y="107" width="26" height="8" rx="4" fill="#15182a"/>
+  <rect x="88" y="107" width="16" height="8" rx="4" fill="#edcf97"/>
+</svg>

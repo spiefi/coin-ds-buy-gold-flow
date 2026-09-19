@@ -1,6 +1,9 @@
 type GuideIconName =
   | 'button'
   | 'accordioncheckbox'
+  | 'actionfooter'
+  | 'actiontile'
+  | 'additem'
   | 'hstack'
   | 'vstack'
   | 'stack'
@@ -13,6 +16,9 @@ export const COMPONENT_NAV = [
     label: 'Accordion Checkbox',
     icon: 'accordioncheckbox',
   },
+  { slug: 'actionfooter', label: 'Action Footer', icon: 'actionfooter' },
+  { slug: 'actiontile', label: 'Action Tile', icon: 'actiontile' },
+  { slug: 'additem', label: 'Add Item', icon: 'additem' },
   { slug: 'hstack', label: 'HStack', icon: 'hstack' },
   { slug: 'vstack', label: 'VStack', icon: 'vstack' },
   { slug: 'stack', label: 'Stack', icon: 'stack' },
@@ -58,6 +64,22 @@ function GuideIcon({ name }: { name: GuideIconName }) {
           <rect x="2.5" y="2.5" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
           <path d="m4.2 5.5 1.1 1.1 1.8-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           <path d="M11.5 5.5h4M11.5 9h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </>
+      ) : name === 'actionfooter' ? (
+        <>
+          <path d="M2.5 4.5h13v9h-13z" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M2.5 9.5h13M5 11.5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </>
+      ) : name === 'actiontile' ? (
+        <>
+          <rect x="2.5" y="3.5" width="13" height="11" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="6" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.25" />
+          <path d="M5 11h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </>
+      ) : name === 'additem' ? (
+        <>
+          <rect x="3" y="3" width="12" height="12" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M9 6v6M6 9h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </>
       ) : name === 'hstack' ? (
         <>

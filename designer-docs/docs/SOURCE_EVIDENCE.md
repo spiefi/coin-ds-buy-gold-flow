@@ -9,6 +9,7 @@ Checked 19 September 2026 for the documentation build in this directory.
 - Registry check on 19 September 2026: `npm view jfs-components version --fetch-timeout=12000 --fetch-retries=0` returned `0.1.60`.
 - Result: installed and declared versions match the registry `latest`; no upgrade was made.
 - The installed package has public `Button`, `HStack`, `VStack`, `Stack`, `Icon`, and `Text` exports. It does not contain a Breadcrumbs component or export.
+- The installed package also has public `ActionFooter`, `ActionTile`, `Additem`, `FormUpload`, and `ButtonGroup` exports used by the three action guides.
 
 ## Canonical sources
 
@@ -17,6 +18,8 @@ Checked 19 September 2026 for the documentation build in this directory.
 - [HStack](https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=9243-2201) — public Coin Components Library node `9243:2201`.
 - [VStack](https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=2841-190) — public Coin Components Library node `2841:190`.
 - [Breadcrumbs](https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=9788-1945) — public Coin Components Library node `9788:1945`.
+- [Action Footer](https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=2904-8057) — public Coin Components Library node `2904:8057`.
+- [Action Tile](https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=1500-13351) — public Coin Components Library node `1500:13351`.
 - [Stack anatomy](https://www.figma.com/design/dSlK8ueQ7wlbyUSZd4f8QO/Coin-Subcomponents?node-id=279-3) — Coin Subcomponents node `279:3`; this is an anatomy reference for the Slot, not a recommendation to place hidden subcomponents directly in product screens.
 
 ### Storybook
@@ -28,6 +31,9 @@ The canonical host is [JFS Components Storybook](https://jfs-components-storyboo
 - `components-vstack--docs`
 - `components-stack--docs`
 - `components-breadcrumbs--docs`
+- `components-actionfooter--docs`
+- `components-actiontile--docs`
+- `components-additem--docs`
 
 The code-rendered Breadcrumbs references link to these published stories:
 
@@ -47,6 +53,29 @@ The code-rendered Breadcrumbs references link to these published stories:
 - Breadcrumbs is currently absent from the resolved `jfs-components@0.1.60` package. The reader-facing guide states this package boundary, labels its code-rendered examples as documentation references, and links to the canonical stories for shipped runtime behavior.
 - In the inspected Breadcrumbs Storybook iframe, the runtime root is a `div` with an accessible label but no `navigation` role. Ancestor items render as `div` elements with `role=link`; the current item renders `aria-current="page"`. Storybook prose describes a navigation landmark, so the runtime semantics need a source accessibility follow-up. The guide avoids claiming a runtime landmark and keeps this exact discrepancy in this internal report.
 - Figma masters for HStack, VStack, and Stack contain empty slots; examples in this site show real public package instances with labelled documentation fixtures to make the layout relationship visible. They are teaching examples, not product-screen fidelity claims.
+
+## ActionFooter guide evidence
+
+- Figma public node `2904:8057` exposes optional `Title`. The inspected 360 × 93 HUG reference uses 10px top, 16px horizontal, and 41px bottom padding with an 8px internal gap; selected modes include `Color Mode=Light`, `context5=Default`, and `Action Footer Radius=False`.
+- Public `ActionFooter` accepts `title`, `children`, `modes`, `safeAreaBottom`, and `bottomPadding`. A single public `ButtonGroup`, `Stack`, or `Slot` child owns its internal layout and receives the footer modes. The examples use `ButtonGroup` for horizontal actions and `Stack` for vertical actions.
+- The package defaults `bottomPadding` to 24 and optionally adds the native safe-area inset. On web it remains in normal document flow; on native it pins to the bottom of its host. Keyboard avoidance is explicitly consumer-owned.
+- Canonical story IDs verified in the published index: `components-actionfooter--default`, `--with-title`, `--bottom-padding-24`, and `--with-stacked-content`.
+
+## ActionTile guide evidence
+
+- Figma public node `1500:13351` exposes `Text` with default `Cards`. The tile is fixed at 168 × 90 with 12px horizontal and 16px vertical padding and an 8px gap.
+- Public `ActionTile` accepts `label`, `icon`, `modes`, and optional `onPress`. The supplied icon slot receives the owner’s modes. The guide does not style-patch the fixed dimensions or invent disabled/loading states.
+- The live Figma icon capsule resolves `Icon Capsule Size=M`, `AppearanceBrand=Neutral`, `Emphasis=High`, `Semantic Intent=Brand`, `Color Mode=Light`, `Context=Default`, and `Page type=MainPage`. The generic Storybook default starts from `AppearanceBrand=Primary`; the guide configures the owner to the Figma-resolved Neutral appearance.
+- Canonical story IDs verified in the published index: `components-actiontile--default`, `--with-custom-icon`, and `--with-modes`.
+
+## Additem guide evidence
+
+- `Additem` is a public export within the `FormUpload` family. It owns a fixed 44 × 44 cell and accepts `state` (`empty` or `preview`), `imageSource`, `onPress`, optional `onRemove`, injected `picker` plus `onAssetsPicked`, `modes`, and `isDisabled`.
+- The package merges default inner IconCapsule modes `AppearanceBrand=Neutral`, `Emphasis=Low`, and `Icon Capsule Size=S`. `FormUpload` is the public in-context composite for labels, support text, controlled attachments, wrapping, and picker integration.
+- The lower-case Additem component key `c56305b04f6636abc27759702a16af895c413b23` was identified in the read-only Coin Subcomponents file `dSlK8ueQ7wlbyUSZd4f8QO`. The available live page context exposed no matching node, so the guide links to the source file and does not guess a node ID.
+- Package source renders the preview remove IconCapsule with `onTouchEnd`; IconCapsule intentionally drops its `accessibilityLabel`. In live browser QA at 390 × 844 and desktop width, the preview remained after both a mouse click and Enter on the visible remove button. The button rendered at 29 × 29 without an accessible name inside the labelled 44 × 44 preview. The guide leaves the component internals unchanged.
+- Responsive browser QA at 390 × 844 confirmed all three new routes without document overflow: ActionFooter's Coin heading kept normal letter spacing, ActionTile remained 168 × 90, and Additem remained 44 × 44. Button and HStack retained their existing desktop hero typography after the shared selector was narrowed.
+- Canonical story IDs verified in the published index: `components-additem--default`, `--preview`, `--preview-with-remove`, `--with-picker`, `--disabled`, and `--all-states`.
 
 ## AccordionCheckbox guide evidence
 
