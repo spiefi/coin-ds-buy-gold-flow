@@ -4090,8 +4090,9 @@ p {
 /* App Bar guide */
 .appbar-preview-stage {
   min-height: 340px;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
+  justify-content: stretch;
   gap: 26px;
   padding: 42px 28px 54px;
 }
@@ -4101,7 +4102,11 @@ p {
 }
 
 .appbar-preview-host {
-  width: min(100%, 620px);
+  width: 100%;
+  max-width: 620px;
+  min-width: 0;
+  box-sizing: border-box;
+  justify-self: center;
   padding: 28px 24px;
   border: 1px solid var(--line);
   border-radius: 22px;
@@ -4329,7 +4334,7 @@ p {
 }
 
 .appbar-size-host-narrow {
-  width: min(100%, 300px);
+  width: min(100%, 360px);
 }
 
 .appbar-sizing-meta {

@@ -159,6 +159,7 @@ function AppBarExample({
   title = 'Page title',
   includeJioDot = false,
   showActions = true,
+  includeMore = true,
   actionsDisabled = false,
   suppliedBack = true,
   onAction,
@@ -169,6 +170,7 @@ function AppBarExample({
   title?: string
   includeJioDot?: boolean
   showActions?: boolean
+  includeMore?: boolean
   actionsDisabled?: boolean
   suppliedBack?: boolean
   onAction?: (action: ActionName) => void
@@ -188,7 +190,7 @@ function AppBarExample({
       />
     ) : undefined
   const actionsSlot = showActions
-    ? ActionButtons({ modes, disabled: actionsDisabled, onAction })
+    ? ActionButtons({ modes, disabled: actionsDisabled, onAction, includeMore })
     : undefined
 
   return (
@@ -564,11 +566,16 @@ export function AppBarGuide() {
           </article>
           <article className="appbar-sizing-card">
             <div className="appbar-size-host appbar-size-host-narrow">
-              <AppBarExample type="SubPage" title="Your complete investment dashboard" showActions />
+              <AppBarExample
+                type="SubPage"
+                title="Your complete investment dashboard"
+                showActions
+                includeMore={false}
+              />
             </div>
             <div className="appbar-sizing-meta">
               <strong>Narrow host</strong>
-              <span>Long titles truncate within the centered middle slot as actions stay visible.</span>
+              <span>At this 360px host, one focused action leaves room; adding more makes the title compete with the side slots.</span>
             </div>
           </article>
         </div>
@@ -586,7 +593,7 @@ export function AppBarGuide() {
             <h3>Keep the title short</h3>
             <p>Use the page name people need to recognize, then move supporting detail into the page body.</p>
             <div className="rule-example appbar-rule-example">
-              <AppBarExample type="SubPage" title="Transactions" showActions />
+              <AppBarExample type="SubPage" title="Bills" showActions includeMore={false} />
             </div>
           </article>
           <article className="content-rule">
@@ -613,14 +620,14 @@ export function AppBarGuide() {
       header: 'Do & Don’ts',
       title: 'Protect orientation at the top of the page',
       description:
-        'The visible difference is simple: a short destination and focused actions are easy to scan; crowded copy and every possible action compete with the page.',
+        'The visible difference is simple: a short destination and focused actions are easy to scan; crowded copy and extra actions compete with the page.',
       body: (
         <div className="comparison-stack appbar-comparison-stack">
           <div className="comparison-row">
             <article className="comparison-card do-card">
               <p className="comparison-label">Do</p>
               <div className="comparison-preview appbar-comparison-preview">
-                <AppBarExample type="SubPage" title="Transactions" showActions />
+                <AppBarExample type="SubPage" title="Bills" showActions includeMore={false} />
               </div>
               <h3>Use a short page title and focused actions</h3>
               <p>The destination stays readable while the actions remain easy to reach.</p>
