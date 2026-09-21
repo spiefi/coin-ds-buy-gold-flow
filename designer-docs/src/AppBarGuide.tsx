@@ -5,14 +5,15 @@ import {
   useState,
   type ReactNode,
 } from 'react'
+import { Text as NativeText } from 'react-native'
 import {
   AppBar,
+  Avatar,
   Button,
   IconButton,
   JioDot,
   Screen,
   Text,
-  Title,
   VStack,
   type Modes,
 } from 'jfs-components'
@@ -38,7 +39,7 @@ const STORYBOOK_PROGRESS_URL =
 
 type ColorMode = 'Light' | 'Dark'
 type AppBarType = 'MainPage' | 'SubPage'
-type ActionName = 'Hello Jio' | 'More options' | 'Go back'
+type ActionName = 'Hello Jio' | 'More options' | 'Go back' | 'Add item'
 
 function classes(...values: Array<string | false | undefined>) {
   return values.filter(Boolean).join(' ')
@@ -49,6 +50,13 @@ function appBarModes(colorMode: ColorMode, type: AppBarType): Modes {
     'Color Mode': colorMode,
     Context2: 'AppBar',
     'Page type': type,
+  } as Modes
+}
+
+function appBarActionModes(colorMode: ColorMode, type: AppBarType): Modes {
+  return {
+    ...appBarModes(colorMode, type),
+    Emphasis: 'Low',
   } as Modes
 }
 
@@ -124,14 +132,26 @@ function ActionButtons({
   modes,
   disabled,
   onAction,
+  includeAdd = false,
   includeMore = true,
 }: {
   modes: Modes
   disabled?: boolean
   onAction?: (action: ActionName) => void
+  includeAdd?: boolean
   includeMore?: boolean
 }) {
   return [
+    includeAdd ? (
+      <IconButton
+        key="add-item"
+        iconName="ic_add"
+        modes={modes}
+        disabled={disabled}
+        accessibilityLabel="Add item"
+        onPress={() => onAction?.('Add item')}
+      />
+    ) : null,
     <IconButton
       key="hello-jio"
       iconName="ic_hellojio"
@@ -153,12 +173,54 @@ function ActionButtons({
   ]
 }
 
+function TitleText({ children, modes }: { children: ReactNode; modes?: Modes }) {
+  return (
+    <NativeText
+      numberOfLines={1}
+      style={{
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: modes?.['Color Mode'] === 'Dark' ? '#FFF' : '#000',
+      }}
+    >
+      {children}
+    </NativeText>
+  )
+}
+
+function MainPageStoryExample({ colorMode = 'Light' }: { colorMode?: ColorMode }) {
+  const modes = useMemo(() => appBarModes(colorMode, 'MainPage'), [colorMode])
+  const actionModes = useMemo(() => appBarActionModes(colorMode, 'MainPage'), [colorMode])
+
+  return (
+    <div className="appbar-example appbar-main-page-story-example">
+      <AppBar
+        type="MainPage"
+        leadingSlot={<JioDot modes={modes} />}
+        actionsSlot={[
+          <IconButton
+            key="main-add"
+            iconName="ic_add"
+            modes={actionModes}
+            accessibilityLabel="Add item"
+          />,
+          <Avatar key="main-avatar" modes={modes} />,
+        ]}
+        modes={modes}
+        accessibilityLabel="App bar"
+        style={{ width: '100%' }}
+      />
+    </div>
+  )
+}
+
 function AppBarExample({
   type,
   colorMode = 'Light',
   title = 'Page title',
   includeJioDot = false,
   showActions = true,
+  includeAdd = false,
   includeMore = true,
   actionsDisabled = false,
   suppliedBack = true,
@@ -170,6 +232,7 @@ function AppBarExample({
   title?: string
   includeJioDot?: boolean
   showActions?: boolean
+  includeAdd?: boolean
   includeMore?: boolean
   actionsDisabled?: boolean
   suppliedBack?: boolean
@@ -177,6 +240,7 @@ function AppBarExample({
   className?: string
 }) {
   const modes = useMemo(() => appBarModes(colorMode, type), [colorMode, type])
+  const actionModes = useMemo(() => appBarActionModes(colorMode, type), [colorMode, type])
   const resolvedTitle = title.trim() || 'Page title'
   const leadingSlot =
     type === 'MainPage' ? (
@@ -184,13 +248,13 @@ function AppBarExample({
     ) : suppliedBack ? (
       <IconButton
         iconName="ic_arrow_back"
-        modes={modes}
+        modes={actionModes}
         accessibilityLabel="Go back"
         onPress={() => onAction?.('Go back')}
       />
     ) : undefined
   const actionsSlot = showActions
-    ? ActionButtons({ modes, disabled: actionsDisabled, onAction, includeMore })
+    ? ActionButtons({ modes: actionModes, disabled: actionsDisabled, onAction, includeAdd, includeMore })
     : undefined
 
   return (
@@ -199,12 +263,7 @@ function AppBarExample({
         type={type}
         leadingSlot={leadingSlot}
         middleSlot={
-          <Title
-            title={resolvedTitle}
-            textAlign="Center"
-            modes={modes}
-            numberOfLines={1}
-          />
+          <TitleText modes={modes}>{resolvedTitle}</TitleText>
         }
         actionsSlot={actionsSlot}
         modes={modes}
@@ -333,14 +392,14 @@ function AppBarAnatomy() {
           modes={modes}
           middleSlot={
             <AnatomySlot className="appbar-anatomy-slot" part="middle">
-              <Title title="Page title" textAlign="Center" modes={modes} />
+              <TitleText modes={modes}>Page title</TitleText>
             </AnatomySlot>
           }
           leadingSlot={
             <AnatomySlot className="appbar-anatomy-slot" part="leading">
               <IconButton
                 iconName="ic_arrow_back"
-                modes={modes}
+                modes={{ ...modes, Emphasis: 'Low' } as Modes}
                 accessibilityLabel="Go back"
               />
             </AnatomySlot>
@@ -353,7 +412,7 @@ function AppBarAnatomy() {
             >
               <IconButton
                 iconName="ic_more_horizontal"
-                modes={modes}
+                modes={{ ...modes, Emphasis: 'Low' } as Modes}
                 accessibilityLabel="More options"
               />
             </AnatomySlot>,
@@ -399,6 +458,7 @@ function ContextExample() {
   const [screen, setScreen] = useState<'Overview' | 'Transactions'>('Overview')
   const colorMode: ColorMode = 'Light'
   const barModes = useMemo(() => appBarModes(colorMode, 'SubPage'), [])
+  const actionModes = useMemo(() => appBarActionModes(colorMode, 'SubPage'), [])
   const bodyModes = useMemo(() => contentModes(colorMode), [])
   const title = screen === 'Overview' ? 'Overview' : 'Transactions'
 
@@ -411,16 +471,16 @@ function ContextExample() {
           leadingSlot={
             <IconButton
               iconName="ic_arrow_back"
-              modes={barModes}
+              modes={actionModes}
               accessibilityLabel="Go back"
               onPress={() => setScreen('Overview')}
             />
           }
-          middleSlot={<Title title={title} textAlign="Center" modes={barModes} />}
+          middleSlot={<TitleText modes={barModes}>{title}</TitleText>}
           actionsSlot={
             <IconButton
               iconName="ic_more_horizontal"
-              modes={barModes}
+              modes={actionModes}
               accessibilityLabel="More options"
               onPress={() => setScreen('Transactions')}
             />
@@ -500,11 +560,11 @@ export function AppBarGuide() {
         <div className="appbar-configuration-grid">
           <article className="configuration-block appbar-config-card">
             <p className="eyebrow">MainPage</p>
-            <h3>Opt into a leading mark</h3>
+            <h3>Use the canonical MainPage identity</h3>
             <div className="appbar-config-preview">
-              <AppBarExample type="MainPage" includeJioDot showActions />
+              <MainPageStoryExample />
             </div>
-            <p>Pass JioDot or a product logo through leadingSlot when the top level needs an identity cue.</p>
+            <p>The published MainPage story pairs JioDot with low-emphasis add and Avatar actions and leaves the middle slot empty.</p>
           </article>
           <article className="configuration-block appbar-config-card">
             <p className="eyebrow">SubPage</p>
@@ -618,27 +678,68 @@ export function AppBarGuide() {
     },
     'dos-donts': {
       header: 'Do & Don’ts',
-      title: 'Protect orientation at the top of the page',
+      title: 'Make the relationship easy to scan',
       description:
-        'The visible difference is simple: a short destination and focused actions are easy to scan; crowded copy and extra actions compete with the page.',
+        'Use the page title, action count, and page type to make the next destination and its available actions clear.',
       body: (
         <div className="comparison-stack appbar-comparison-stack">
-          <div className="comparison-row">
+          <div className="comparison-row appbar-comparison-row">
             <article className="comparison-card do-card">
               <p className="comparison-label">Do</p>
               <div className="comparison-preview appbar-comparison-preview">
                 <AppBarExample type="SubPage" title="Bills" showActions includeMore={false} />
               </div>
-              <h3>Use a short page title and focused actions</h3>
-              <p>The destination stays readable while the actions remain easy to reach.</p>
+              <h3>Keep the destination concise</h3>
+              <p>A short title stays readable in the centered middle slot.</p>
             </article>
             <article className="comparison-card dont-card">
               <p className="comparison-label">Don’t</p>
               <div className="comparison-preview appbar-comparison-preview">
-                <AppBarExample type="SubPage" title="Your complete investment dashboard" showActions />
+                <AppBarExample
+                  type="SubPage"
+                  title="Your complete investment dashboard"
+                  showActions
+                  includeMore={false}
+                />
               </div>
               <h3>Put the page brief inside the bar</h3>
-              <p>The centered slot has a fixed width, so extra words compete with navigation and actions.</p>
+              <p>The centered slot clips extra words when a title carries the whole page brief.</p>
+            </article>
+          </div>
+          <div className="comparison-row appbar-comparison-row">
+            <article className="comparison-card do-card">
+              <p className="comparison-label">Do</p>
+              <div className="comparison-preview appbar-comparison-preview">
+                <AppBarExample type="SubPage" title="Payments" showActions includeMore={false} />
+              </div>
+              <h3>Keep actions focused</h3>
+              <p>One low-emphasis action leaves the destination and the next step easy to scan.</p>
+            </article>
+            <article className="comparison-card dont-card">
+              <p className="comparison-label">Don’t</p>
+              <div className="comparison-preview appbar-comparison-preview">
+                <AppBarExample type="SubPage" title="Payments" showActions includeAdd />
+              </div>
+              <h3>Overcrowd the actions slot</h3>
+              <p>Every extra control competes with the few actions that support the current task.</p>
+            </article>
+          </div>
+          <div className="comparison-row appbar-comparison-row">
+            <article className="comparison-card do-card">
+              <p className="comparison-label">Do</p>
+              <div className="comparison-preview appbar-comparison-preview">
+                <AppBarExample type="SubPage" title="Payment details" showActions includeMore={false} />
+              </div>
+              <h3>Use SubPage for a child destination</h3>
+              <p>The supplied Go back action makes the relationship to the parent page explicit.</p>
+            </article>
+            <article className="comparison-card dont-card">
+              <p className="comparison-label">Don’t</p>
+              <div className="comparison-preview appbar-comparison-preview">
+                <MainPageStoryExample />
+              </div>
+              <h3>Use MainPage identity for a detail view</h3>
+              <p>JioDot and an empty middle slot describe a top-level destination, not a child page.</p>
             </article>
           </div>
         </div>
@@ -672,7 +773,7 @@ export function AppBarGuide() {
           <div className="verification-note">
             <span>Checked 21 September 2026</span>
             <p>
-              Examples use public <code>AppBar</code>, <code>Title</code>, <code>IconButton</code>, and <code>JioDot</code> exports from jfs-components 0.1.60, which matches the registry latest. Figma and package behavior differ on fixed reference heights and MainPage’s JioDot default; the guide also supplies a named public back action because the package default has no accessible name.
+              Examples use the public <code>AppBar</code>, <code>IconButton</code>, <code>JioDot</code>, and <code>Avatar</code> exports plus the published Storybook <code>TitleText</code> fixture for the middle slot. The source fixture uses explicit 16px bold text and a color literal keyed to its Light/Dark mode; this is documented provenance rather than a claim that Figma specifies the typography. Figma and package behavior differ on fixed reference heights and MainPage’s JioDot default; the guide also supplies a named public back action because the package default has no accessible name.
             </p>
           </div>
           <div className="appbar-source-links">

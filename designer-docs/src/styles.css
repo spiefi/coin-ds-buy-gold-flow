@@ -4261,6 +4261,11 @@ p {
   background: var(--line);
 }
 
+.appbar-configuration-grid,
+.appbar-state-grid {
+  grid-template-columns: 1fr;
+}
+
 .appbar-config-card,
 .appbar-state-card,
 .appbar-sizing-card {
