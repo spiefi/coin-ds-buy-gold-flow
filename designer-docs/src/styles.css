@@ -4330,7 +4330,7 @@ p {
 }
 
 .appbar-sizing-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .appbar-size-host {
@@ -4349,6 +4349,7 @@ p {
 
 .appbar-size-host-narrow {
   width: min(100%, 360px);
+  padding-inline: 0;
 }
 
 .appbar-sizing-meta {
@@ -4370,6 +4371,10 @@ p {
 
 .appbar-content-grid .content-rule {
   min-height: 330px;
+}
+
+.appbar-comparison-row {
+  grid-template-columns: 1fr;
 }
 
 .appbar-rule-example {

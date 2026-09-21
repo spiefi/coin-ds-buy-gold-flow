@@ -628,14 +628,14 @@ export function AppBarGuide() {
             <div className="appbar-size-host appbar-size-host-narrow">
               <AppBarExample
                 type="SubPage"
-                title="Your complete investment dashboard"
+                title="Investments"
                 showActions
                 includeMore={false}
               />
             </div>
             <div className="appbar-sizing-meta">
               <strong>Narrow host</strong>
-              <span>At this 360px host, one focused action leaves room; adding more makes the title compete with the side slots.</span>
+              <span>At up to 360px of content width, one focused action leaves room; longer titles or extra actions compete with the side slots.</span>
             </div>
           </article>
         </div>
