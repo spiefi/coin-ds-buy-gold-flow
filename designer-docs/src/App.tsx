@@ -21,6 +21,7 @@ import {
   AddItemGuide,
   getActionGuideFromLocation,
 } from './ActionGuides'
+import { AppBarGuide, isAppBarLocation } from './AppBarGuide'
 import {
   GuideMobileBar,
   GuideSidebar,
@@ -993,6 +994,9 @@ function App() {
   }
   if (actionGuide === 'additem') {
     return <AddItemGuide />
+  }
+  if (isAppBarLocation()) {
+    return <AppBarGuide />
   }
   if (isAccordionCheckboxLocation()) {
     return <AccordionCheckboxGuide />
