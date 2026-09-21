@@ -1,5 +1,4 @@
 import {
-  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -17,6 +16,7 @@ import {
   GuideSidebar,
   MobileComponentNav,
   MobilePageNav,
+  useGuidePageNavigation,
 } from './GuideNavigation'
 
 const FIGMA_URL =
@@ -485,6 +485,8 @@ function AccountSelectionExample() {
 }
 
 export function AccordionCheckboxGuide() {
+  useGuidePageNavigation()
+
   const [expanded, setExpanded] = useState(false)
   const [checked, setChecked] = useState(false)
   const [disabled, setDisabled] = useState(false)
@@ -492,7 +494,7 @@ export function AccordionCheckboxGuide() {
   const [subtitleVisible, setSubtitleVisible] = useState(true)
   const modes = useMemo(() => coinModes(colorMode), [colorMode])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const previousTitle = document.title
     document.title = 'AccordionCheckbox · Coin designer documentation'
     return () => {
@@ -505,7 +507,7 @@ export function AccordionCheckboxGuide() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <GuideSidebar active="accordioncheckbox" />
 
-      <main id="main-content" className="content">
+      <main id="main-content" className="content" tabIndex={-1}>
         <GuideMobileBar />
         <MobileComponentNav active="accordioncheckbox" />
         <MobilePageNav />

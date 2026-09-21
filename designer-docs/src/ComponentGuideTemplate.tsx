@@ -1,10 +1,11 @@
-import { useEffect, type ReactNode } from 'react'
+import { useLayoutEffect, type ReactNode } from 'react'
 import {
   GuideMobileBar,
   GuideSidebar,
   MobileComponentNav,
   MobilePageNav,
   PAGE_NAV,
+  useGuidePageNavigation,
   type ComponentSlug,
 } from './GuideNavigation'
 
@@ -68,7 +69,7 @@ export function ComponentGuideTemplate({
   playground,
   sections,
 }: ComponentGuideTemplateProps) {
-  useEffect(() => {
+  useLayoutEffect(() => {
     const previousTitle = document.title
     document.title = `${metadata.name} · Coin designer documentation`
     return () => {
@@ -76,14 +77,7 @@ export function ComponentGuideTemplate({
     }
   }, [metadata.name])
 
-  useEffect(() => {
-    const targetId = window.location.hash.slice(1) || 'overview'
-    const frame = window.requestAnimationFrame(() => {
-      document.getElementById(targetId)?.scrollIntoView({ block: 'start' })
-    })
-
-    return () => window.cancelAnimationFrame(frame)
-  }, [metadata.slug])
+  useGuidePageNavigation()
 
   return (
     <div className="site-shell">
@@ -93,7 +87,7 @@ export function ComponentGuideTemplate({
 
       <GuideSidebar active={metadata.slug} />
 
-      <main id="main-content" className="content">
+      <main id="main-content" className="content" tabIndex={-1}>
         <GuideMobileBar />
         <MobileComponentNav active={metadata.slug} />
         <MobilePageNav />

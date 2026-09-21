@@ -16,6 +16,7 @@ import {
   GuideSidebar,
   MobileComponentNav,
   MobilePageNav,
+  useGuidePageNavigation,
 } from './GuideNavigation'
 
 export type LayoutGuideKey = 'hstack' | 'vstack' | 'stack' | 'breadcrumbs'
@@ -1767,8 +1768,10 @@ function GuideFooter() {
 }
 
 export function LayoutGuidePage({ guide }: { guide: LayoutGuideKey }) {
+  useGuidePageNavigation()
+
   const meta = META[guide]
-  useEffect(() => {
+  useLayoutEffect(() => {
     const previousTitle = document.title
     document.title = meta.name + ' · Coin designer documentation'
     return () => {
@@ -1865,7 +1868,7 @@ export function LayoutGuidePage({ guide }: { guide: LayoutGuideKey }) {
     <div className={classes('site-shell', 'layout-docs', 'layout-docs-' + guide)}>
       <a className="skip-link" href="#main-content">Skip to content</a>
       <GuideSidebar active={guide} />
-      <main id="main-content" className="content">
+      <main id="main-content" className="content" tabIndex={-1}>
         <GuideMobileBar />
         <MobileComponentNav active={guide} />
         <MobilePageNav />

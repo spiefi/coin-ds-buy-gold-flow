@@ -1,4 +1,9 @@
-import { useMemo, useState } from 'react'
+import {
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   Button,
   getVariableByName,
@@ -28,6 +33,8 @@ import {
   GuideSidebar,
   MobileComponentNav,
   MobilePageNav,
+  useGuideLocation,
+  useGuidePageNavigation,
 } from './GuideNavigation'
 
 const FIGMA_URL =
@@ -216,6 +223,16 @@ function SourceLink({ href, children }: { href: string; children: string }) {
 }
 
 function ButtonGuide() {
+  useGuidePageNavigation()
+
+  useLayoutEffect(() => {
+    const previousTitle = document.title
+    document.title = 'Button · Coin designer documentation'
+    return () => {
+      document.title = previousTitle
+    }
+  }, [])
+
   const [label, setLabel] = useState('Continue')
   const [type, setType] = useState<ButtonType>('default')
   const [size, setSize] = useState<ButtonSize>('M')
@@ -246,7 +263,7 @@ function ButtonGuide() {
 
       <GuideSidebar active="button" />
 
-      <main id="main-content" className="content">
+      <main id="main-content" className="content" tabIndex={-1}>
         <GuideMobileBar />
 
         <MobileComponentNav active="button" />
@@ -986,6 +1003,19 @@ function ButtonGuide() {
 }
 
 function App() {
+  const location = useGuideLocation()
+  const previousRouteRef = useRef<string | null>(null)
+
+  useLayoutEffect(() => {
+    const routeKey = `${location.pathname}${location.search}`
+    const previousRoute = previousRouteRef.current
+    previousRouteRef.current = routeKey
+
+    if (!previousRoute || previousRoute === routeKey) return
+
+    document.getElementById('main-content')?.focus({ preventScroll: true })
+  }, [location.pathname, location.search])
+
   const actionGuide = getActionGuideFromLocation()
   if (actionGuide === 'actionfooter') {
     return <ActionFooterGuide />
