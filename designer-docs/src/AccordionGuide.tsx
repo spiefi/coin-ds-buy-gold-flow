@@ -7,6 +7,7 @@ import {
 } from 'react'
 import {
   Accordion,
+  Button,
   IconCapsule,
   ListItem,
   MoneyValue,
@@ -44,8 +45,19 @@ function classes(...values: Array<string | false | undefined>) {
 function accordionModes(colorMode: ColorMode): Modes {
   return {
     'Color Mode': colorMode,
-    'Accordion / Output': 'Default',
     AppearanceBrand: 'Primary',
+  } as Modes
+}
+
+function primaryButtonModes(colorMode: ColorMode = 'Light'): Modes {
+  return {
+    'Button / Size': 'M',
+    'Button / State': 'Idle',
+    'Color Mode': colorMode,
+    Context4: 'Button',
+    Emphasis: 'High',
+    AppearanceBrand: 'Primary',
+    'Semantic Intent': 'Brand',
   } as Modes
 }
 
@@ -596,7 +608,7 @@ export function AccordionGuide() {
           <article className="coin-accordion-sizing-card">
             <div className="coin-accordion-sizing-host coin-accordion-host-narrow">
               <AccordionExample
-                title="Longer account group"
+                title="Linked savings accounts and payment sources"
                 defaultExpanded
                 disableTruncation
               />
@@ -706,7 +718,14 @@ export function AccordionGuide() {
             <article className="comparison-card do-card">
               <p className="comparison-label">Do</p>
               <div className="comparison-preview coin-accordion-comparison-preview">
-                <AccordionExample title="Payment details" />
+                <div className="coin-accordion-action-example">
+                  <AccordionExample title="Payment details" />
+                  <Button
+                    label="Confirm payment"
+                    modes={primaryButtonModes()}
+                    accessibilityLabel="Confirm payment"
+                  />
+                </div>
               </div>
               <h3>Keep primary work visible</h3>
               <p>Use the Accordion for supporting details while the main payment action stays in the page flow.</p>
@@ -715,14 +734,15 @@ export function AccordionGuide() {
               <p className="comparison-label">Don’t</p>
               <div className="comparison-preview coin-accordion-comparison-preview">
                 <AccordionExample title="Confirm payment">
-                  <AccordionText
-                    text="The primary action is hidden here, so people cannot see what completes the task."
-                    modes={modes}
+                  <Button
+                    label="Confirm payment"
+                    modes={primaryButtonModes()}
+                    accessibilityLabel="Confirm payment"
                   />
                 </AccordionExample>
               </div>
-              <h3>Hide a critical action</h3>
-              <p>The task becomes harder to complete when its primary action is behind disclosure.</p>
+              <h3>Hide the primary action in the body</h3>
+              <p>The button is unavailable until someone expands the section, so the task is harder to complete.</p>
             </article>
           </div>
         </div>

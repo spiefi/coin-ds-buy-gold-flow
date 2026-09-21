@@ -4811,6 +4811,12 @@ p {
   width: min(100%, 360px);
 }
 
+.coin-accordion-action-example {
+  display: grid;
+  width: min(100%, 360px);
+  gap: 12px;
+}
+
 .coin-accordion-source-links {
   display: flex;
   flex-wrap: wrap;
