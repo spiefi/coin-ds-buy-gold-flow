@@ -4276,6 +4276,10 @@ p {
   background: var(--surface);
 }
 
+.appbar-state-card {
+  display: block;
+}
+
 .appbar-config-card h3,
 .appbar-state-card h3 {
   max-width: 290px;
@@ -4309,9 +4313,14 @@ p {
 
 .appbar-state-preview {
   display: flex;
+  grid-column: auto;
+  grid-row: auto;
+  box-sizing: border-box;
+  width: 100%;
   min-height: 105px;
   align-items: center;
   padding: 18px 14px;
+  border-right: 0 !important;
   border-radius: 14px;
   background: var(--surface-muted);
 }
