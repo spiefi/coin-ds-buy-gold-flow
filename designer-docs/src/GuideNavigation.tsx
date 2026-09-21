@@ -1,6 +1,7 @@
 type GuideIconName =
   | 'button'
   | 'appbar'
+  | 'accordion'
   | 'accordioncheckbox'
   | 'actionfooter'
   | 'actiontile'
@@ -13,6 +14,7 @@ type GuideIconName =
 export const COMPONENT_NAV = [
   { slug: 'button', label: 'Button', icon: 'button' },
   { slug: 'appbar', label: 'App Bar', icon: 'appbar' },
+  { slug: 'accordion', label: 'Accordion', icon: 'accordion' },
   {
     slug: 'accordioncheckbox',
     label: 'Accordion Checkbox',
@@ -65,6 +67,11 @@ function GuideIcon({ name }: { name: GuideIconName }) {
         <>
           <rect x="2" y="3" width="14" height="5" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
           <path d="M4.5 5.5h3M11 5.5h2.5M2.5 11.5h13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </>
+      ) : name === 'accordion' ? (
+        <>
+          <path d="M3 5.5h12M3 9h12M3 12.5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="m13 10.5 2 2-2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </>
       ) : name === 'accordioncheckbox' ? (
         <>

@@ -4483,3 +4483,410 @@ p {
     padding: 12px;
   }
 }
+
+/* Accordion guide --------------------------------------------------------- */
+
+.coin-accordion-preview-stage {
+  min-height: 340px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  justify-content: stretch;
+  gap: 24px;
+  padding: 42px 28px 54px;
+}
+
+.coin-accordion-preview-stage.is-dark {
+  background: #17120d;
+}
+
+.coin-accordion-preview-host {
+  width: 100%;
+  max-width: 620px;
+  min-width: 0;
+  box-sizing: border-box;
+  justify-self: center;
+  padding: 28px 24px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--surface);
+}
+
+.coin-accordion-example {
+  width: 100%;
+  min-width: 0;
+}
+
+.coin-accordion-preview-note {
+  margin: 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.coin-accordion-controls-panel {
+  gap: 22px;
+}
+
+.coin-accordion-title-control {
+  display: grid;
+  gap: 8px;
+  color: var(--quiet);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.coin-accordion-title-control input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  color: var(--ink);
+  background: var(--surface);
+  font: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.coin-accordion-toggle-row {
+  display: grid;
+  gap: 10px;
+}
+
+.coin-accordion-readout {
+  display: grid;
+  gap: 5px;
+  padding: 15px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-muted);
+}
+
+.coin-accordion-readout span {
+  color: var(--quiet);
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.coin-accordion-readout strong {
+  color: var(--ink);
+  font-size: 0.96rem;
+}
+
+.coin-accordion-readout p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.coin-accordion-anatomy-card {
+  grid-template-columns: minmax(0, 1.3fr) minmax(240px, 0.7fr);
+}
+
+.coin-accordion-anatomy-stage {
+  min-height: 360px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.coin-accordion-anatomy-live {
+  position: relative;
+  width: 100%;
+  min-height: 360px;
+  padding: 104px 42px 88px;
+}
+
+.coin-accordion-anatomy-component {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 445px);
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.coin-accordion-anatomy-leaders {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.coin-accordion-anatomy-leaders line {
+  stroke: var(--accent);
+  stroke-width: 1.25;
+  stroke-dasharray: 3 3;
+}
+
+.coin-accordion-anatomy-pin {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+  background: var(--surface);
+  font-size: 0.72rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.coin-accordion-anatomy-list li {
+  grid-template-columns: 100px 1fr;
+}
+
+.coin-accordion-configuration-grid,
+.coin-accordion-state-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.coin-accordion-config-card,
+.coin-accordion-state-card {
+  min-width: 0;
+  padding: 28px;
+  border: 0;
+  border-radius: 0;
+  background: var(--surface);
+}
+
+.coin-accordion-config-card h3,
+.coin-accordion-state-card h3 {
+  max-width: 310px;
+  margin: 0 0 18px;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.coin-accordion-config-card > p:last-child,
+.coin-accordion-state-card > p:last-child {
+  margin: 20px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.coin-accordion-config-preview {
+  display: flex;
+  min-height: 100px;
+  align-items: center;
+  padding: 18px 14px;
+  border-radius: 14px;
+  background: var(--surface-muted);
+}
+
+.coin-accordion-static-note {
+  margin: 0 0 18px;
+  color: var(--quiet);
+  font-size: 0.78rem;
+}
+
+.coin-accordion-state-card {
+  display: block;
+}
+
+.coin-accordion-state-preview {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 110px;
+  align-items: center;
+  padding: 18px 14px;
+  border-radius: 14px;
+  background: var(--surface-muted);
+}
+
+.coin-accordion-state-example {
+  max-width: 100%;
+}
+
+.coin-accordion-guidance-note {
+  margin-top: 22px;
+}
+
+.coin-accordion-sizing-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+  gap: 14px;
+}
+
+.coin-accordion-sizing-card {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.coin-accordion-sizing-host {
+  display: flex;
+  min-height: 255px;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  border-radius: 13px;
+  background: var(--surface-muted);
+}
+
+.coin-accordion-host-roomy {
+  width: min(100%, 445px);
+  margin-inline: auto;
+}
+
+.coin-accordion-host-narrow {
+  width: min(100%, 248px);
+  margin-inline: auto;
+}
+
+.coin-accordion-sizing-meta {
+  display: grid;
+  gap: 7px;
+  margin-top: 16px;
+}
+
+.coin-accordion-sizing-meta strong {
+  color: var(--ink);
+  font-size: 0.86rem;
+}
+
+.coin-accordion-sizing-meta span {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.coin-accordion-rule-example {
+  display: flex;
+  min-height: 100px;
+  align-items: center;
+  margin-top: 28px;
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--surface-muted);
+}
+
+.coin-accordion-context-screen {
+  display: grid;
+  gap: 14px;
+  max-width: 620px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface-muted);
+}
+
+.coin-accordion-context-stack {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.coin-accordion-context-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.coin-accordion-comparison-preview {
+  min-height: 150px;
+  align-items: center;
+  padding: 24px;
+}
+
+.coin-accordion-comparison-preview .coin-accordion-example {
+  width: min(100%, 360px);
+}
+
+.coin-accordion-source-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-top: 20px;
+}
+
+@media (max-width: 1120px) {
+  .coin-accordion-sizing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .coin-accordion-anatomy-card {
+    grid-template-columns: 1fr;
+  }
+
+  .coin-accordion-anatomy-stage,
+  .coin-accordion-anatomy-live {
+    min-height: 310px;
+  }
+
+  .coin-accordion-anatomy-live {
+    padding: 76px 28px 68px;
+  }
+
+  .coin-accordion-comparison-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .coin-accordion-preview-stage {
+    min-height: 390px;
+    padding-inline: 16px;
+  }
+
+  .coin-accordion-preview-host {
+    padding: 18px 12px;
+  }
+
+  .coin-accordion-config-card,
+  .coin-accordion-state-card,
+  .coin-accordion-sizing-card {
+    padding: 20px;
+  }
+
+  .coin-accordion-anatomy-stage,
+  .coin-accordion-anatomy-live {
+    min-height: 250px;
+  }
+
+  .coin-accordion-anatomy-live {
+    padding: 58px 14px 52px;
+  }
+
+  .coin-accordion-anatomy-list li {
+    grid-template-columns: 74px 1fr;
+  }
+
+  .coin-accordion-sizing-host {
+    min-height: 220px;
+    padding: 14px;
+  }
+
+  .coin-accordion-host-roomy,
+  .coin-accordion-host-narrow {
+    width: 100%;
+  }
+
+  .coin-accordion-comparison-preview {
+    padding: 18px 12px;
+  }
+
+  .coin-accordion-context-screen {
+    padding: 12px;
+  }
+}

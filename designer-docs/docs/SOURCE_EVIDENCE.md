@@ -133,3 +133,27 @@ Checked 19 September 2026 for the local AccordionCheckbox guide and package vers
 
 - On 19 September 2026, `src/GuideNavigation.tsx` became the shared source for the component registry, desktop sidebar, mobile component navigation, and section navigation used by Button, AccordionCheckbox, and the layout guides. Active guide links expose `aria-current="page"`; icons are documentation SVG chrome with a fixed nonshrinking box.
 - AccordionCheckbox anatomy marks now measure the rendered public component through layout effects and `ResizeObserver`, then clamp numbered markers and leaders inside the live stage. The measurement and leader lines belong to documentation chrome; the public component and its internals are not patched.
+
+## Accordion guide evidence
+
+Checked 21 September 2026 for the local Accordion guide and package version.
+
+### Package and canonical sources
+
+- Declared and resolved package: `jfs-components@0.1.60`.
+- Registry check on 21 September 2026: `npm view jfs-components version --fetch-timeout=12000 --fetch-retries=0` returned `0.1.60`; the declared and resolved versions match `latest`, and no dependency change was made.
+- Figma: [Coin Components Library · Accordion](https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=1291-4846), component set node `1291:4846`. The inspected source exposes `Header` text, a `content` `SLOT`, and `State` values `Idle`, `Hover`, `Open`, `Open Hover`, and `Disabled`. The variants are `1291:4847`, `1291:4854`, `1291:4861`, `1291:4867`, and `1291:4873`. The reference header measures 445 × 40 and the open reference measures 445 × 210, including a 170px content reference; these are source measurements, not a package fixed-height promise. The header label resolves to 14px, 700 weight, JioType Var, 20px line height.
+- Storybook inventory includes `components-accordion--docs`, `--default`, `--contained`, `--contained-expanded`, `--expanded`, `--disabled`, `--with-list-items`, `--accordion-group`, and `--dark-mode`. The inspected published fixture is [Accordion-Accordion-stories.fb936310.iframe.bundle.js](https://jfs-components-storybook.vercel.app/Accordion-Accordion-stories.fb936310.iframe.bundle.js).
+
+### Public API and behavior
+
+- `Accordion` is exported from the public `jfs-components` barrel. Its supported guide props are `title`, `contained`, `defaultExpanded` or controlled `expanded` with `onExpandedChange`, `disabled`, `children`, `modes`, `style`, `accessibilityLabel`, and `disableTruncation`.
+- The package derives `Accordion States` from `expanded`, `disabled`, pointer hover, and `contained`: `Idle`, `Hover`, `Open`, `Open Hover`, or `Disabled`. The guide passes consumer modes and public props only; it does not force that internal state collection or use the developer-only `showHeader`/`showContent` sticky split.
+- The default published fixture uses `title="Accordion title"`, `contained={false}`, and a collapsed body. The expanded Light fixture selects `AppearanceBrand=Primary`. The guide exposes Light and Dark through the public mode object and retains the package's token ownership.
+- The published list fixture uses public `ListItem` with `layout="Horizontal"`, a title and support text, `IconCapsule` `ic_card` in the leading slot, `MoneyValue` value `500` with currency `₹` in the trailing slot, and `navArrow`. The guide reuses that composition in its account context. The group fixture places `Payment Methods` and `Bank Accounts` siblings with independent expanded state; it does not imply exclusive opening.
+
+### Known limitations and accessibility evidence
+
+- The package derives height from its children and token padding, while the Figma reference supplies a 445px source measurement and a content-driven open example. The sizing examples show a roomy host and a narrow host with a readable wrapped title instead of asserting fixed parity.
+- The package requests React Native `LayoutAnimation` during open and close. In the local React Native Web preview, this transition is immediate; the guide leaves the shipped behavior unchanged and does not add an animation shim.
+- The anatomy leaders and numbered marks measure the rendered public header, label, add/minus icon, content slot, and bottom divider after layout and fonts settle. They are documentation chrome and do not patch Accordion internals.

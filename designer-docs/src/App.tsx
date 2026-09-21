@@ -22,6 +22,7 @@ import {
   getActionGuideFromLocation,
 } from './ActionGuides'
 import { AppBarGuide, isAppBarLocation } from './AppBarGuide'
+import { AccordionGuide, isAccordionLocation } from './AccordionGuide'
 import {
   GuideMobileBar,
   GuideSidebar,
@@ -997,6 +998,9 @@ function App() {
   }
   if (isAppBarLocation()) {
     return <AppBarGuide />
+  }
+  if (isAccordionLocation()) {
+    return <AccordionGuide />
   }
   if (isAccordionCheckboxLocation()) {
     return <AccordionCheckboxGuide />
