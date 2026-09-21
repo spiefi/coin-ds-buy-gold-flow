@@ -490,6 +490,7 @@ export function AccordionGuide() {
   const [lastAction, setLastAction] = useState('No interaction yet')
 
   const modes = useMemo(() => accordionModes(colorMode), [colorMode])
+  const lightModes = useMemo(() => accordionModes('Light'), [])
 
   const sections: GuideSectionSlots = {
     anatomy: {
@@ -633,12 +634,14 @@ export function AccordionGuide() {
             <h3>Make the promise specific</h3>
             <p>Use a meaningful header and let the body answer the question that header raises.</p>
             <div className="rule-example coin-accordion-rule-example">
-              <AccordionExample title="Payment methods" defaultExpanded>
-                <AccordionText
-                  text="Review the payment methods available for this account."
-                  modes={modes}
-                />
-              </AccordionExample>
+              <div className="coin-accordion-content-specimen">
+                <AccordionExample title="Payment methods" defaultExpanded colorMode="Light">
+                  <AccordionText
+                    text="Review the payment methods available for this account."
+                    modes={lightModes}
+                  />
+                </AccordionExample>
+              </div>
             </div>
           </article>
           <article className="content-rule">

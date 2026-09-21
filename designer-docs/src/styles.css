@@ -4777,6 +4777,15 @@ p {
   background: var(--surface-muted);
 }
 
+.coin-accordion-content-specimen {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
 .coin-accordion-context-screen {
   display: grid;
   gap: 14px;
