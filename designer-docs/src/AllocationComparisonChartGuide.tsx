@@ -121,13 +121,15 @@ function AllocationAnatomy() {
       const current = bar
       const label = firstBar?.lastElementChild
       const legend = findVisibleText(frame, 'Current')
-      if (!firstBar || !bar || !overlay || !marker || !current || !label || !legend) return
+      const baselineLabel = findVisibleText(frame, '35%')
+      if (!firstBar || !bar || !overlay || !marker || !current || !label || !legend || !baselineLabel) return
       const targets = [legend, current, overlay, marker, label].map((node) => rect(node, frameRect))
+      const baselineLabelRect = rect(baselineLabel, frameRect)
       const desired = [
         { left: targets[0].left - markerSize - 18, top: targets[0].top + targets[0].height / 2 - markerSize / 2 },
         { left: targets[1].left - markerSize - 18, top: targets[1].top + targets[1].height / 2 - markerSize / 2 },
         { left: targets[2].left + targets[2].width + 18, top: targets[2].top + targets[2].height / 2 - markerSize / 2 },
-        { left: targets[3].left + targets[3].width + 18, top: targets[3].top + targets[3].height / 2 - markerSize / 2 },
+        { left: baselineLabelRect.left + baselineLabelRect.width + 12, top: baselineLabelRect.top + baselineLabelRect.height / 2 - markerSize / 2 },
         { left: targets[4].left + targets[4].width / 2 - markerSize / 2, top: targets[4].top + targets[4].height + 14 },
       ]
       const next = {

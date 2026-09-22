@@ -2453,6 +2453,7 @@ p {
 .coin-allocation-anatomy-stage { width: 100%; padding: 34px; }
 .coin-area-anatomy-chart-wrap,
 .coin-allocation-anatomy-chart-wrap { position: relative; width: min(100%, 320px); margin-inline: auto; }
+.coin-allocation-anatomy-chart-wrap { padding-bottom: 40px; box-sizing: border-box; }
 .coin-area-anatomy-chart-wrap .coin-area-selection-readout,
 .coin-area-anatomy-chart-wrap .coin-area-data-details,
 .coin-allocation-anatomy-chart-wrap .coin-allocation-chart-scale { display: none; }
@@ -2512,7 +2513,7 @@ p {
 .coin-amount-anatomy-component {
   position: absolute;
   z-index: 1;
-  left: 0;
+  left: 24px;
   top: 7px;
   display: flex;
   width: 133px;
@@ -2526,6 +2527,7 @@ p {
   z-index: 2;
   width: 100%;
   height: 100%;
+  overflow: visible;
   pointer-events: none;
 }
 .coin-amount-anatomy-leaders line {
@@ -2535,7 +2537,7 @@ p {
   vector-effect: non-scaling-stroke;
 }
 .coin-amount-pin-currency { left: 0; top: 20px; }
-.coin-amount-pin-value { left: 84px; top: 4px; }
+.coin-amount-pin-value { left: 84px; top: -24px; }
 .coin-amount-pin-note { left: 156px; top: 66px; }
 .coin-amount-config-card,
 .coin-amount-state-card,

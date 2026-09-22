@@ -223,8 +223,8 @@ function AreaAnatomy() {
       const desired = [
         { left: targets[0].left - markerSize - 18, top: targets[0].top + targets[0].height / 2 - markerSize / 2 },
         { left: targets[1].left + targets[1].width * 0.52, top: targets[1].top + targets[1].height * 0.48 - markerSize / 2 },
-        { left: targets[2].left + targets[2].width + 18, top: targets[2].top + targets[2].height / 2 - markerSize / 2 },
-        { left: targets[3].left + targets[3].width / 2 - markerSize / 2, top: targets[3].top + targets[3].height + 14 },
+        { left: targets[2].left - markerSize - 12, top: targets[2].top + targets[2].height / 2 - markerSize / 2 },
+        { left: targets[3].left + targets[3].width / 2 - markerSize / 2, top: targets[3].top - markerSize - 8 },
       ]
       const next = {
         width: frameRect.width,
