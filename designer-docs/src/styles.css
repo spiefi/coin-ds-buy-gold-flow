@@ -2591,6 +2591,12 @@ p {
   padding-right: 48px;
 }
 
+@media (max-width: 1120px) {
+  .coin-attached-anatomy-card { grid-template-columns: 1fr; }
+  .coin-attached-anatomy-stage { border-right: 0; }
+  .coin-attached-anatomy-figure figcaption { max-width: min(100%, 340px); }
+}
+
 @media (max-width: 860px) {
   .coin-attached-anatomy-card,
   .coin-area-anatomy-card,
