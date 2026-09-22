@@ -63,7 +63,7 @@ function AmountExample({
 }
 
 function AmountAnatomy() {
-  return <figure className="coin-amount-anatomy-figure"><div className="coin-amount-anatomy-live"><AmountExample value="500" currency="₹" note="Rent" /><span className="coin-amount-anatomy-pin coin-amount-pin-currency">1</span><span className="coin-amount-anatomy-pin coin-amount-pin-value">2</span><span className="coin-amount-anatomy-pin coin-amount-pin-note">3</span></div><figcaption>The marks point to the real MoneyValue currency and amount children and the NoteInput slot.</figcaption></figure>
+  return <figure className="coin-amount-anatomy-figure"><div className="coin-amount-anatomy-live"><div className="coin-amount-anatomy-specimen"><div className="coin-amount-anatomy-component"><AmountExample value="500" currency="₹" note="Rent" /></div><svg className="coin-amount-anatomy-leaders" viewBox="0 0 180 120" preserveAspectRatio="none" aria-hidden="true"><line x1="12" y1="32" x2="37" y2="31" /><line x1="96" y1="16" x2="91" y2="31" /><line x1="168" y1="78" x2="95" y2="88" /></svg><span className="coin-amount-anatomy-pin coin-amount-pin-currency">1</span><span className="coin-amount-anatomy-pin coin-amount-pin-value">2</span><span className="coin-amount-anatomy-pin coin-amount-pin-note">3</span></div></div><figcaption>The marks point to the real MoneyValue currency and amount children and the NoteInput slot.</figcaption></figure>
 }
 
 function ContextExample() {

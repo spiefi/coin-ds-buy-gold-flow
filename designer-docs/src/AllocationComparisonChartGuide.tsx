@@ -44,7 +44,7 @@ function Segment<T extends string>({ label, value, options, onChange, display = 
 
 function allocationData(preset: Preset, showReference: boolean, showMarker: boolean, longLabels = false, variant: AllocationVariant = 'default'): AllocationSegment[] {
   const labels = longLabels ? ['Small and mid-capital holdings', 'Large-capital holdings', 'Other diversified holdings'] : ['Small & Mid', 'Large', 'Others']
-  const values = variant === 'rescaled' ? [90, 60, 10] : [65, 25, 10]
+  const values = variant === 'rescaled' ? [90, 7, 3] : [65, 25, 10]
   return [
     { label: labels[0], value: values[0], ...(showReference ? { baseline: 35, showMarker } : {}) },
     { label: labels[1], value: values[1] },
@@ -87,6 +87,7 @@ function AllocationAnatomy() {
     const frame = frameRef.current
     if (!frame) return
     let active = true
+    let scheduledFrame = 0
     const markerSize = 24
     const rect = (node: Element, frameRect: DOMRect) => {
       const bounds = node.getBoundingClientRect()
@@ -111,7 +112,10 @@ function AllocationAnatomy() {
       const chart = frame.querySelector<HTMLElement>('[role="img"]')
       if (!chart || frameRect.width === 0 || frameRect.height === 0) return
       const firstBar = chart.children[0] as HTMLElement | undefined
-      const bar = firstBar?.children[firstBar.children.length - 2] as HTMLElement | undefined
+      const bar = Array.from(firstBar?.children ?? []).find((child) => {
+        const node = child as HTMLElement
+        return Boolean(node.querySelector('svg')) || node.getBoundingClientRect().height > 30
+      }) as HTMLElement | undefined
       const overlay = bar?.firstElementChild
       const marker = bar?.querySelector('svg')
       const current = bar
@@ -135,22 +139,33 @@ function AllocationAnatomy() {
         })),
       }
       setMetrics(next)
-      ;[chart, firstBar, bar, overlay, marker, current, label, legend].forEach((node) => observer?.observe(node))
     }
-    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure)
-    observer?.observe(frame)
-    const animationFrame = requestAnimationFrame(measure)
-    void document.fonts?.ready.then(measure)
-    window.addEventListener('resize', measure)
+    const scheduleMeasure = () => {
+      if (scheduledFrame) return
+      scheduledFrame = requestAnimationFrame(() => {
+        scheduledFrame = 0
+        measure()
+      })
+    }
+    const publicExample = frame.querySelector<HTMLElement>('.coin-allocation-anatomy-public-example')
+    const mutations = typeof MutationObserver === 'undefined' ? null : new MutationObserver(scheduleMeasure)
+    if (publicExample) mutations?.observe(publicExample, { childList: true, characterData: true, subtree: true })
+    const resize = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(scheduleMeasure)
+    resize?.observe(frame)
+    if (publicExample) resize?.observe(publicExample)
+    scheduleMeasure()
+    void document.fonts?.ready.then(scheduleMeasure)
+    window.addEventListener('resize', scheduleMeasure)
     return () => {
       active = false
-      cancelAnimationFrame(animationFrame)
-      observer?.disconnect()
-      window.removeEventListener('resize', measure)
+      if (scheduledFrame) cancelAnimationFrame(scheduledFrame)
+      mutations?.disconnect()
+      resize?.disconnect()
+      window.removeEventListener('resize', scheduleMeasure)
     }
   }, [])
 
-  return <div ref={frameRef} className="coin-allocation-anatomy-stage"><div className="coin-allocation-anatomy-chart-wrap"><AllocationExample height={154} />{metrics ? <><svg className="coin-allocation-anatomy-leaders" viewBox={`0 0 ${metrics.width} ${metrics.height}`} preserveAspectRatio="none" aria-hidden="true">{metrics.marks.map((mark, index) => <line key={index} x1={mark.marker.left + 12} y1={mark.marker.top + 12} x2={mark.target.left + mark.target.width / 2} y2={mark.target.top + mark.target.height / 2} />)}</svg>{metrics.marks.map((mark, index) => <span className="coin-allocation-anatomy-mark" style={{ left: mark.marker.left, top: mark.marker.top }} aria-hidden="true" key={index}>{index + 1}</span>)}</> : null}</div><div className="coin-allocation-anatomy-labels" aria-label="Allocation chart anatomy labels"><span><b>1</b> Legend</span><span><b>2</b> Current pillar</span><span><b>3</b> Baseline overlay</span><span><b>4</b> Marker</span><span><b>5</b> Category label</span></div><p className="coin-allocation-anatomy-note">The chart uses one shared scale for every current value and supplied baseline.</p></div>
+  return <div className="coin-allocation-anatomy-stage"><div ref={frameRef} className="coin-allocation-anatomy-chart-wrap"><div className="coin-allocation-anatomy-public-example"><AllocationExample height={154} /></div>{metrics ? <><svg className="coin-allocation-anatomy-leaders" viewBox={`0 0 ${metrics.width} ${metrics.height}`} preserveAspectRatio="none" aria-hidden="true">{metrics.marks.map((mark, index) => <line key={index} x1={mark.marker.left + 12} y1={mark.marker.top + 12} x2={mark.target.left + mark.target.width / 2} y2={mark.target.top + mark.target.height / 2} />)}</svg>{metrics.marks.map((mark, index) => <span className="coin-allocation-anatomy-mark" style={{ left: mark.marker.left, top: mark.marker.top }} aria-hidden="true" key={index}>{index + 1}</span>)}</> : null}</div><div className="coin-allocation-anatomy-labels" aria-label="Allocation chart anatomy labels"><span><b>1</b> Legend</span><span><b>2</b> Current pillar</span><span><b>3</b> Baseline overlay</span><span><b>4</b> Marker</span><span><b>5</b> Category label</span></div><p className="coin-allocation-anatomy-note">The chart uses one shared scale for every current value and supplied baseline.</p></div>
 }
 
 function ContextExample() {

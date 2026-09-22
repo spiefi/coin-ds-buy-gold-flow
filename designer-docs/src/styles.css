@@ -2426,7 +2426,9 @@ p {
 .coin-attached-comparison-row,
 .coin-area-comparison-row,
 .coin-allocation-comparison-row,
-.coin-amount-comparison-row { grid-template-columns: 1fr; }
+.coin-amount-comparison-row { grid-template-columns: minmax(0, 1fr); }
+.coin-amount-comparison-row > .comparison-card,
+.coin-amount-clipped-example { min-width: 0; }
 .coin-attached-comparison-lesson { grid-column: 1; margin: -6px 6px 0; color: var(--quiet); font-size: 0.78rem; }
 .coin-attached-comparison-preview,
 .coin-area-comparison-preview,
@@ -2502,16 +2504,46 @@ p {
 .coin-amount-preview-host,
 .coin-amount-sizing-host { overflow: visible; }
 .coin-amount-anatomy-live { min-height: 300px; }
-.coin-amount-pin-currency { left: calc(50% - 100px); top: 93px; }
-.coin-amount-pin-value { left: calc(50% - 15px); top: 66px; }
-.coin-amount-pin-note { left: calc(50% - 26px); top: 178px; }
+.coin-amount-anatomy-specimen {
+  position: relative;
+  width: 180px;
+  height: 120px;
+}
+.coin-amount-anatomy-component {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 7px;
+  display: flex;
+  width: 133px;
+  height: 106px;
+  align-items: center;
+  justify-content: center;
+}
+.coin-amount-anatomy-leaders {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.coin-amount-anatomy-leaders line {
+  stroke: var(--accent);
+  stroke-width: 1.25;
+  stroke-dasharray: 3 3;
+  vector-effect: non-scaling-stroke;
+}
+.coin-amount-pin-currency { left: 0; top: 20px; }
+.coin-amount-pin-value { left: 84px; top: 4px; }
+.coin-amount-pin-note { left: 156px; top: 66px; }
 .coin-amount-config-card,
 .coin-amount-state-card,
 .coin-amount-sizing-card { display: grid; gap: 14px; }
 .coin-amount-config-card > p:last-child,
 .coin-amount-state-card > p:last-child { margin-top: 0; }
 .coin-amount-sizing-host.is-narrow { max-width: 280px; }
-.coin-amount-clipped-example { max-width: 100%; overflow: hidden; }
+.coin-amount-clipped-example { width: 100%; max-width: 100%; overflow: hidden; }
 .coin-amount-clipped-example .coin-amount-example { width: max-content; min-width: 260px; justify-content: flex-start; }
 .coin-amount-control-note { margin: 0; }
 
@@ -2528,6 +2560,26 @@ p {
 }
 
 .coin-area-chart-example.is-constrained { max-width: 320px; }
+
+/* AreaLineChart's x-axis labels use 100px absolute wrappers. Keep the
+   documentation hosts wide enough for those labels and for the y-axis text. */
+.coin-area-preview-host,
+.coin-area-sizing-host {
+  padding-left: 44px;
+  padding-right: 48px;
+}
+.coin-area-chart-card > .coin-area-chart-example,
+.coin-area-state-card > .coin-area-chart-example,
+.coin-area-context .coin-area-chart-example {
+  width: auto;
+  margin-left: 32px;
+  margin-right: 48px;
+}
+.coin-area-comparison-preview,
+.coin-area-content-grid .rule-example {
+  padding-left: 48px;
+  padding-right: 48px;
+}
 
 @media (max-width: 860px) {
   .coin-attached-anatomy-card,
@@ -2551,6 +2603,8 @@ p {
   .coin-area-preview-host,
   .coin-allocation-preview-host,
   .coin-amount-preview-host { padding: 18px 12px; }
+  .coin-area-preview-host,
+  .coin-area-sizing-host { padding-left: 32px; padding-right: 38px; }
   .coin-attached-config-card,
   .coin-area-chart-card,
   .coin-allocation-config-card,

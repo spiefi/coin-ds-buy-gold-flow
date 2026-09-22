@@ -188,6 +188,7 @@ function AreaAnatomy() {
     const frame = frameRef.current
     if (!frame) return
     let active = true
+    let scheduledFrame = 0
     const markerSize = 24
     const rect = (node: Element, frameRect: DOMRect) => {
       const bounds = node.getBoundingClientRect()
@@ -234,25 +235,36 @@ function AreaAnatomy() {
         })),
       }
       setMetrics(next)
-      ;[chart, plot, goal, xLabel, yLabel].forEach((node) => observer?.observe(node))
     }
-    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure)
-    observer?.observe(frame)
-    const animationFrame = requestAnimationFrame(measure)
-    void document.fonts?.ready.then(measure)
-    window.addEventListener('resize', measure)
+    const scheduleMeasure = () => {
+      if (scheduledFrame) return
+      scheduledFrame = requestAnimationFrame(() => {
+        scheduledFrame = 0
+        measure()
+      })
+    }
+    const publicExample = frame.querySelector<HTMLElement>('.coin-area-anatomy-public-example')
+    const mutations = typeof MutationObserver === 'undefined' ? null : new MutationObserver(scheduleMeasure)
+    if (publicExample) mutations?.observe(publicExample, { childList: true, characterData: true, subtree: true })
+    const resize = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(scheduleMeasure)
+    resize?.observe(frame)
+    if (publicExample) resize?.observe(publicExample)
+    scheduleMeasure()
+    void document.fonts?.ready.then(scheduleMeasure)
+    window.addEventListener('resize', scheduleMeasure)
     return () => {
       active = false
-      cancelAnimationFrame(animationFrame)
-      observer?.disconnect()
-      window.removeEventListener('resize', measure)
+      if (scheduledFrame) cancelAnimationFrame(scheduledFrame)
+      mutations?.disconnect()
+      resize?.disconnect()
+      window.removeEventListener('resize', scheduleMeasure)
     }
   }, [])
 
   return (
-    <div ref={frameRef} className="coin-area-anatomy-stage">
-      <div className="coin-area-anatomy-chart-wrap">
-        <AreaChartExample preset="trend" showArea showDots height={218} />
+    <div className="coin-area-anatomy-stage">
+      <div ref={frameRef} className="coin-area-anatomy-chart-wrap">
+        <div className="coin-area-anatomy-public-example"><AreaChartExample preset="trend" showArea showDots height={218} /></div>
         {metrics ? (
           <>
             <svg className="coin-area-anatomy-leaders" viewBox={`0 0 ${metrics.width} ${metrics.height}`} preserveAspectRatio="none" aria-hidden="true">
