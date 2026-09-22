@@ -33,6 +33,8 @@ const POSITIONS: readonly AttachedPosition[] = [
 ]
 
 const lightModes: Modes = { 'Color Mode': 'Light' } as Modes
+const mainIconModes: Modes = { ...lightModes, 'Icon Capsule Size': 'M' } as Modes
+const badgeIconModes: Modes = { ...lightModes, 'Icon Capsule Size': 'XS' } as Modes
 
 function SmallArrow() {
   return (
@@ -88,14 +90,14 @@ function AttachedMark({
   position = 'bottom-right',
   circular = true,
   showBadge = true,
-  badgeSize,
+  badgeSizeMode = 'XS',
   mainIcon = 'ic_cart',
   badgeIcon = 'ic_rupee',
 }: {
   position?: AttachedPosition
   circular?: boolean
   showBadge?: boolean
-  badgeSize?: number
+  badgeSizeMode?: 'XS' | 'M'
   mainIcon?: string
   badgeIcon?: string
 }) {
@@ -103,14 +105,12 @@ function AttachedMark({
     <Attached
       position={position}
       circular={circular}
-      badgeSize={badgeSize}
       modes={lightModes}
       badge={
         showBadge ? (
           <IconCapsule
             iconName={badgeIcon}
-            style={badgeSize ? { width: badgeSize, height: badgeSize } : { width: 22, height: 22 }}
-            modes={lightModes}
+            modes={badgeSizeMode === 'M' ? mainIconModes : badgeIconModes}
             accessibilityLabel="Attached secondary signal"
           />
         ) : undefined
@@ -118,8 +118,7 @@ function AttachedMark({
     >
       <IconCapsule
         iconName={mainIcon}
-        style={{ width: 56, height: 56 }}
-        modes={lightModes}
+        modes={mainIconModes}
         accessibilityLabel="Main item"
       />
     </Attached>
@@ -133,8 +132,8 @@ function AttachedAnatomy() {
         <div className="coin-attached-anatomy-specimen">
           <div className="coin-attached-anatomy-component"><AttachedMark /></div>
           <svg className="coin-attached-anatomy-leaders" viewBox="0 0 200 130" preserveAspectRatio="none" aria-hidden="true">
-            <line x1="48" y1="42" x2="72" y2="52" />
-            <line x1="151" y1="74" x2="127" y2="91" />
+            <line x1="48" y1="42" x2="79" y2="56" />
+            <line x1="151" y1="74" x2="115" y2="80" />
           </svg>
           <span className="coin-attached-anatomy-pin coin-attached-pin-main">1</span>
           <span className="coin-attached-anatomy-pin coin-attached-pin-badge">2</span>
@@ -147,7 +146,7 @@ function AttachedAnatomy() {
   )
 }
 
-function PositionGrid({ circular = false }: { circular?: boolean }) {
+function PositionGrid({ circular = true }: { circular?: boolean }) {
   return (
     <div className="coin-attached-position-grid">
       {POSITIONS.map((position) => (
@@ -182,8 +181,11 @@ function ContextExample() {
 function ComparisonPreview({ kind }: { kind: 'clear' | 'obstructed' | 'room' | 'clipped' | 'compact' | 'competing' }) {
   if (kind === 'room' || kind === 'clipped') {
     return (
-      <div className={`coin-attached-host ${kind === 'clipped' ? 'is-clipped' : ''}`}>
-        <AttachedMark badgeSize={kind === 'clipped' ? 30 : undefined} />
+      <div className="coin-attached-host">
+        <div className={`coin-attached-host-frame ${kind === 'clipped' ? 'is-clipped' : ''}`}>
+          <AttachedMark />
+        </div>
+        {kind === 'clipped' && <span className="coin-attached-host-label">Clipped by host</span>}
       </div>
     )
   }
@@ -191,7 +193,7 @@ function ComparisonPreview({ kind }: { kind: 'clear' | 'obstructed' | 'room' | '
     <div className="coin-attached-comparison-mark">
       <AttachedMark
         position={kind === 'obstructed' ? 'center' : 'bottom-right'}
-        badgeSize={kind === 'competing' ? 36 : undefined}
+        badgeSizeMode={kind === 'competing' ? 'M' : 'XS'}
         mainIcon={kind === 'compact' ? 'ic_card' : 'ic_cart'}
       />
     </div>
@@ -268,7 +270,7 @@ export function AttachedGuide() {
         header: 'Configuration',
         title: 'Choose the anchor and corner relationship',
         description:
-          'Use the exposed position choices for where the badge belongs. Circular projection is useful for round main content; square projection keeps the corner on the bounding box.',
+          'Use the exposed position choices for where the badge belongs. For diagonal anchors, choose the round child’s edge or its bounding-box corner.',
         body: (
           <div className="coin-attached-configuration-stack">
             <article className="configuration-block coin-attached-config-card">
@@ -279,12 +281,12 @@ export function AttachedGuide() {
             </article>
             <article className="configuration-block coin-attached-config-card">
               <p className="eyebrow">Corner geometry</p>
-              <h3>Match the main mark’s shape</h3>
+              <h3>Choose the corner anchor</h3>
               <div className="coin-attached-corner-pair">
-                <div><AttachedMark circular={false} /><span>Square bounds</span></div>
-                <div><AttachedMark circular /><span>Circular projection</span></div>
+                <div><AttachedMark circular={false} /><span>Bounding box</span></div>
+                <div><AttachedMark circular /><span>Circle edge</span></div>
               </div>
-              <p>Circular projection keeps a badge close to a round capsule’s edge instead of its bounding-box corner.</p>
+              <p>The child stays a native circular capsule in both examples. Corner projection changes only the badge anchor: use Circle edge for round marks and Bounding box for a square corner relationship.</p>
             </article>
           </div>
         ),
@@ -320,11 +322,6 @@ export function AttachedGuide() {
               <div className="coin-attached-sizing-host is-roomy"><AttachedMark /></div>
               <strong>Roomy host</strong>
               <span>Whitespace keeps the edge signal clear.</span>
-            </article>
-            <article className="coin-attached-sizing-card">
-              <div className="coin-attached-sizing-host is-clipped"><AttachedMark badgeSize={30} /></div>
-              <strong>Clipped host</strong>
-              <span>Overflow hidden on the host can cut the badge; widen the host instead.</span>
             </article>
           </div>
         ),
@@ -378,7 +375,7 @@ export function AttachedGuide() {
               <a href={FIGMA_URL} target="_blank" rel="noreferrer"><span className="source-index">01</span><div><h3>Coin Components Library</h3><p>Attached component set · node 4477:471</p></div><SmallArrow /></a>
               <a href={STORYBOOK_URL} target="_blank" rel="noreferrer"><span className="source-index">02</span><div><h3>Attached Storybook</h3><p>Default, all positions, corner, and capsule badge stories</p></div><SmallArrow /></a>
             </div>
-            <div className="verification-note"><span>Checked 22 September 2026</span><p>Examples use public <code>Attached</code> and <code>IconCapsule</code> exports from <code>jfs-components</code> 0.1.60. The package source defaults <code>circular</code> to <code>true</code>, while its JSDoc says <code>false</code>; the guide uses the actual runtime default when omitted and exposes the supported choice. Badge placement waits for layout measurement, and the badge does not expand the parent layout footprint.</p></div>
+            <div className="verification-note"><span>Checked 22 September 2026</span><p>Examples use public <code>Attached</code> and <code>IconCapsule</code> exports from <code>jfs-components</code> 0.1.60. The package source defaults <code>circular</code> to <code>true</code>, while its JSDoc says <code>false</code>; the guide uses the actual runtime default when omitted and exposes the supported choice. Badge placement waits for layout measurement, and the badge does not expand the parent layout footprint. The capsule story enlarges its children with style dimensions; this guide uses the native Icon Capsule Size modes M and XS so both child capsules keep their component-owned circular geometry.</p></div>
             <div className="coin-attached-source-links"><SourceLink href="https://jfs-components-storybook.vercel.app/iframe.html?id=components-attached--capsule-badge&viewMode=story">Open capsule badge story</SourceLink><SourceLink href="https://jfs-components-storybook.vercel.app/iframe.html?id=components-attached--all-positions&viewMode=story">Open all positions story</SourceLink></div>
           </>
         ),
@@ -406,9 +403,9 @@ export function AttachedGuide() {
           </div>
           <div className="controls-panel coin-attached-controls-panel">
             <label className="text-control"><span>Anchor position</span><select value={position} onChange={(event) => setPosition(event.target.value as AttachedPosition)}>{POSITIONS.map((option) => <option key={option}>{option}</option>)}</select></label>
-            <Segment label="Corner projection" value={circular ? 'Circular' : 'Square'} options={['Circular', 'Square'] as const} onChange={(value) => setCircular(value === 'Circular')} />
+            <Segment label="Corner projection" value={circular ? 'Circle edge' : 'Bounding box'} options={['Circle edge', 'Bounding box'] as const} onChange={(value) => setCircular(value === 'Circle edge')} />
             <label className="toggle-row"><input type="checkbox" checked={showBadge} onChange={(event) => setShowBadge(event.target.checked)} /><span className="toggle-track" /> Show badge</label>
-            <div className="coin-attached-readout" aria-live="polite"><span>Configured example</span><strong>{position} · {circular ? 'circular' : 'square'}</strong><p>The badge takes its meaning from the child you supply.</p></div>
+            <div className="coin-attached-readout" aria-live="polite"><span>Configured example</span><strong>{position} · {circular ? 'circle edge' : 'bounding box'} anchor</strong><p>The child stays circular; this choice changes the corner anchor.</p></div>
           </div>
         </>
       }

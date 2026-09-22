@@ -2196,11 +2196,11 @@ p {
 .coin-attached-anatomy-component {
   position: absolute;
   z-index: 1;
-  left: 72px;
-  top: 37px;
+  left: 79px;
+  top: 44px;
   display: flex;
-  width: 56px;
-  height: 56px;
+  width: 42px;
+  height: 42px;
   align-items: center;
   justify-content: center;
 }
@@ -2383,8 +2383,8 @@ p {
   font-size: 0.88rem;
 }
 
-.coin-attached-sizing-host.is-clipped { overflow: hidden; }
 .coin-attached-host {
+  position: relative;
   display: flex;
   width: 92px;
   height: 92px;
@@ -2394,17 +2394,25 @@ p {
   background: var(--soft);
   border-radius: 14px;
 }
-.coin-attached-host.is-clipped {
-  width: 56px;
-  height: 56px;
-  padding: 0;
-  overflow: hidden;
+.coin-attached-host-frame {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
 }
-.coin-attached-sizing-host.is-clipped {
-  width: 56px;
-  min-height: 56px;
-  height: 56px;
-  padding: 0;
+.coin-attached-host-frame.is-clipped { overflow: hidden; }
+.coin-attached-host-label {
+  position: absolute;
+  right: 6px;
+  bottom: 5px;
+  left: 6px;
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 650;
+  line-height: 1;
+  text-align: center;
 }
 .coin-attached-context,
 .coin-area-context,
