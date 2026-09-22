@@ -28,6 +28,13 @@ import {
 } from './ActionGuides'
 import { AppBarGuide, isAppBarLocation } from './AppBarGuide'
 import { AccordionGuide, isAccordionLocation } from './AccordionGuide'
+import { AttachedGuide, isAttachedLocation } from './AttachedGuide'
+import { AreaLineChartGuide, isAreaLineChartLocation } from './AreaLineChartGuide'
+import {
+  AllocationComparisonChartGuide,
+  isAllocationComparisonChartLocation,
+} from './AllocationComparisonChartGuide'
+import { AmountInputGuide, isAmountInputLocation } from './AmountInputGuide'
 import {
   GuideMobileBar,
   GuideSidebar,
@@ -1031,6 +1038,18 @@ function App() {
   }
   if (isAccordionLocation()) {
     return <AccordionGuide />
+  }
+  if (isAttachedLocation()) {
+    return <AttachedGuide />
+  }
+  if (isAreaLineChartLocation()) {
+    return <AreaLineChartGuide />
+  }
+  if (isAllocationComparisonChartLocation()) {
+    return <AllocationComparisonChartGuide />
+  }
+  if (isAmountInputLocation()) {
+    return <AmountInputGuide />
   }
   if (isAccordionCheckboxLocation()) {
     return <AccordionCheckboxGuide />

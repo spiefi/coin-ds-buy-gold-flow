@@ -13,6 +13,10 @@ type GuideIconName =
   | 'actionfooter'
   | 'actiontile'
   | 'additem'
+  | 'attached'
+  | 'arealinechart'
+  | 'allocationcomparisonchart'
+  | 'amountinput'
   | 'hstack'
   | 'vstack'
   | 'stack'
@@ -30,6 +34,10 @@ export const COMPONENT_NAV = [
   { slug: 'actionfooter', label: 'Action Footer', icon: 'actionfooter' },
   { slug: 'actiontile', label: 'Action Tile', icon: 'actiontile' },
   { slug: 'additem', label: 'Add Item', icon: 'additem' },
+  { slug: 'attached', label: 'Attached', icon: 'attached' },
+  { slug: 'arealinechart', label: 'Area Line Chart', icon: 'arealinechart' },
+  { slug: 'allocationcomparisonchart', label: 'Allocation Comparison Chart', icon: 'allocationcomparisonchart' },
+  { slug: 'amountinput', label: 'Amount Input', icon: 'amountinput' },
   { slug: 'hstack', label: 'HStack', icon: 'hstack' },
   { slug: 'vstack', label: 'VStack', icon: 'vstack' },
   { slug: 'stack', label: 'Stack', icon: 'stack' },
@@ -214,6 +222,27 @@ function GuideIcon({ name }: { name: GuideIconName }) {
         <>
           <rect x="3" y="3" width="12" height="12" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
           <path d="M9 6v6M6 9h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </>
+      ) : name === 'attached' ? (
+        <>
+          <circle cx="7" cy="9" r="4.5" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="12.5" cy="12.5" r="2.25" fill="currentColor" />
+        </>
+      ) : name === 'arealinechart' ? (
+        <>
+          <path d="M2.5 14.5h13M3.5 12.5l3-3 2.5 1.5 5-6 1.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M3.5 12.5 6.5 9l2.5 1.5 5-6v10h-11z" fill="currentColor" opacity=".16" />
+        </>
+      ) : name === 'allocationcomparisonchart' ? (
+        <>
+          <path d="M2.5 15.5h13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M4 14V8h2v6M8 14V4h2v10M12 14v-3h2v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M3.5 6.5h3M7.5 2.5h3" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeDasharray="1 1" />
+        </>
+      ) : name === 'amountinput' ? (
+        <>
+          <path d="M3 5.5h12M3 9h8M3 12.5h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="13.5" cy="12.5" r="2" stroke="currentColor" strokeWidth="1.35" />
         </>
       ) : name === 'hstack' ? (
         <>

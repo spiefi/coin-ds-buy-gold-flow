@@ -159,3 +159,36 @@ Checked 21 September 2026 for the local Accordion guide and package version.
 - The package requests React Native `LayoutAnimation` during open and close. In the local React Native Web preview, this transition is immediate; the guide leaves the shipped behavior unchanged and does not add an animation shim.
 - The package source supplies `accessibilityState={{ expanded: isExpanded, disabled, ...accessibilityState }}` to its header Pressable. In the RNW DOM smoke, the rendered button does not expose an `aria-expanded` attribute even though Enter and Space toggle it correctly; this is recorded as a platform semantic gap and the guide does not patch the component.
 - The anatomy leaders and numbered marks measure the rendered public header, label, add/minus icon, content slot, and bottom divider after layout and fonts settle. They are documentation chrome and do not patch Accordion internals.
+
+## Four component batch evidence
+
+Checked 22 September 2026 for the local Attached, Area Line Chart, Allocation Comparison Chart, and Amount Input guides. Declared and resolved `jfs-components` is `0.1.60`; the registry `latest` check for this session also returned `0.1.60`, so no dependency change was made.
+
+### Attached
+
+- Figma: [Coin Components Library · Attached](https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=4477-471), node `4477:471`; the inspected source shows a 42px main slot with a 16px attachment reference.
+- Storybook: [Attached docs](https://jfs-components-storybook.vercel.app/?path=/docs/components-attached--docs), with the published default, all-positions, square-vs-circular, enforced-image, and capsule-badge stories. The capsule fixture uses public `IconCapsule` children (`ic_cart` main and `ic_rupee` badge), with documented 56px and 22px examples.
+- Public `Attached` exposes `children`, `badge`, nine `position` values, `circular`, `badgeSize`, `badgeRadius`, `modes`, and style. The package clones its owner modes into both slots, waits for layout measurements before placing the badge, and keeps the badge outside the main layout footprint. Runtime source defaults `circular` to `true` while its JSDoc says `false`; the guide follows the runtime default and exposes the choice.
+
+### Area Line Chart
+
+- Figma: [Coin Components Library · Area Line Chart](https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=4225-1049), node `4225:1049`; the reference was inspected at 320px wide with a 14px y-axis and 298px plot region. The saved review reference is `/tmp/coin-area-figma-sep22.png`.
+- Storybook: [Area Line Chart docs](https://jfs-components-storybook.vercel.app/?path=/docs/components-arealinechart--docs), including the default trend, overlap, forecast, and interactive stories. The inspected interactive fixture uses a public x-axis Pressable with keyboard selection in RN Web.
+- Public `AreaLineChart` accepts series, x labels, y bounds, curve (`linear` or `monotone`), plot height, grid/axes/legend/dots, projected points, goal pins, active index, callback, and modes. The `AreaLineChart` owner resolves `Appearance / DataViz`, `Emphasis / DataViz`, and `Color Mode`; the guide uses those modes and avoids per-series literal colors. The y domain uses nice ticks, so the guide does not promise exact min/max ticks when bounds are omitted.
+- The rendered RN Web accessibility tree exposes the x-axis keyboard target but does not expose complete series labels. The guide therefore includes a visible plotted-values table as supporting text and does not claim a complete screen-reader chart experience.
+- The guide's anatomy callouts measure the rendered y-axis, plot, goal pin, and x-axis label after layout and fonts settle; the leaders and numbered markers are documentation chrome.
+
+### Allocation Comparison Chart
+
+- Figma: [Coin Components Library · Allocation Comparison Chart](https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=4976-1080), node `4976:1080`; the inspected reference uses current values 65/25/10 and a 35 baseline marker. The saved review reference is `/tmp/coin-allocation-figma-sep22.png`.
+- Storybook: [Allocation Comparison Chart docs](https://jfs-components-storybook.vercel.app/?path=/docs/components-allocationcomparisonchart--docs), including the default and `no-baseline` stories.
+- Public `AllocationComparisonChart` accepts data segments, optional baselines, max, height, bar width, legend labels, value formatting, modes, and truncation. The guide uses `Appearance / DataViz`, `Emphasis / DataViz`, and `Color Mode` on the owner and does not pass the story's custom color overrides.
+- Source and rendered story behavior caps `overlayHeight` at `min(baselineHeight, barHeight)`. A recommended baseline above the current pillar is therefore visually clipped at the current pillar; the guide records this runtime limitation and does not present the baseline as an independently scaled bar. The chart is static and has no press or selection state.
+- The guide's anatomy callouts measure the rendered legend, first current pillar, baseline overlay, marker, and category label after layout; the leaders and numbered markers are documentation chrome.
+
+### Amount Input
+
+- Figma: [Coin Components Library · Amount Input](https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=2217-6259), node `2217:6259`; the inspected parent owns `Context3=Amount Input` and shows a 56px amount with a 32px currency and a 14px Add note label. The saved review reference is `/tmp/coin-amount-figma-sep22.png`.
+- Storybook: [Amount Input docs](https://jfs-components-storybook.vercel.app/?path=/docs/components-amountinput--docs), with default and `custom-slots` fixtures. The default story relies on ambient context and renders smaller typography than the inspected Figma parent.
+- Public `AmountInput` exposes `moneyValueSlot`, `noteInputSlot`, `modes`, and style. It clones the owner modes into supplied `MoneyValue` and `NoteInput` children and falls back to those public children when slots are falsy. `MoneyValue` owns editable, hidden, focused, currency, and value behavior; `NoteInput` owns its focus and controlled text behavior.
+- The `NoteInput` implementation accepts a `state` prop but destructures it without using it; the guide demonstrates focus and filled text rather than a manually selected state. The guide passes `Color Mode=Light` and `Context3=Amount Input` to the owner and does not override child typography or colors.
