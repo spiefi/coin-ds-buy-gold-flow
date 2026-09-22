@@ -160,7 +160,7 @@ function AreaChartExample({
         showGrid={showGrid}
         showDots={showDots}
         showLegend={showLegend ?? (series.length > 1 && scenario !== 'hiddenLegend')}
-        goalPin={goalPin == null ? undefined : { value: `${pointValue(series[0].data[goalPin] ?? 0)}k goal`, atIndex: goalPin }}
+        goalPin={goalPin == null ? undefined : { value: `${pointValue(series[0].data[goalPin] ?? 0)}k`, atIndex: goalPin }}
         activeIndex={activeIndex}
         onActiveIndexChange={setActiveIndex}
         interactive
@@ -213,7 +213,7 @@ function AreaAnatomy() {
       const chart = frame.querySelector<HTMLElement>('[role="img"]')
       if (!chart || frameRect.width === 0 || frameRect.height === 0) return
       const plot = chart.querySelector<HTMLElement>('svg')
-      const goal = findVisibleText(chart, '725k goal')
+      const goal = findVisibleText(chart, '725k')
       const xLabel = findVisibleText(chart, 'Jun')
       const yLabel = Array.from(chart.querySelectorAll<HTMLElement>('*'))
         .filter((node) => /^\d+k$/.test(node.textContent?.trim() ?? '') && node.getBoundingClientRect().width > 0)
