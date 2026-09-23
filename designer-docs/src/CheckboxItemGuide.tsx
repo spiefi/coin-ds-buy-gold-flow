@@ -70,9 +70,14 @@ export function CheckboxItemGuide() {
       body: <div className="coin-new-context"><VStack modes={ROW_MODES}>{['Savings • 0245', 'Current • 1182', 'Fixed deposit • 9073'].map((name, index) => <Row key={name} label={name} checked={accounts[index]} onValueChange={value => setAccounts(current => current.map((item, i) => i === index ? value : item))} />)}</VStack><p className="coin-new-readout" role="status">{count} of 3 accounts selected</p></div>,
     },
     'dos-donts': {
-      header: 'Do & Don’ts', title: 'Keep controls on one edge',
-      description: 'A consistent edge makes a list easier to scan.',
-      body: <GuideDoDont good={<div className="coin-new-stack"><Row label="Savings • 0245" /><Row label="Current • 1182" /></div>} bad={<div className="coin-new-stack"><Row label="Savings • 0245" /><Row label="Current • 1182" control="Trailing" /></div>} goodTitle="Align the controls" badTitle="Avoid mixed placement" goodCaption="Keep controls on the same edge." badCaption="Avoid making people search for each control." />,
+      header: 'Do & Don’ts', title: 'Make every row easy to choose',
+      description: 'Use consistent placement, specific labels, and enough context to explain the choice.',
+      body: <div className="coin-new-stack">
+        <GuideDoDont good={<div className="coin-new-stack"><Row label="Savings • 0245" /><Row label="Current • 1182" /></div>} bad={<div className="coin-new-stack"><Row label="Savings • 0245" /><Row label="Current • 1182" control="Trailing" /></div>} goodTitle="Align the controls" badTitle="Avoid mixed placement" goodCaption="Keep controls on the same edge." badCaption="Avoid making people search for each control." />
+        <GuideDoDont good={<Row label="Email monthly statements" />} bad={<Row label="Enable this" />} goodTitle="Name the choice" badTitle="Avoid vague labels" goodCaption="Say exactly what selecting the row enables." badCaption="People should not have to guess what “this” means." />
+        <GuideDoDont good={<div className="coin-new-stack"><Row label="Savings • 0245" disabled /><p className="coin-new-readout">Unavailable while account verification is pending.</p></div>} bad={<Row label="Savings • 0245" disabled />} goodTitle="Explain unavailable choices" badTitle="Avoid unexplained disabled rows" goodCaption="Place the reason beside the unavailable option." badCaption="A disabled control alone does not explain what to do next." />
+        <GuideDoDont good={<div className="coin-new-stack"><Row label="Savings • 0245" /><Row label="Savings • 1182" /></div>} bad={<div className="coin-new-stack"><Row label="Savings" /><Row label="Savings" /></div>} goodTitle="Distinguish similar options" badTitle="Avoid duplicate choices" goodCaption="Include the detail people need to choose the right account." badCaption="Identical labels hide which account will be selected." />
+      </div>,
     },
     sources: {
       header: 'Sources', title: 'Use the public row contract',

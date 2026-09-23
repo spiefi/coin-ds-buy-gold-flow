@@ -52,9 +52,14 @@ export function BrandChipGuide() {
       body: <div className="coin-new-context"><Card variant="slim" modes={LIGHT_MODES}><VStack modes={LIGHT_MODES}><Text>Paying from</Text><Chip label="Axis Bank • 0245" /></VStack></Card></div>,
     },
     'dos-donts': {
-      header: 'Do & Don’ts', title: 'Make accounts distinguishable',
-      description: 'A familiar brand can still represent more than one account.',
-      body: <GuideDoDont good={<div className="coin-new-stack"><Chip label="Axis Bank • 0245" /><Chip label="Axis Bank • 1182" /></div>} bad={<div className="coin-new-stack"><Chip label="Axis Bank" /><Chip label="Axis Bank" /></div>} goodTitle="Use an account suffix" badTitle="Avoid duplicate labels" goodCaption="Include a useful distinguishing detail." badCaption="Avoid identical labels for different accounts." />,
+      header: 'Do & Don’ts', title: 'Keep identity recognizable and useful',
+      description: 'Match the identity, distinguish accounts, and keep the chip focused on identification.',
+      body: <div className="coin-new-stack">
+        <GuideDoDont good={<div className="coin-new-stack"><Chip label="Axis Bank • 0245" /><Chip label="Axis Bank • 1182" /></div>} bad={<div className="coin-new-stack"><Chip label="Axis Bank" /><Chip label="Axis Bank" /></div>} goodTitle="Use an account suffix" badTitle="Avoid duplicate labels" goodCaption="Include a useful distinguishing detail." badCaption="Avoid identical labels for different accounts." />
+        <GuideDoDont good={<Chip label="Axis Bank • 0245" monogram="AB" />} bad={<Chip label="Axis Bank • 0245" monogram="HB" />} goodTitle="Match avatar and label" badTitle="Avoid conflicting identities" goodCaption="Use an avatar or monogram for the brand named in the label." badCaption="A different brand cue creates uncertainty about the account." />
+        <GuideDoDont good={<div className="coin-new-host narrow"><Chip label="Axis • 0245" /></div>} bad={<div className="coin-new-host narrow"><Chip label="Axis Bank savings account • 0245" /></div>} goodTitle="Keep the identifier compact" badTitle="Avoid full descriptions" goodCaption="Keep the brand and the distinguishing suffix." badCaption="Long descriptions consume space needed by surrounding content." />
+        <GuideDoDont good={<div className="coin-new-stack"><p className="coin-new-readout">Payment complete</p><Chip label="Axis Bank • 0245" monogram="AB" /></div>} bad={<Chip label="Payment complete" monogram="AB" />} goodTitle="Keep status beside the identifier" badTitle="Do not replace identity with status" goodCaption="Use nearby content for the transaction status." badCaption="A status label no longer tells people which account is involved." />
+      </div>,
     },
     sources: {
       header: 'Sources', title: 'Use the public identity slot',

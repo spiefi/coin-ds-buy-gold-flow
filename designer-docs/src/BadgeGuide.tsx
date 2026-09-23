@@ -98,9 +98,14 @@ export function BadgeGuide() {
       body: <div className="coin-new-context"><Card variant="slim" modes={{ 'Color Mode': 'Light' } as Modes}><HStack alignVertical="center" justifyHorizontal="space-between" modes={{ 'Color Mode': 'Light' } as Modes}><Text>September payment</Text><CoinBadge label="Paid" intent="System" systemMeaning="positive" /></HStack></Card></div>,
     },
     'dos-donts': {
-      header: 'Do & Don’ts', title: 'Keep the message compact',
-      description: 'A Badge works best as a quick signal beside fuller content.',
-      body: <GuideDoDont good={<CoinBadge label="Paid" />} bad={<CoinBadge label="Payment successfully completed" />} goodTitle="Use a short status" badTitle="Avoid a sentence inside the Badge" goodCaption="Keep the status concise." badCaption="Avoid putting the whole explanation inside the Badge." />,
+      header: 'Do & Don’ts', title: 'Make status clear at a glance',
+      description: 'Keep labels concise, match their meaning, and establish a clear priority.',
+      body: <div className="coin-new-stack">
+        <GuideDoDont good={<CoinBadge label="Paid" />} bad={<CoinBadge label="Payment successfully completed" />} goodTitle="Use a short status" badTitle="Avoid a sentence inside the Badge" goodCaption="Keep the status concise." badCaption="Avoid putting the whole explanation inside the Badge." />
+        <GuideDoDont good={<div className="coin-new-content-list"><CoinBadge label="Paid" intent="System" systemMeaning="positive" /><CoinBadge label="Failed" intent="System" systemMeaning="negative" /></div>} bad={<div className="coin-new-content-list"><CoinBadge label="Paid" intent="System" systemMeaning="negative" /><CoinBadge label="Failed" intent="System" systemMeaning="positive" /></div>} goodTitle="Match meaning and tone" badTitle="Avoid contradictory signals" goodCaption="Use semantic treatment that agrees with the status." badCaption="Conflicting words and tone make the status harder to trust." />
+        <GuideDoDont good={<div className="coin-new-content-list"><CoinBadge label="Failed" intent="System" systemMeaning="negative" emphasis="High" /><CoinBadge label="Archived" brandTone="Neutral" emphasis="Low" /></div>} bad={<div className="coin-new-content-list"><CoinBadge label="Failed" intent="System" systemMeaning="negative" emphasis="High" /><CoinBadge label="Archived" brandTone="Neutral" emphasis="High" /></div>} goodTitle="Reserve strong emphasis" badTitle="Avoid equal emphasis everywhere" goodCaption="Give the status needing attention the strongest emphasis." badCaption="If every status competes, the urgent one is harder to find." />
+        <GuideDoDont good={<div className="coin-new-content-list"><CoinBadge label="Paid" /><CoinBadge label="Pending" /><CoinBadge label="Failed" /></div>} bad={<div className="coin-new-content-list"><CoinBadge label="Paid" /><CoinBadge label="Awaiting payment processing" /><CoinBadge label="FAILURE" /></div>} goodTitle="Use a consistent vocabulary" badTitle="Avoid mixed label styles" goodCaption="Keep comparable statuses similar in length and capitalization." badCaption="Mixed wording and capitalization slow scanning." />
+      </div>,
     },
     sources: {
       header: 'Sources', title: 'Use the public Badge contract',

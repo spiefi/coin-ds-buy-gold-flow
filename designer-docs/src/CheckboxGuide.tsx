@@ -60,9 +60,14 @@ export function CheckboxGuide() {
       body: <div className="coin-new-context"><VStack modes={LIGHT_MODES}>{['Email updates', 'SMS updates'].map((name, index) => <CheckboxItem key={name} checked={channels[index]} onValueChange={value => setChannels(current => current.map((item, i) => i === index ? value : item))} accessibilityLabel={name} modes={LIGHT_MODES}>{name}</CheckboxItem>)}</VStack><p className="coin-new-readout" role="status">{channels.filter(Boolean).length} channels selected</p></div>,
     },
     'dos-donts': {
-      header: 'Do & Don’ts', title: 'Show what each choice means',
-      description: 'Visible context helps people recognize the value they are changing.',
-      body: <GuideDoDont good={<Choice label="Email me a monthly statement" />} bad={<Choice label="Email me a monthly statement" visible={false} />} goodTitle="Name the choice" badTitle="Avoid an isolated control" goodCaption="Keep the meaning next to the control." badCaption="Avoid a control with no visible explanation." />,
+      header: 'Do & Don’ts', title: 'Keep choices explicit and independent',
+      description: 'Give each control a clear meaning and preserve the difference between selection and availability.',
+      body: <div className="coin-new-stack">
+        <GuideDoDont good={<Choice label="Email me a monthly statement" />} bad={<Choice label="Email me a monthly statement" visible={false} />} goodTitle="Name the choice" badTitle="Avoid an isolated control" goodCaption="Keep the meaning next to the control." badCaption="Avoid a control with no visible explanation." />
+        <GuideDoDont good={<Choice label="Send email updates" />} bad={<Choice label="Do not stop sending email updates" />} goodTitle="Use direct, positive wording" badTitle="Avoid double negatives" goodCaption="Make the checked meaning easy to predict." badCaption="Double negatives make the selected value difficult to interpret." />
+        <GuideDoDont good={<div className="coin-new-stack"><p className="coin-new-readout">Choose update channels</p><Choice label="Email updates" selected /><Choice label="SMS updates" selected /></div>} bad={<div className="coin-new-stack"><p className="coin-new-readout">Send updates?</p><Choice label="Yes" selected /><Choice label="No" selected /></div>} goodTitle="Use independent options" badTitle="Avoid mutually exclusive answers" goodCaption="Checkboxes allow more than one option to be selected." badCaption="Yes and No cannot both be true; use a single-choice control for this question." />
+        <GuideDoDont good={<div className="coin-new-stack"><Choice label="Email updates" selected disabled /><p className="coin-new-readout">Saved preference; editing is unavailable.</p></div>} bad={<div className="coin-new-stack"><Choice label="Email updates" disabled /><p className="coin-new-readout">Saved preference; editing is unavailable.</p></div>} goodTitle="Preserve the saved value" badTitle="Do not clear selection to show disabled" goodCaption="An unavailable control can still show the saved checked value." badCaption="Clearing the mark misrepresents a preference that is still selected." />
+      </div>,
     },
     sources: {
       header: 'Sources', title: 'Follow the public Checkbox states',
