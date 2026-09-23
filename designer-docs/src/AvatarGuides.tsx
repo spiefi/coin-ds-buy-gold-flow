@@ -177,6 +177,7 @@ type AnatomyMarker = {
   fromY: number
   toX: number
   toY: number
+  showEndpoint?: boolean
 }
 
 type AnatomyMeasures = {
@@ -257,34 +258,26 @@ function useAnatomyMeasures(
         const left = rect.left - stageRect.left
         const top = rect.top - stageRect.top
         const centerX = left + rect.width / 2
-        const centerY = top + rect.height / 2
 
-        if (index === 1 && targets.length > 1) {
+        if (kind === 'group' && index === 1 && targets.length > 1) {
           const firstRect = targets[0].getBoundingClientRect()
           const firstCenterX = firstRect.left - stageRect.left + firstRect.width / 2
-          const secondCenterX = centerX
-          const seamCenterY = firstRect.top - stageRect.top + firstRect.height / 2
-          const firstRadius = firstRect.width / 2
-          const secondRadius = rect.width / 2
-          const border = Number.parseFloat(window.getComputedStyle(target).borderWidth) || 0
-          const renderedScale = target.offsetWidth > 0 ? rect.width / target.offsetWidth : 1
-          const secondBorder = border * renderedScale
-          const cutoutRadius = secondRadius + secondBorder
-          const centerDistance = Math.max(0.001, Math.abs(secondCenterX - firstCenterX))
-          const seamOffsetX = (centerDistance * centerDistance + firstRadius * firstRadius - cutoutRadius * cutoutRadius) / (2 * centerDistance)
-          const seamOffsetY = Math.sqrt(Math.max(0, firstRadius * firstRadius - seamOffsetX * seamOffsetX))
-          const seamX = firstCenterX + seamOffsetX
-          const seamY = seamCenterY - seamOffsetY
-          const markerSize = kind === 'group' ? 24 : 20
-          const markerTop = Math.max(6, seamY - 36)
+          const seamCenterX = (firstCenterX + centerX) / 2
+          const firstTop = firstRect.top - stageRect.top
+          const sharedTop = (firstTop + top) / 2
+          const sharedHeight = (firstRect.height + rect.height) / 2
+          const seamTopY = sharedTop + sharedHeight * 0.36
+          const markerSize = 24
+          const markerTop = Math.max(6, Math.min(firstTop, top) - 56)
           return {
             number: index + 1,
-            left: seamX - markerSize / 2,
+            left: seamCenterX - markerSize / 2,
             top: markerTop,
-            fromX: seamX,
+            fromX: seamCenterX,
             fromY: markerTop + markerSize,
-            toX: seamX,
-            toY: seamY,
+            toX: seamCenterX,
+            toY: seamTopY,
+            showEndpoint: true,
           }
         }
 
@@ -297,8 +290,12 @@ function useAnatomyMeasures(
           top: markerTop,
           fromX: markerCenterX,
           fromY: markerTop + markerSize,
-          toX: index === 0 ? left + 3 : centerX,
-          toY: top + 1,
+          toX: kind === 'group'
+            ? left + rect.width * (index === 0 ? 0.31 : 0.5)
+            : centerX,
+          toY: kind === 'group'
+            ? top + rect.height * 0.2
+            : top + 1,
         }
       })
 
@@ -346,6 +343,17 @@ function AnatomyOverlay({ measures }: { measures: AnatomyMeasures }) {
               y1={marker.fromY}
               x2={marker.toX}
               y2={marker.toY}
+            />
+          ))}
+          {measures.markers.filter((marker) => marker.showEndpoint).map((marker) => (
+            <circle
+              key={`endpoint-${marker.number}`}
+              cx={marker.toX}
+              cy={marker.toY}
+              r="3"
+              fill="#fff"
+              stroke="#745495"
+              strokeWidth="1.25"
             />
           ))}
         </svg>
