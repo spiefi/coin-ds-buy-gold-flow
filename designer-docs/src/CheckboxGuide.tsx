@@ -25,8 +25,8 @@ export function CheckboxGuide() {
       header: 'Anatomy', title: 'Selection at a glance',
       description: 'The boundary locates the control. The checkmark makes the selected value explicit.',
       body: <GuideAnatomy targets={[
-        { selector: '.coin-checkbox-anatomy [role="checkbox"] > div', label: 'Boundary', description: 'Locates the control in a list or form.', anchorX: .1, anchorY: .05 },
-        { selector: '.coin-checkbox-anatomy svg', label: 'Checkmark', description: 'Makes the selected value explicit.', anchorX: .5, anchorY: .1 },
+        { selector: '.coin-checkbox-anatomy [role="checkbox"] > div', label: 'Boundary', description: 'Locates the control in a list or form.', anchorX: 0, anchorY: .5, side: 'left' },
+        { selector: '.coin-checkbox-anatomy svg', label: 'Checkmark', description: 'Makes the selected value explicit.', anchorX: .5, anchorY: 0, side: 'top' },
       ]}><div className="coin-checkbox-anatomy"><Checkbox checked accessibilityLabel="Selected example" modes={LIGHT_MODES} /></div></GuideAnatomy>,
     },
     configuration: {

@@ -5949,7 +5949,7 @@ p {
 .coin-new-anatomy-stage { position: relative; display: grid; min-width: 0; min-height: 220px; place-items: center; overflow: hidden; background: #f2f4f8; border-right: 1px solid var(--line); }
 .coin-new-anatomy-live { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; min-width: 0; }
 .coin-new-anatomy-leaders { position: absolute; z-index: 3; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.coin-new-anatomy-leaders polyline, .coin-new-anatomy-leaders line { fill: none; stroke: #745495; stroke-width: 1.25; stroke-linecap: round; stroke-linejoin: round; }
+.coin-new-anatomy-leaders line { stroke: #745495; stroke-width: 1.25; stroke-linecap: round; }
 .coin-new-anatomy-marker { position: absolute; z-index: 4; display: grid; width: 20px; height: 20px; place-items: center; transform: translateX(-50%); color: #553275; background: #fff; border: 1px solid #8b70a4; border-radius: 50%; box-shadow: 0 1px 5px rgba(30,18,49,.14); font-size: .68rem; font-weight: 700; line-height: 1; pointer-events: none; }
 .coin-new-anatomy-card .anatomy-list { padding: 24px; }
 .coin-new-anatomy-card .anatomy-list li { grid-template-columns: 95px minmax(0, 1fr); }

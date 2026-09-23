@@ -35,7 +35,7 @@ type AnatomyTarget = {
   anchorX?: number
   anchorY?: number
   /** A short, straight leader placed beside this measured point. */
-  side?: 'left' | 'top' | 'right'
+  side: 'left' | 'top' | 'right'
 }
 
 export function GuideAnatomy({ children, targets }: { children: ReactNode; targets: readonly AnatomyTarget[] }) {
@@ -71,10 +71,7 @@ export function GuideAnatomy({ children, targets }: { children: ReactNode; targe
           const side = targets[index].side
           if (side === 'left') return <line key={index} x1={mark.x - 24} y1={mark.y} x2={mark.x} y2={mark.y} />
           if (side === 'top') return <line key={index} x1={mark.x} y1={mark.y - 24} x2={mark.x} y2={mark.y} />
-          if (side === 'right') return <line key={index} x1={mark.x} y1={mark.y} x2={mark.x + 24} y2={mark.y} />
-          const markerX = stageRef.current?.clientWidth ? stageRef.current.clientWidth * (index + 1) / (targets.length + 1) : 0
-          const elbowY = 76 + index * 10
-          return <polyline key={index} points={`${markerX},47 ${markerX},${elbowY} ${mark.x},${elbowY} ${mark.x},${mark.y}`} />
+          return <line key={index} x1={mark.x} y1={mark.y} x2={mark.x + 24} y2={mark.y} />
         })}
       </svg>
       {targets.map((target, index) => {
@@ -82,8 +79,8 @@ export function GuideAnatomy({ children, targets }: { children: ReactNode; targe
         if (!mark) return null
         const side = target.side
         const centerX = side === 'left' ? mark.x - 34 : side === 'right' ? mark.x + 34 : mark.x
-        const centerY = side === 'top' ? mark.y - 34 : side ? mark.y : 37
-        return <span className="coin-new-anatomy-marker" key={target.label} style={{ left: side ? centerX : `${(index + 1) * 100 / (targets.length + 1)}%`, top: centerY - 10 }}>{index + 1}</span>
+        const centerY = side === 'top' ? mark.y - 34 : mark.y
+        return <span className="coin-new-anatomy-marker" key={target.label} style={{ left: centerX, top: centerY - 10 }}>{index + 1}</span>
       })}
     </div>
     <ol className="anatomy-list">{targets.map((target, index) => <li key={target.label}><b><em className="coin-new-legend-number">{index + 1}</em>{target.label}</b><span>{target.description}</span></li>)}</ol>

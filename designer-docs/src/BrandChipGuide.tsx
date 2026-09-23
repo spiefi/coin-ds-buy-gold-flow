@@ -22,8 +22,8 @@ export function BrandChipGuide() {
       header: 'Anatomy', title: 'Identity and identifier',
       description: 'A small avatar and short label form one recognizable account identifier.',
       body: <GuideAnatomy targets={[
-        { selector: '.coin-brand-chip-anatomy .coin-brand-chip-specimen > div > div:first-child', label: 'Avatar', description: 'Helps recognize the brand.', anchorY: .05 },
-        { selector: '.coin-brand-chip-anatomy .coin-brand-chip-specimen > div > [dir="auto"]', label: 'Label', description: 'Names the account and distinguishes it from similar accounts.', anchorY: .05 },
+        { selector: '.coin-brand-chip-anatomy .coin-brand-chip-specimen > div > div:first-child', label: 'Avatar', description: 'Helps recognize the brand.', anchorX: 0, anchorY: .5, side: 'left' },
+        { selector: '.coin-brand-chip-anatomy .coin-brand-chip-specimen > div > [dir="auto"]', label: 'Label', description: 'Names the account and distinguishes it from similar accounts.', anchorX: .5, anchorY: 0, side: 'top' },
       ]}><div className="coin-brand-chip-anatomy"><Chip label="Axis Bank • 0245" /></div></GuideAnatomy>,
     },
     configuration: {

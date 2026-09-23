@@ -28,9 +28,9 @@ export function CheckboxItemGuide() {
       header: 'Anatomy', title: 'One choice, three regions',
       description: 'The row combines a control, label, and optional supporting action.',
       body: <GuideAnatomy targets={[
-        { selector: '.coin-checkbox-item-anatomy [role="checkbox"] [role="checkbox"]', label: 'Control', description: 'Shows whether the option is selected.', anchorY: 0 },
-        { selector: '.coin-checkbox-item-anatomy [dir="auto"]', label: 'Label', description: 'Describes the option and uses the remaining row width.', anchorY: 0 },
-        { selector: '.coin-checkbox-item-anatomy [role="button"]', label: 'Action', description: 'Opens related information without changing the choice.', anchorY: 0 },
+        { selector: '.coin-checkbox-item-anatomy [role="checkbox"] [role="checkbox"]', label: 'Control', description: 'Shows whether the option is selected.', anchorX: 0, anchorY: .5, side: 'left' },
+        { selector: '.coin-checkbox-item-anatomy [dir="auto"]', label: 'Label', description: 'Describes the option and uses the remaining row width.', anchorX: .5, anchorY: 0, side: 'top' },
+        { selector: '.coin-checkbox-item-anatomy [role="button"]', label: 'Action', description: 'Opens related information without changing the choice.', anchorX: 1, anchorY: .5, side: 'right' },
       ]}><div className="coin-checkbox-item-anatomy"><Row label="Savings • 0245" checked action onAction={() => {}} /></div></GuideAnatomy>,
     },
     configuration: {
