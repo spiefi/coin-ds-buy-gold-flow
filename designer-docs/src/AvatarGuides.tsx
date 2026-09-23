@@ -177,7 +177,6 @@ type AnatomyMarker = {
   fromY: number
   toX: number
   toY: number
-  showEndpoint?: boolean
 }
 
 type AnatomyMeasures = {
@@ -259,29 +258,7 @@ function useAnatomyMeasures(
         const top = rect.top - stageRect.top
         const centerX = left + rect.width / 2
 
-        if (kind === 'group' && index === 1 && targets.length > 1) {
-          const firstRect = targets[0].getBoundingClientRect()
-          const firstCenterX = firstRect.left - stageRect.left + firstRect.width / 2
-          const seamCenterX = (firstCenterX + centerX) / 2
-          const firstTop = firstRect.top - stageRect.top
-          const sharedTop = (firstTop + top) / 2
-          const sharedHeight = (firstRect.height + rect.height) / 2
-          const seamTopY = sharedTop + sharedHeight * 0.36
-          const markerSize = 24
-          const markerTop = Math.max(6, Math.min(firstTop, top) - 56)
-          return {
-            number: index + 1,
-            left: seamCenterX - markerSize / 2,
-            top: markerTop,
-            fromX: seamCenterX,
-            fromY: markerTop + markerSize,
-            toX: seamCenterX,
-            toY: seamTopY,
-            showEndpoint: true,
-          }
-        }
-
-        const markerSize = kind === 'group' ? 24 : 20
+        const markerSize = 20
         const markerTop = Math.max(6, top - 36)
         const markerCenterX = centerX
         return {
@@ -341,17 +318,6 @@ function AnatomyOverlay({ measures }: { measures: AnatomyMeasures }) {
               y1={marker.fromY}
               x2={marker.toX}
               y2={marker.toY}
-            />
-          ))}
-          {measures.markers.filter((marker) => marker.showEndpoint).map((marker) => (
-            <circle
-              key={`endpoint-${marker.number}`}
-              cx={marker.toX}
-              cy={marker.toY}
-              r="3"
-              fill="#fff"
-              stroke="#745495"
-              strokeWidth="1.25"
             />
           ))}
         </svg>
@@ -530,7 +496,7 @@ export function AvatarGroupGuide() {
           <AvatarGroupAnatomy />
           <ol className="anatomy-list">
             <li><b>First child</b><span>It starts at the back of the visual order and gives the group its first face.</span></li>
-            <li><b>Overlap cutout</b><span>The group masks this edge of the first child so the next child’s circle remains clear.</span></li>
+            <li><b>Middle child</b><span>It overlaps the first child and sits behind the last.</span></li>
             <li><b>Last child</b><span>The final child is drawn in front. Child order therefore changes which face leads.</span></li>
           </ol>
         </div>
