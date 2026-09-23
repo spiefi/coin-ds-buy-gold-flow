@@ -41,6 +41,10 @@ import {
   isAvatarGroupLocation,
   isAvatarLocation,
 } from './AvatarGuides'
+import { BadgeGuide } from './BadgeGuide'
+import { CheckboxItemGuide } from './CheckboxItemGuide'
+import { CheckboxGuide } from './CheckboxGuide'
+import { BrandChipGuide } from './BrandChipGuide'
 import {
   GuideMobileBar,
   GuideSidebar,
@@ -1062,6 +1066,18 @@ function App() {
   }
   if (isAvatarLocation()) {
     return <AvatarGuide />
+  }
+  if (new URLSearchParams(location.search).get('component') === 'badge') {
+    return <BadgeGuide />
+  }
+  if (new URLSearchParams(location.search).get('component') === 'checkboxitem') {
+    return <CheckboxItemGuide />
+  }
+  if (new URLSearchParams(location.search).get('component') === 'checkbox') {
+    return <CheckboxGuide />
+  }
+  if (new URLSearchParams(location.search).get('component') === 'brandchip') {
+    return <BrandChipGuide />
   }
   if (isAccordionCheckboxLocation()) {
     return <AccordionCheckboxGuide />

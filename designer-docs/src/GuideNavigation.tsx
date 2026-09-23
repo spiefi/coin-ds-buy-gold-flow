@@ -19,6 +19,10 @@ type GuideIconName =
   | 'amountinput'
   | 'avatargroup'
   | 'avatar'
+  | 'badge'
+  | 'checkboxitem'
+  | 'checkbox'
+  | 'brandchip'
   | 'hstack'
   | 'vstack'
   | 'stack'
@@ -42,6 +46,10 @@ export const COMPONENT_NAV = [
   { slug: 'amountinput', label: 'Amount Input', icon: 'amountinput' },
   { slug: 'avatargroup', label: 'Avatar Group', icon: 'avatargroup' },
   { slug: 'avatar', label: 'Avatar', icon: 'avatar' },
+  { slug: 'badge', label: 'Badge', icon: 'badge' },
+  { slug: 'checkboxitem', label: 'Checkbox Item', icon: 'checkboxitem' },
+  { slug: 'checkbox', label: 'Checkbox', icon: 'checkbox' },
+  { slug: 'brandchip', label: 'Brand Chip', icon: 'brandchip' },
   { slug: 'hstack', label: 'HStack', icon: 'hstack' },
   { slug: 'vstack', label: 'VStack', icon: 'vstack' },
   { slug: 'stack', label: 'Stack', icon: 'stack' },
@@ -278,6 +286,14 @@ function GuideIcon({ name }: { name: GuideIconName }) {
           <rect x="4" y="7.5" width="10" height="3" rx="1" stroke="currentColor" strokeWidth="1.5" />
           <rect x="4" y="12.5" width="10" height="3" rx="1" stroke="currentColor" strokeWidth="1.5" />
         </>
+      ) : name === 'badge' ? (
+        <><rect x="2" y="4" width="14" height="10" rx="5" stroke="currentColor" strokeWidth="1.5" /><path d="M6 9h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></>
+      ) : name === 'checkboxitem' ? (
+        <><rect x="2" y="4" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" /><path d="m3.5 7 1.2 1.2 2-2.4M10 5.5h6M10 8.5h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></>
+      ) : name === 'checkbox' ? (
+        <><rect x="3" y="3" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.5" /><path d="m5.5 9 2.4 2.3 4.7-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></>
+      ) : name === 'brandchip' ? (
+        <><rect x="1.5" y="4" width="15" height="10" rx="5" stroke="currentColor" strokeWidth="1.5" /><circle cx="6" cy="9" r="2" stroke="currentColor" strokeWidth="1.3" /><path d="M9.5 9h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></>
       ) : (
         <>
           <path d="M2.5 5.5h4M8.5 5.5h4M14.5 5.5h1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
