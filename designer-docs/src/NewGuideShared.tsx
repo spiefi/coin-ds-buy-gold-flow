@@ -34,6 +34,8 @@ type AnatomyTarget = {
   /** Point to a visible edge or region of the real rendered part. */
   anchorX?: number
   anchorY?: number
+  /** A short, straight leader placed beside this measured point. */
+  side?: 'left' | 'top' | 'right'
 }
 
 export function GuideAnatomy({ children, targets }: { children: ReactNode; targets: readonly AnatomyTarget[] }) {
@@ -64,9 +66,25 @@ export function GuideAnatomy({ children, targets }: { children: ReactNode; targe
     <div className="coin-new-anatomy-stage" ref={stageRef}>
       <div className="coin-new-anatomy-live">{children}</div>
       <svg className="coin-new-anatomy-leaders" aria-hidden="true">
-        {marks.map((mark, index) => mark && <polyline key={index} points={`${stageRef.current?.clientWidth ? stageRef.current.clientWidth * (index + 1) / (targets.length + 1) : 0},47 ${stageRef.current?.clientWidth ? stageRef.current.clientWidth * (index + 1) / (targets.length + 1) : 0},${76 + index * 10} ${mark.x},${76 + index * 10} ${mark.x},${mark.y}`} />)}
+        {marks.map((mark, index) => {
+          if (!mark) return null
+          const side = targets[index].side
+          if (side === 'left') return <line key={index} x1={mark.x - 24} y1={mark.y} x2={mark.x} y2={mark.y} />
+          if (side === 'top') return <line key={index} x1={mark.x} y1={mark.y - 24} x2={mark.x} y2={mark.y} />
+          if (side === 'right') return <line key={index} x1={mark.x} y1={mark.y} x2={mark.x + 24} y2={mark.y} />
+          const markerX = stageRef.current?.clientWidth ? stageRef.current.clientWidth * (index + 1) / (targets.length + 1) : 0
+          const elbowY = 76 + index * 10
+          return <polyline key={index} points={`${markerX},47 ${markerX},${elbowY} ${mark.x},${elbowY} ${mark.x},${mark.y}`} />
+        })}
       </svg>
-      {targets.map((target, index) => marks[index] && <span className="coin-new-anatomy-marker" key={target.label} style={{ left: `${(index + 1) * 100 / (targets.length + 1)}%`, top: 27 }}>{index + 1}</span>)}
+      {targets.map((target, index) => {
+        const mark = marks[index]
+        if (!mark) return null
+        const side = target.side
+        const centerX = side === 'left' ? mark.x - 34 : side === 'right' ? mark.x + 34 : mark.x
+        const centerY = side === 'top' ? mark.y - 34 : side ? mark.y : 37
+        return <span className="coin-new-anatomy-marker" key={target.label} style={{ left: side ? centerX : `${(index + 1) * 100 / (targets.length + 1)}%`, top: centerY - 10 }}>{index + 1}</span>
+      })}
     </div>
     <ol className="anatomy-list">{targets.map((target, index) => <li key={target.label}><b><em className="coin-new-legend-number">{index + 1}</em>{target.label}</b><span>{target.description}</span></li>)}</ol>
   </div>

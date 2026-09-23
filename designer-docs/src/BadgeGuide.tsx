@@ -56,9 +56,9 @@ export function BadgeGuide() {
       header: 'Anatomy', title: 'A compact signal',
       description: 'A leading cue, short label, and token-owned surface form one compact message.',
       body: <GuideAnatomy targets={[
-        { selector: '[data-testid="badge-anatomy"] > div:first-child', label: 'Leading visual', description: 'Adds a recognizable cue without replacing the words.', anchorY: 0 },
-        { selector: '[data-testid="badge-anatomy"] [dir="auto"]', label: 'Label', description: 'Names the status or category.', anchorY: 0 },
-        { selector: '[data-testid="badge-anatomy"]', label: 'Surface', description: 'Groups the message into one compact shape.', anchorX: .92, anchorY: .1 },
+        { selector: '[data-testid="badge-anatomy"] > div:first-child', label: 'Leading visual', description: 'Adds a recognizable cue without replacing the words.', anchorX: 0, anchorY: .5, side: 'left' },
+        { selector: '[data-testid="badge-anatomy"] [dir="auto"]', label: 'Label', description: 'Names the status or category.', anchorX: .5, anchorY: 0, side: 'top' },
+        { selector: '[data-testid="badge-anatomy"]', label: 'Surface', description: 'Groups the message into one compact shape.', anchorX: 1, anchorY: .5, side: 'right' },
       ]}><CoinBadge label="Paid" leading testID="badge-anatomy" /></GuideAnatomy>,
     },
     configuration: {
