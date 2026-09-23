@@ -36,6 +36,12 @@ import {
 } from './AllocationComparisonChartGuide'
 import { AmountInputGuide, isAmountInputLocation } from './AmountInputGuide'
 import {
+  AvatarGuide,
+  AvatarGroupGuide,
+  isAvatarGroupLocation,
+  isAvatarLocation,
+} from './AvatarGuides'
+import {
   GuideMobileBar,
   GuideSidebar,
   MobileComponentNav,
@@ -1050,6 +1056,12 @@ function App() {
   }
   if (isAmountInputLocation()) {
     return <AmountInputGuide />
+  }
+  if (isAvatarGroupLocation()) {
+    return <AvatarGroupGuide />
+  }
+  if (isAvatarLocation()) {
+    return <AvatarGuide />
   }
   if (isAccordionCheckboxLocation()) {
     return <AccordionCheckboxGuide />

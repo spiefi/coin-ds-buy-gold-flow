@@ -17,6 +17,8 @@ type GuideIconName =
   | 'arealinechart'
   | 'allocationcomparisonchart'
   | 'amountinput'
+  | 'avatargroup'
+  | 'avatar'
   | 'hstack'
   | 'vstack'
   | 'stack'
@@ -38,6 +40,8 @@ export const COMPONENT_NAV = [
   { slug: 'arealinechart', label: 'Area Line Chart', icon: 'arealinechart' },
   { slug: 'allocationcomparisonchart', label: 'Allocation Comparison Chart', icon: 'allocationcomparisonchart' },
   { slug: 'amountinput', label: 'Amount Input', icon: 'amountinput' },
+  { slug: 'avatargroup', label: 'Avatar Group', icon: 'avatargroup' },
+  { slug: 'avatar', label: 'Avatar', icon: 'avatar' },
   { slug: 'hstack', label: 'HStack', icon: 'hstack' },
   { slug: 'vstack', label: 'VStack', icon: 'vstack' },
   { slug: 'stack', label: 'Stack', icon: 'stack' },
@@ -243,6 +247,18 @@ function GuideIcon({ name }: { name: GuideIconName }) {
         <>
           <path d="M3 5.5h12M3 9h8M3 12.5h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           <circle cx="13.5" cy="12.5" r="2" stroke="currentColor" strokeWidth="1.35" />
+        </>
+      ) : name === 'avatargroup' ? (
+        <>
+          <circle cx="5.25" cy="9" r="4" stroke="currentColor" strokeWidth="1.4" />
+          <circle cx="9" cy="9" r="4" fill="var(--paper, #fff)" stroke="currentColor" strokeWidth="1.4" />
+          <circle cx="12.75" cy="9" r="4" fill="var(--paper, #fff)" stroke="currentColor" strokeWidth="1.4" />
+        </>
+      ) : name === 'avatar' ? (
+        <>
+          <circle cx="9" cy="9" r="6.4" stroke="currentColor" strokeWidth="1.5" />
+          <circle cx="9" cy="7" r="2" stroke="currentColor" strokeWidth="1.3" />
+          <path d="M4.8 13.2c.7-1.6 2.1-2.5 4.2-2.5s3.5.9 4.2 2.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
         </>
       ) : name === 'hstack' ? (
         <>

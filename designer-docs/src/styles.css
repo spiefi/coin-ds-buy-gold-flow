@@ -3193,6 +3193,448 @@ p {
   }
 }
 
+/* Avatar component guides ------------------------------------------------- */
+
+.coin-avatar-preview-stage {
+  min-width: 0;
+  min-height: 320px;
+  padding: 28px 24px;
+}
+
+.coin-avatar-preview-content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  max-width: 100%;
+  justify-items: center;
+  gap: 18px;
+}
+
+.coin-avatar-group-specimen {
+  display: grid;
+  max-width: 100%;
+  justify-items: center;
+  gap: 9px;
+}
+
+.coin-avatar-group-visual,
+.coin-avatar-visual,
+.coin-avatar-playground-specimen,
+.coin-avatar-size-preview {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.coin-avatar-group-visual > *,
+.coin-avatar-visual > *,
+.coin-avatar-playground-specimen > *,
+.coin-avatar-size-preview > * {
+  flex: 0 0 auto;
+}
+
+.coin-avatar-controls-panel select {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  font-size: 0.82rem;
+}
+
+.coin-avatar-controls-panel select:focus-visible {
+  outline: 2px solid #6f3a94;
+  outline-offset: 2px;
+}
+
+.coin-avatar-controls-panel select:disabled {
+  color: var(--quiet);
+  background: var(--soft);
+}
+
+.coin-avatar-readout {
+  display: grid;
+  gap: 5px;
+  margin-top: auto;
+  padding: 13px 14px;
+  background: #f5f2fa;
+  border: 1px solid #e6dfef;
+  border-radius: 12px;
+}
+
+.coin-avatar-readout span,
+.coin-avatar-sizing-card > span {
+  color: var(--quiet);
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.coin-avatar-readout strong {
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+
+.coin-avatar-readout p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.coin-avatar-example-grid,
+.coin-avatar-sizing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.coin-avatar-demo-card,
+.coin-avatar-sizing-card {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 12px;
+  padding: 20px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+
+.coin-avatar-demo-stage {
+  display: grid;
+  min-height: 116px;
+  place-items: center;
+  background: #f4f5f9;
+  border-radius: 12px;
+}
+
+.coin-avatar-demo-card h3,
+.coin-avatar-sizing-card strong {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.98rem;
+  font-weight: 650;
+}
+
+.coin-avatar-demo-card > p,
+.coin-avatar-context-caption {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.coin-avatar-size-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.coin-avatar-size-card {
+  display: grid;
+  min-width: 0;
+  justify-items: center;
+  gap: 9px;
+  padding: 18px 12px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.coin-avatar-size-preview {
+  min-height: 58px;
+}
+
+.coin-avatar-size-card strong {
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+
+.coin-avatar-size-card > span {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.coin-avatar-anatomy-card {
+  grid-template-columns: minmax(0, 1.2fr) minmax(270px, 0.8fr);
+}
+
+.coin-avatar-anatomy-zoom-note {
+  position: absolute;
+  z-index: 5;
+  top: 12px;
+  left: 14px;
+  padding: 5px 8px;
+  color: #4d5365;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(77, 83, 101, 0.16);
+  border-radius: 7px;
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.coin-avatar-anatomy-stage {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 288px;
+  place-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(43, 49, 73, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43, 49, 73, 0.05) 1px, transparent 1px),
+    #f2f4f8;
+  background-size: 24px 24px;
+  border-right: 1px solid var(--line);
+}
+
+.coin-avatar-anatomy-live {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coin-avatar-anatomy-pair {
+  gap: clamp(54px, 8vw, 92px);
+  transform: scale(1.35);
+  transform-origin: center;
+}
+
+.coin-avatar-group-anatomy-live {
+  transform: scale(1.7);
+  transform-origin: center;
+}
+
+.coin-avatar-anatomy-sample {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.coin-avatar-anatomy-leaders {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.coin-avatar-anatomy-leaders line {
+  stroke: #745495;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+}
+
+.coin-avatar-anatomy-marker {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  color: #553275;
+  background: #fff;
+  border: 1px solid #8b70a4;
+  border-radius: 50%;
+  box-shadow: 0 1px 5px rgba(30, 18, 49, 0.14);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.coin-avatar-anatomy-card .anatomy-list {
+  padding: 28px 24px;
+}
+
+.coin-avatar-anatomy-card .anatomy-list li {
+  grid-template-columns: 100px minmax(0, 1fr);
+}
+
+.coin-avatar-sizing-card {
+  justify-items: start;
+}
+
+.coin-avatar-host {
+  display: flex;
+  min-height: 102px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(48, 54, 77, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(48, 54, 77, 0.04) 1px, transparent 1px),
+    #f4f5f9;
+  background-size: 18px 18px;
+  border: 1px dashed #aeb4c2;
+  border-radius: 12px;
+}
+
+.coin-avatar-host-wide { width: min(196px, 100%); }
+.coin-avatar-host-narrow { width: min(112px, 100%); }
+
+.coin-avatar-count-demo {
+  display: grid;
+  max-width: 100%;
+  justify-items: center;
+  gap: 8px;
+}
+
+.coin-avatar-host-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.coin-avatar-context-wrap {
+  display: grid;
+  width: min(100%, 620px);
+  gap: 12px;
+}
+
+.coin-avatar-context-card {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.coin-avatar-context-card .coin-avatar-group-specimen {
+  flex: 0 0 auto;
+}
+
+.coin-avatar-person-card {
+  justify-content: flex-start;
+}
+
+.coin-avatar-person-mark {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.coin-avatar-person-copy {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.coin-avatar-context-caption {
+  padding-inline: 4px;
+}
+
+.coin-avatar-rule-example {
+  min-height: 118px;
+  margin-top: 16px;
+  padding: 12px;
+  place-items: center;
+}
+
+.coin-avatar-content-sample {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.coin-avatar-comparison-stack {
+  gap: 26px;
+}
+
+.coin-avatar-comparison-preview {
+  display: flex;
+  min-height: 160px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px;
+}
+
+.coin-avatar-comparison-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.coin-avatar-fallback-pair {
+  gap: 16px;
+}
+
+.coin-avatar-override-demo {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+}
+
+.coin-avatar-override-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  color: #4f4563;
+  background: #f5f2fa;
+  border: 1px solid #e3ddec;
+  border-radius: 999px;
+  font-size: 0.69rem;
+  font-weight: 650;
+}
+
+.coin-avatar-override-note b {
+  display: grid;
+  width: 17px;
+  height: 17px;
+  place-items: center;
+  color: #553275;
+  background: #fff;
+  border: 1px solid #8b70a4;
+  border-radius: 50%;
+  font-size: 0.64rem;
+}
+
+.coin-avatar-story-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin-top: 18px;
+}
+
+.coin-avatar-source-arrow {
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+@media (max-width: 860px) {
+  .coin-avatar-anatomy-card { grid-template-columns: 1fr; }
+  .coin-avatar-anatomy-stage { border-right: 0; border-bottom: 1px solid var(--line); }
+}
+
+@media (max-width: 620px) {
+  .coin-avatar-preview-stage { min-height: 252px; padding: 24px 16px; }
+  .coin-avatar-example-grid,
+  .coin-avatar-sizing-grid,
+  .coin-avatar-comparison-row { grid-template-columns: 1fr; }
+  .coin-avatar-size-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .coin-avatar-demo-card,
+  .coin-avatar-sizing-card { padding: 16px; }
+  .coin-avatar-anatomy-stage { min-height: 230px; padding-inline: 22px; }
+  .coin-avatar-anatomy-card .anatomy-list { padding: 22px; }
+  .coin-avatar-anatomy-card .anatomy-list li { grid-template-columns: 88px minmax(0, 1fr); }
+  .coin-avatar-context-card { gap: 12px; }
+  .coin-avatar-comparison-preview { min-height: 130px; }
+}
+
 /* Layout component guides ------------------------------------------------- */
 
 .layout-section {
