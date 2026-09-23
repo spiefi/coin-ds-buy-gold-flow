@@ -283,16 +283,14 @@ function useAnatomyMeasures(
 
         const markerSize = kind === 'group' ? 24 : 20
         const markerTop = Math.max(6, top - 36)
-        const markerCenterX = index === 0 ? centerX - 18 : centerX
+        const markerCenterX = centerX
         return {
           number: index + 1,
           left: markerCenterX - markerSize / 2,
           top: markerTop,
           fromX: markerCenterX,
           fromY: markerTop + markerSize,
-          toX: kind === 'group'
-            ? left + rect.width * (index === 0 ? 0.31 : 0.5)
-            : centerX,
+          toX: centerX,
           toY: kind === 'group'
             ? top + rect.height * 0.2
             : top + 1,
