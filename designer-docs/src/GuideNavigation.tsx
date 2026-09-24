@@ -17,12 +17,15 @@ type GuideIconName =
   | 'arealinechart'
   | 'allocationcomparisonchart'
   | 'amountinput'
+  | 'autoplaycontrol'
   | 'avatargroup'
   | 'avatar'
   | 'badge'
   | 'checkboxitem'
   | 'checkbox'
   | 'brandchip'
+  | 'bottomnavitem'
+  | 'buttongroup'
   | 'hstack'
   | 'vstack'
   | 'stack'
@@ -44,12 +47,15 @@ export const COMPONENT_NAV = [
   { slug: 'arealinechart', label: 'Area Line Chart', icon: 'arealinechart' },
   { slug: 'allocationcomparisonchart', label: 'Allocation Comparison Chart', icon: 'allocationcomparisonchart' },
   { slug: 'amountinput', label: 'Amount Input', icon: 'amountinput' },
+  { slug: 'autoplaycontrol', label: 'Autoplay Control', icon: 'autoplaycontrol' },
   { slug: 'avatargroup', label: 'Avatar Group', icon: 'avatargroup' },
   { slug: 'avatar', label: 'Avatar', icon: 'avatar' },
   { slug: 'badge', label: 'Badge', icon: 'badge' },
   { slug: 'checkboxitem', label: 'Checkbox Item', icon: 'checkboxitem' },
   { slug: 'checkbox', label: 'Checkbox', icon: 'checkbox' },
   { slug: 'brandchip', label: 'Brand Chip', icon: 'brandchip' },
+  { slug: 'bottomnavitem', label: 'Bottom Nav Item', icon: 'bottomnavitem' },
+  { slug: 'buttongroup', label: 'Button Group', icon: 'buttongroup' },
   { slug: 'hstack', label: 'HStack', icon: 'hstack' },
   { slug: 'vstack', label: 'VStack', icon: 'vstack' },
   { slug: 'stack', label: 'Stack', icon: 'stack' },
@@ -255,6 +261,22 @@ function GuideIcon({ name }: { name: GuideIconName }) {
         <>
           <path d="M3 5.5h12M3 9h8M3 12.5h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           <circle cx="13.5" cy="12.5" r="2" stroke="currentColor" strokeWidth="1.35" />
+        </>
+      ) : name === 'autoplaycontrol' ? (
+        <>
+          <circle cx="9" cy="9" r="6.5" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M7.25 6.5v5M10.75 6.5v5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </>
+      ) : name === 'bottomnavitem' ? (
+        <>
+          <path d="M5.5 8.25 9 5.25l3.5 3V11h-7z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+          <path d="M6 14h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </>
+      ) : name === 'buttongroup' ? (
+        <>
+          <circle cx="3.75" cy="9" r="2.25" stroke="currentColor" strokeWidth="1.4" />
+          <rect x="7.5" y="6.75" width="4" height="4.5" rx="2.25" stroke="currentColor" strokeWidth="1.4" />
+          <rect x="12.75" y="6.75" width="4" height="4.5" rx="2.25" stroke="currentColor" strokeWidth="1.4" />
         </>
       ) : name === 'avatargroup' ? (
         <>

@@ -45,6 +45,9 @@ import { BadgeGuide } from './BadgeGuide'
 import { CheckboxItemGuide } from './CheckboxItemGuide'
 import { CheckboxGuide } from './CheckboxGuide'
 import { BrandChipGuide } from './BrandChipGuide'
+import { AutoplayControlGuide, isAutoplayControlLocation } from './AutoplayControlGuide'
+import { BottomNavItemGuide, isBottomNavItemLocation } from './BottomNavItemGuide'
+import { ButtonGroupGuide, isButtonGroupLocation } from './ButtonGroupGuide'
 import {
   GuideMobileBar,
   GuideSidebar,
@@ -1078,6 +1081,14 @@ function App() {
   }
   if (new URLSearchParams(location.search).get('component') === 'brandchip') {
     return <BrandChipGuide />
+  if (isAutoplayControlLocation()) {
+    return <AutoplayControlGuide />
+  }
+  if (isBottomNavItemLocation()) {
+    return <BottomNavItemGuide />
+  }
+  if (isButtonGroupLocation()) {
+    return <ButtonGroupGuide />
   }
   if (isAccordionCheckboxLocation()) {
     return <AccordionCheckboxGuide />
