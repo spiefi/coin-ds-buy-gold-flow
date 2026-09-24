@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Badge, Card, HStack, Icon, SkeletonGroup, Text, type Modes } from 'jfs-components'
 import { ComponentGuideTemplate, type GuideSectionSlots } from './ComponentGuideTemplate'
 import { GuideAnatomy, GuideDoDont, GuideExampleCard, GuideSegment, GuideSources } from './NewGuideShared'
-import glassImage from '../../src/assets/bank-hero.png'
+import glassImage from './assets/bank-hero.png'
 
 const FIGMA = 'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=5607-5484'
 const STORYBOOK = 'https://jfs-components-storybook.vercel.app/?path=/docs/components-badge--docs'
