@@ -1081,6 +1081,7 @@ function App() {
   }
   if (new URLSearchParams(location.search).get('component') === 'brandchip') {
     return <BrandChipGuide />
+  }
   if (isAutoplayControlLocation()) {
     return <AutoplayControlGuide />
   }

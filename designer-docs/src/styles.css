@@ -5980,6 +5980,7 @@ p {
   .coin-new-anatomy-card { grid-template-columns: 1fr; }
   .coin-new-anatomy-stage { border-right: 0; border-bottom: 1px solid var(--line); }
   .coin-new-anatomy-card .anatomy-list { padding: 20px; }
+}
 
 /* Button Group, Bottom Nav Item, and Autoplay Control guides --------------- */
 
