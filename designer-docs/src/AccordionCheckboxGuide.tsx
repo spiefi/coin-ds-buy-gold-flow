@@ -496,7 +496,7 @@ export function AccordionCheckboxGuide() {
 
   useLayoutEffect(() => {
     const previousTitle = document.title
-    document.title = 'AccordionCheckbox · Coin designer documentation'
+    document.title = 'Accordion Checkbox · Coin designer documentation'
     return () => {
       document.title = previousTitle
     }
@@ -515,9 +515,9 @@ export function AccordionCheckboxGuide() {
         <article>
           <section id="overview" className="hero-section anchor-section">
             <div className="hero-copy">
-              <p className="breadcrumb">Components / AccordionCheckbox</p>
+              <p className="breadcrumb">Components / Accordion Checkbox</p>
               <div className="hero-title-row">
-                <h1>AccordionCheckbox</h1>
+                <h1>Accordion Checkbox</h1>
                 <span className="public-badge">Public component</span>
               </div>
               <p className="hero-lede">
@@ -747,11 +747,6 @@ export function AccordionCheckboxGuide() {
       </main>
     </div>
   )
-}
-
-export function isAccordionCheckboxLocation() {
-  if (typeof window === 'undefined') return false
-  return new URLSearchParams(window.location.search).get('component') === 'accordioncheckbox'
 }
 
 export default AccordionCheckboxGuide

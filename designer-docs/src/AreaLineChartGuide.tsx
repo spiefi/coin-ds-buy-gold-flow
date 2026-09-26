@@ -389,9 +389,4 @@ export function AreaLineChartGuide() {
   )
 }
 
-export function isAreaLineChartLocation() {
-  if (typeof window === 'undefined') return false
-  return new URLSearchParams(window.location.search).get('component') === 'arealinechart'
-}
-
 export default AreaLineChartGuide

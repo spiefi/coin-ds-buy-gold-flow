@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button, CheckboxItem, VStack, type Modes } from 'jfs-components'
 import { ComponentGuideTemplate, type GuideSectionSlots } from './ComponentGuideTemplate'
-import { GuideAnatomy, GuideDoDont, GuideExampleCard, GuideSegment, GuideSources } from './NewGuideShared'
+import { Anatomy, DoDont, ExampleCard, Segment, Sources } from './guide-kit'
 
 const FIGMA = 'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=4303-8392'
 const STORYBOOK = 'https://jfs-components-storybook.vercel.app/?path=/docs/components-checkboxitem--docs'
@@ -27,42 +27,42 @@ export function CheckboxItemGuide() {
     anatomy: {
       header: 'Anatomy', title: 'One choice, three regions',
       description: 'The row combines a control, label, and optional supporting action.',
-      body: <GuideAnatomy targets={[
-        { selector: '.coin-checkbox-item-anatomy [role="checkbox"] [role="checkbox"]', label: 'Control', description: 'Shows whether the option is selected.', anchorX: 0, anchorY: .5, side: 'left' },
-        { selector: '.coin-checkbox-item-anatomy [dir="auto"]', label: 'Label', description: 'Describes the option and uses the remaining row width.', anchorX: .5, anchorY: 0, side: 'top' },
-        { selector: '.coin-checkbox-item-anatomy [role="button"]', label: 'Action', description: 'Opens related information without changing the choice.', anchorX: 1, anchorY: .5, side: 'right' },
-      ]}><div className="coin-checkbox-item-anatomy"><Row label="Savings • 0245" checked action onAction={() => {}} /></div></GuideAnatomy>,
+      body: <Anatomy specimenWidth={300} parts={[
+        { name: 'Control', note: 'Shows whether the option is selected.', target: '[role="checkbox"] [role="checkbox"]', side: 'left' },
+        { name: 'Label', note: 'Describes the option and uses the remaining row width.', target: '[dir="auto"]', side: 'top' },
+        { name: 'Action', note: 'Opens related information without changing the choice.', target: '[role="button"]', side: 'right' },
+      ]}><Row label="Savings • 0245" checked action onAction={() => {}} /></Anatomy>,
     },
     configuration: {
       header: 'Configuration', title: 'Place the control consistently',
       description: 'Choose the edge that fits the list. Keep that position consistent across neighboring options.',
       body: <div className="coin-new-stack"><div className="coin-new-example-grid">
-        <GuideExampleCard title="Leading"><Row label="Savings • 0245" checked /></GuideExampleCard>
-        <GuideExampleCard title="Trailing"><Row label="Savings • 0245" checked control="Trailing" /></GuideExampleCard>
+        <ExampleCard title="Leading"><Row label="Savings • 0245" checked /></ExampleCard>
+        <ExampleCard title="Trailing"><Row label="Savings • 0245" checked control="Trailing" /></ExampleCard>
       </div><div className="coin-new-example-grid">
-        <GuideExampleCard title="Without supporting action"><Row label="Savings • 0245" /></GuideExampleCard>
-        <GuideExampleCard title="With Details"><Row label="Savings • 0245" action onAction={() => {}} /></GuideExampleCard>
+        <ExampleCard title="Without supporting action"><Row label="Savings • 0245" /></ExampleCard>
+        <ExampleCard title="With Details"><Row label="Savings • 0245" action onAction={() => {}} /></ExampleCard>
       </div></div>,
     },
     states: {
       header: 'States', title: 'Selection and availability are independent',
       description: 'A disabled option can retain its selected value. Explain unavailable choices in nearby content when the reason is not obvious.',
       body: <div className="coin-new-example-grid">
-        <GuideExampleCard title="Unchecked"><Row label="Savings • 0245" /></GuideExampleCard>
-        <GuideExampleCard title="Checked"><Row label="Savings • 0245" checked /></GuideExampleCard>
-        <GuideExampleCard title="Disabled, unchecked"><Row label="Savings • 0245" disabled /></GuideExampleCard>
-        <GuideExampleCard title="Disabled, checked"><Row label="Savings • 0245" checked disabled /></GuideExampleCard>
+        <ExampleCard title="Unchecked"><Row label="Savings • 0245" /></ExampleCard>
+        <ExampleCard title="Checked"><Row label="Savings • 0245" checked /></ExampleCard>
+        <ExampleCard title="Disabled, unchecked"><Row label="Savings • 0245" disabled /></ExampleCard>
+        <ExampleCard title="Disabled, checked"><Row label="Savings • 0245" checked disabled /></ExampleCard>
       </div>,
     },
     sizing: {
       header: 'Sizing', title: 'The row follows its host',
       description: 'Give the label room to wrap. The row takes the available width; the Checkbox keeps its own size.',
-      body: <div className="coin-new-example-grid"><GuideExampleCard title="Host up to 360 px"><div className="coin-new-host wide"><Row label="Send monthly account statements by email" /></div></GuideExampleCard><GuideExampleCard title="Host up to 240 px"><div className="coin-new-host narrow"><Row label="Send monthly account statements by email" /></div></GuideExampleCard></div>,
+      body: <div className="coin-new-example-grid"><ExampleCard title="Host up to 360 px"><div className="coin-new-host wide"><Row label="Send monthly account statements by email" /></div></ExampleCard><ExampleCard title="Host up to 240 px"><div className="coin-new-host narrow"><Row label="Send monthly account statements by email" /></div></ExampleCard></div>,
     },
     content: {
       header: 'Content', title: 'Name the choice clearly',
       description: 'A plain label usually makes the row easiest to understand.',
-      body: <div className="coin-new-example-grid"><GuideExampleCard title="Specific"><Row label="Send account updates by email" /></GuideExampleCard><GuideExampleCard title="Vague"><Row label="Enable this" /></GuideExampleCard></div>,
+      body: <div className="coin-new-example-grid"><ExampleCard title="Specific"><Row label="Send account updates by email" /></ExampleCard><ExampleCard title="Vague"><Row label="Enable this" /></ExampleCard></div>,
     },
     context: {
       header: 'In context', title: 'Choose the accounts to include',
@@ -73,18 +73,18 @@ export function CheckboxItemGuide() {
       header: 'Do & Don’ts', title: 'Make every row easy to choose',
       description: 'Use consistent placement, specific labels, and enough context to explain the choice.',
       body: <div className="coin-new-stack">
-        <GuideDoDont good={<div className="coin-new-stack"><Row label="Savings • 0245" /><Row label="Current • 1182" /></div>} bad={<div className="coin-new-stack"><Row label="Savings • 0245" /><Row label="Current • 1182" control="Trailing" /></div>} goodTitle="Align the controls" badTitle="Avoid mixed placement" goodCaption="Keep controls on the same edge." badCaption="Avoid making people search for each control." />
-        <GuideDoDont good={<Row label="Email monthly statements" />} bad={<Row label="Enable this" />} goodTitle="Name the choice" badTitle="Avoid vague labels" goodCaption="Say exactly what selecting the row enables." badCaption="People should not have to guess what “this” means." />
-        <GuideDoDont good={<div className="coin-new-stack"><Row label="Savings • 0245" disabled /><p className="coin-new-readout">Unavailable while account verification is pending.</p></div>} bad={<Row label="Savings • 0245" disabled />} goodTitle="Explain unavailable choices" badTitle="Avoid unexplained disabled rows" goodCaption="Place the reason beside the unavailable option." badCaption="A disabled control alone does not explain what to do next." />
-        <GuideDoDont good={<div className="coin-new-stack"><Row label="Savings • 0245" /><Row label="Savings • 1182" /></div>} bad={<div className="coin-new-stack"><Row label="Savings" /><Row label="Savings" /></div>} goodTitle="Distinguish similar options" badTitle="Avoid duplicate choices" goodCaption="Include the detail people need to choose the right account." badCaption="Identical labels hide which account will be selected." />
+        <DoDont good={<div className="coin-new-stack"><Row label="Savings • 0245" /><Row label="Current • 1182" /></div>} bad={<div className="coin-new-stack"><Row label="Savings • 0245" /><Row label="Current • 1182" control="Trailing" /></div>} goodTitle="Align the controls" badTitle="Avoid mixed placement" goodCaption="Keep controls on the same edge." badCaption="Avoid making people search for each control." />
+        <DoDont good={<Row label="Email monthly statements" />} bad={<Row label="Enable this" />} goodTitle="Name the choice" badTitle="Avoid vague labels" goodCaption="Say exactly what selecting the row enables." badCaption="People should not have to guess what “this” means." />
+        <DoDont good={<div className="coin-new-stack"><Row label="Savings • 0245" disabled /><p className="coin-new-readout">Unavailable while account verification is pending.</p></div>} bad={<Row label="Savings • 0245" disabled />} goodTitle="Explain unavailable choices" badTitle="Avoid unexplained disabled rows" goodCaption="Place the reason beside the unavailable option." badCaption="A disabled control alone does not explain what to do next." />
+        <DoDont good={<div className="coin-new-stack"><Row label="Savings • 0245" /><Row label="Savings • 1182" /></div>} bad={<div className="coin-new-stack"><Row label="Savings" /><Row label="Savings" /></div>} goodTitle="Distinguish similar options" badTitle="Avoid duplicate choices" goodCaption="Include the detail people need to choose the right account." badCaption="Identical labels hide which account will be selected." />
       </div>,
     },
     sources: {
       header: 'Sources', title: 'Use the public row contract',
       description: 'The guide follows the component’s exposed control placement, slot, and state behavior.',
-      body: <GuideSources figmaUrl={FIGMA} storybookUrl={STORYBOOK} stories={[
+      body: <Sources checked="23 September 2026" figmaUrl={FIGMA} storybookUrl={STORYBOOK} stories={[
         { label: 'Default', id: 'components-checkboxitem--default' }, { label: 'String label', id: 'components-checkboxitem--string-label' }, { label: 'Custom slot', id: 'components-checkboxitem--custom-slot-content' }, { label: 'End slot', id: 'components-checkboxitem--with-end-slot' }, { label: 'Trailing', id: 'components-checkboxitem--trailing' }, { label: 'Trailing action', id: 'components-checkboxitem--trailing-with-end-slot' }, { label: 'Interactive', id: 'components-checkboxitem--interactive' }, { label: 'Long label', id: 'components-checkboxitem--long-label-truncation' },
-      ]} note={<>Declared, installed, and registry <code>jfs-components</code> versions are <code>0.1.60</code>. The row fills its host; the optional end slot defaults to 80 px and swaps edges with the Checkbox. A string label wraps in this version; a story name alone does not imply ellipsis. The row and its nested Checkbox each expose a checkbox role on web. In the local preview, Details did not change selection and pointer or Enter toggled the row; native Space on the focused row did not. This is a current package/web interaction limitation.</>} />,
+      ]}>Declared, installed, and registry <code>jfs-components</code> versions are <code>0.1.60</code>. The row fills its host; the optional end slot defaults to 80 px and swaps edges with the Checkbox. A string label wraps in this version; a story name alone does not imply ellipsis. The row and its nested Checkbox each expose a checkbox role on web. In the local preview, Details did not change selection and pointer or Enter toggled the row; native Space on the focused row did not. This is a current package/web interaction limitation.</Sources>,
     },
   }
 
@@ -92,10 +92,10 @@ export function CheckboxItemGuide() {
     <div className="preview-stage"><div className="coin-new-host wide"><Row label={label || 'Savings • 0245'} checked={checked} disabled={disabled} control={edge} action={action} onValueChange={setChecked} onAction={() => setMessage('Savings account details opened')} /></div><span className="stage-label">Live Coin CheckboxItem</span></div>
     <div className="controls-panel">
       <label className="text-control"><span>Label</span><input value={label} onChange={event => setLabel(event.target.value)} maxLength={72} /></label>
-      <GuideSegment label="Control edge" value={edge} options={['Leading', 'Trailing']} onChange={setEdge} />
-      <GuideSegment label="Checked" value={checked ? 'On' : 'Off'} options={['Off', 'On'] as const} onChange={value => setChecked(value === 'On')} />
-      <GuideSegment label="Disabled" value={disabled ? 'On' : 'Off'} options={['Off', 'On'] as const} onChange={value => setDisabled(value === 'On')} />
-      <GuideSegment label="Supporting action" value={action ? 'On' : 'Off'} options={['Off', 'On'] as const} onChange={value => setAction(value === 'On')} />
+      <Segment label="Control edge" value={edge} options={['Leading', 'Trailing']} onChange={setEdge} />
+      <Segment label="Checked" value={checked ? 'On' : 'Off'} options={['Off', 'On'] as const} onChange={value => setChecked(value === 'On')} />
+      <Segment label="Disabled" value={disabled ? 'On' : 'Off'} options={['Off', 'On'] as const} onChange={value => setDisabled(value === 'On')} />
+      <Segment label="Supporting action" value={action ? 'On' : 'Off'} options={['Off', 'On'] as const} onChange={value => setAction(value === 'On')} />
       <p className="coin-new-readout" role="status">{message} · {checked ? 'Selected' : 'Not selected'}</p>
     </div>
   </>} sections={sections} />

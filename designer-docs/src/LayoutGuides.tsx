@@ -1976,11 +1976,3 @@ export function LayoutGuidePage({ guide }: { guide: LayoutGuideKey }) {
     </div>
   )
 }
-
-export function getLayoutGuideFromLocation(): LayoutGuideKey | null {
-  if (typeof window === 'undefined') return null
-  const component = new URLSearchParams(window.location.search).get('component')
-  return component === 'hstack' || component === 'vstack' || component === 'stack' || component === 'breadcrumbs'
-    ? component
-    : null
-}

@@ -925,8 +925,3 @@ export function ButtonGroupGuide() {
     />
   )
 }
-
-export function isButtonGroupLocation() {
-  if (typeof window === 'undefined') return false
-  return new URLSearchParams(window.location.search).get('component') === 'buttongroup'
-}

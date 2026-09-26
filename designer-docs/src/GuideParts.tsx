@@ -12,38 +12,7 @@ export function classes(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(' ')
 }
 
-export function Segment<T extends string>({
-  label,
-  value,
-  options,
-  onChange,
-  format,
-}: {
-  label: string
-  value: T
-  options: readonly T[]
-  onChange: (value: T) => void
-  format?: (value: T) => string
-}) {
-  return (
-    <fieldset className="control-group">
-      <legend>{label}</legend>
-      <div className="segmented-control">
-        {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            className={value === option ? 'is-selected' : ''}
-            aria-pressed={value === option}
-            onClick={() => onChange(option)}
-          >
-            {format ? format(option) : option}
-          </button>
-        ))}
-      </div>
-    </fieldset>
-  )
-}
+export { Segment } from './guide-kit'
 
 export function Toggle({
   label,
@@ -307,6 +276,4 @@ export function SourceCards({
   )
 }
 
-export function storyUrl(id: string) {
-  return `https://jfs-components-storybook.vercel.app/?path=/story/${id}`
-}
+export { storyUrl } from './guide-kit'

@@ -20,11 +20,12 @@ header. Direct routes are:
 - `/?component=stack#overview` — Stack
 - `/?component=breadcrumbs#overview` — Breadcrumbs
 
-The shared component registry lives in `src/GuideNavigation.tsx` and drives
-both menus, their icons, active-page semantics, and section links. To add a
-future guide, add one registry item there and add its route dispatch in
-`src/App.tsx`; page shells should continue to use the shared navigation
-components.
+Each guide registers itself with one file, `src/guides/<slug>.guide.tsx`,
+which supplies its slug, label, icon, and page component. The navigation
+(alphabetical), routing, and page titles are derived from those files. To add a
+guide, follow [`src/guide-kit/README.md`](src/guide-kit/README.md); guides use
+the shared kit and add no CSS. `npm run build` runs `scripts/check-guides.mjs`
+to enforce this.
 
 ## Local development
 

@@ -860,9 +860,4 @@ export function AppBarGuide() {
   )
 }
 
-export function isAppBarLocation() {
-  if (typeof window === 'undefined') return false
-  return new URLSearchParams(window.location.search).get('component') === 'appbar'
-}
-
 export default AppBarGuide

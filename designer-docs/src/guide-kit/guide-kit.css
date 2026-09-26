@@ -1,0 +1,209 @@
+/* Guide kit — shared documentation chrome. Guides use these components
+   instead of adding CSS; nothing here styles a Coin component. */
+
+.gk-pin {
+  display: inline-grid;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  place-items: center;
+  color: #fff;
+  background: var(--ink);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(21, 24, 42, 0.28);
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Anatomy ---------------------------------------------------------------- */
+
+.gk-anatomy {
+  --gk-leader: #4d5468;
+  --gk-stage: #f2f4f8;
+  --gk-grid: rgba(43, 49, 73, 0.05);
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+}
+
+.gk-anatomy.is-dark {
+  --gk-leader: #d6dbe8;
+  --gk-stage: #18152b;
+  --gk-grid: rgba(255, 255, 255, 0.045);
+}
+
+.gk-anatomy-stage {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 300px;
+  padding: 56px;
+  place-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(var(--gk-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--gk-grid) 1px, transparent 1px),
+    var(--gk-stage);
+  background-size: 24px 24px;
+  border-right: 1px solid var(--line);
+}
+
+.gk-anatomy-frame {
+  position: relative;
+  z-index: 1;
+}
+
+.gk-anatomy-specimen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: max-content;
+  transform-origin: 0 0;
+}
+
+.gk-anatomy-leaders {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.gk-anatomy-leaders path {
+  fill: none;
+  stroke: var(--gk-leader);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.gk-anatomy-leaders circle {
+  fill: var(--gk-leader);
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+
+.gk-anatomy.is-dark .gk-anatomy-leaders circle {
+  stroke: var(--gk-stage);
+}
+
+.gk-anatomy-pin {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.gk-anatomy-zoom {
+  position: absolute;
+  z-index: 3;
+  top: 14px;
+  left: 16px;
+  padding: 3px 8px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.gk-anatomy.is-dark .gk-anatomy-zoom {
+  color: #d6dbe8;
+  background: rgba(24, 21, 43, 0.86);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.gk-anatomy-legend {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0;
+  padding: 28px 30px;
+  list-style: none;
+}
+
+.gk-anatomy-legend li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 6.5rem) minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.gk-anatomy-legend li:last-child {
+  border-bottom: 0;
+}
+
+.gk-anatomy-legend .gk-pin {
+  align-self: start;
+}
+
+.gk-anatomy-legend b {
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.gk-anatomy-legend li > span:last-child {
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.gk-specimen-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.gk-specimen {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.gk-specimen-caption {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+@media (max-width: 860px) {
+  .gk-anatomy {
+    grid-template-columns: 1fr;
+  }
+
+  .gk-anatomy-stage {
+    min-height: 240px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .gk-anatomy-legend {
+    padding: 18px 20px;
+  }
+
+  .gk-anatomy-legend li {
+    grid-template-columns: 22px minmax(0, 1fr);
+    row-gap: 4px;
+  }
+
+  .gk-anatomy-legend li > span:last-child {
+    grid-column: 2;
+  }
+}
+
+/* Sources ---------------------------------------------------------------- */
+
+.gk-story-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin-top: 18px;
+}

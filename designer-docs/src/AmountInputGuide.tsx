@@ -95,9 +95,4 @@ export function AmountInputGuide() {
     return <ComponentGuideTemplate metadata={{ slug: 'amountinput', name: 'Amount Input', summary: 'Make monetary entry primary while keeping optional detail close.', corePrinciple: 'Amount first, note second.', figmaUrl: FIGMA_URL, storybookUrl: STORYBOOK_URL }} playground={<><div className="preview-stage coin-amount-preview-stage"><div className="coin-amount-preview-host"><AmountExample value={value} currency={currency} note={note} editable hidden={hidden} onValueChange={(next) => { setValue(String(next)); setLastAction('Amount changed') }} onNoteChange={(next) => { setNote(next); setLastAction('Note changed') }} /></div><p className="preview-note" aria-live="polite">{lastAction}</p><span className="stage-label">Live Coin AmountInput · Context3 Amount Input</span></div><div className="controls-panel coin-amount-controls-panel"><Segment label="Currency" value={currency} options={['₹', '$'] as const} onChange={setCurrency} /><label className="toggle-row"><input type="checkbox" checked={hidden} onChange={(event) => setHidden(event.target.checked)} /><span className="toggle-track" /> Hide amount for privacy</label><p className="coin-amount-control-note">Tap the amount or note in the live example to try the child interactions.</p><div className="coin-amount-readout"><span>Context</span><strong>Amount Input · Light</strong><p>MoneyValue and NoteInput receive the same modes.</p></div></div></>} sections={sections} />
 }
 
-export function isAmountInputLocation() {
-  if (typeof window === 'undefined') return false
-  return new URLSearchParams(window.location.search).get('component') === 'amountinput'
-}
-
 export default AmountInputGuide

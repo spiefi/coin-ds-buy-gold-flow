@@ -8,6 +8,7 @@ import {
   useGuidePageNavigation,
   type ComponentSlug,
 } from './GuideNavigation'
+import { findGuide } from './guides/store'
 
 type PageNavEntry = (typeof PAGE_NAV)[number]
 
@@ -15,7 +16,8 @@ export type GuideSectionId = Exclude<PageNavEntry[0], 'overview'>
 
 export type ComponentGuideMetadata = {
   slug: ComponentSlug
-  name: string
+  /** Defaults to the registered guide label, which keeps title and navigation in sync. */
+  name?: string
   summary: string
   corePrinciple: string
   figmaUrl: string
@@ -69,13 +71,17 @@ export function ComponentGuideTemplate({
   playground,
   sections,
 }: ComponentGuideTemplateProps) {
+  const registered = findGuide(metadata.slug)
+  const name =
+    registered.slug === metadata.slug ? registered.label : (metadata.name ?? metadata.slug)
+
   useLayoutEffect(() => {
     const previousTitle = document.title
-    document.title = `${metadata.name} · Coin designer documentation`
+    document.title = `${name} · Coin designer documentation`
     return () => {
       document.title = previousTitle
     }
-  }, [metadata.name])
+  }, [name])
 
   useGuidePageNavigation()
 
@@ -95,9 +101,9 @@ export function ComponentGuideTemplate({
         <article>
           <section id="overview" className="hero-section anchor-section">
             <div className="hero-copy">
-              <p className="breadcrumb">Components / {metadata.name}</p>
+              <p className="breadcrumb">Components / {name}</p>
               <div className="hero-title-row">
-                <h1>{metadata.name}</h1>
+                <h1>{name}</h1>
                 <span className="public-badge">Public component</span>
               </div>
               <p className="hero-lede">{metadata.summary}</p>

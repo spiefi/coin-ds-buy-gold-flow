@@ -547,8 +547,3 @@ export function AutoplayControlGuide() {
     />
   )
 }
-
-export function isAutoplayControlLocation() {
-  if (typeof window === 'undefined') return false
-  return new URLSearchParams(window.location.search).get('component') === 'autoplaycontrol'
-}

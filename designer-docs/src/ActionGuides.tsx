@@ -1350,10 +1350,3 @@ export function AddItemGuide() {
 }
 
 export type ActionGuideSlug = 'actionfooter' | 'actiontile' | 'additem'
-
-export function getActionGuideFromLocation(): ActionGuideSlug | null {
-  const slug = new URLSearchParams(window.location.search).get('component')
-  return slug === 'actionfooter' || slug === 'actiontile' || slug === 'additem'
-    ? slug
-    : null
-}

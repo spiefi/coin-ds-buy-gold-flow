@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Avatar,
   AvatarGroup,
@@ -10,6 +10,7 @@ import {
   ComponentGuideTemplate,
   type GuideSectionSlots,
 } from './ComponentGuideTemplate'
+import { Anatomy, Segment, Sources, Specimen, SpecimenRow, byTestId } from './guide-kit'
 
 const FIGMA_FILE =
   'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library'
@@ -20,36 +21,15 @@ const AVATAR_GROUP_STORYBOOK =
 const AVATAR_STORYBOOK =
   'https://jfs-components-storybook.vercel.app/?path=/docs/components-avatar--docs'
 const AVATAR_GROUP_STORIES = [
-  {
-    label: 'Default group',
-    url: 'https://jfs-components-storybook.vercel.app/iframe.html?id=components-avatargroup--default&viewMode=story',
-  },
-  {
-    label: 'Large size',
-    url: 'https://jfs-components-storybook.vercel.app/iframe.html?id=components-avatargroup--large-size&viewMode=story',
-  },
-  {
-    label: 'Custom gap',
-    url: 'https://jfs-components-storybook.vercel.app/iframe.html?id=components-avatargroup--custom-gap&viewMode=story',
-  },
+  { label: 'Default group', id: 'components-avatargroup--default' },
+  { label: 'Large size', id: 'components-avatargroup--large-size' },
+  { label: 'Custom gap', id: 'components-avatargroup--custom-gap' },
 ]
 const AVATAR_STORIES = [
-  {
-    label: 'Image style',
-    url: 'https://jfs-components-storybook.vercel.app/iframe.html?id=components-avatar--image&viewMode=story',
-  },
-  {
-    label: 'Monogram style',
-    url: 'https://jfs-components-storybook.vercel.app/iframe.html?id=components-avatar--monogram&viewMode=story',
-  },
-  {
-    label: 'Size modes',
-    url: 'https://jfs-components-storybook.vercel.app/iframe.html?id=components-avatar--sizes&viewMode=story',
-  },
-  {
-    label: 'Remote image',
-    url: 'https://jfs-components-storybook.vercel.app/iframe.html?id=components-avatar--remote-image&viewMode=story',
-  },
+  { label: 'Image style', id: 'components-avatar--image' },
+  { label: 'Monogram style', id: 'components-avatar--monogram' },
+  { label: 'Size modes', id: 'components-avatar--sizes' },
+  { label: 'Remote image', id: 'components-avatar--remote-image' },
 ]
 
 type AvatarSize = 'L' | 'M' | 'S' | 'XS'
@@ -72,37 +52,6 @@ function avatarModes(size: AvatarSize): Modes {
 
 function avatarGroupModes(size: AvatarSize): Modes {
   return { 'Avatar Size': size } as Modes
-}
-
-function Segment<T extends string>({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string
-  value: T
-  options: readonly T[]
-  onChange: (value: T) => void
-}) {
-  return (
-    <fieldset className="control-group">
-      <legend>{label}</legend>
-      <div className="segmented-control">
-        {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            className={value === option ? 'is-selected' : ''}
-            aria-pressed={value === option}
-            onClick={() => onChange(option)}
-          >
-            {option}
-          </button>
-        ))}
-      </div>
-    </fieldset>
-  )
 }
 
 function GuideAvatar({
@@ -169,223 +118,6 @@ function AvatarGroupSpecimen({
   )
 }
 
-type AnatomyMarker = {
-  number: number
-  left: number
-  top: number
-  fromX: number
-  fromY: number
-  toX: number
-  toY: number
-}
-
-type AnatomyMeasures = {
-  width: number
-  height: number
-  markers: AnatomyMarker[]
-}
-
-function useAnatomyMeasures(
-  stageRef: RefObject<HTMLDivElement | null>,
-  selector: string,
-  kind: 'group' | 'avatar-pair',
-) {
-  const [measures, setMeasures] = useState<AnatomyMeasures>({
-    width: 0,
-    height: 0,
-    markers: [],
-  })
-
-  useEffect(() => {
-    const stage = stageRef.current
-    if (!stage) return
-
-    const measure = () => {
-      const stageRect = stage.getBoundingClientRect()
-      if (kind === 'avatar-pair') {
-        const monogram = stage.querySelector<HTMLElement>('[data-testid="avatar-anatomy-monogram"]')
-        const imageFrame = stage.querySelector<HTMLElement>('[data-testid="avatar-anatomy-image"]')
-        const image = imageFrame?.querySelector<HTMLElement>('img') ?? imageFrame
-        const monogramRect = monogram?.getBoundingClientRect()
-        const imageRect = image?.getBoundingClientRect()
-
-        if (monogramRect && imageRect) {
-          const monoLeft = monogramRect.left - stageRect.left
-          const monoTop = monogramRect.top - stageRect.top
-          const monoCenterX = monoLeft + monogramRect.width / 2
-          const monoCenterY = monoTop + monogramRect.height / 2
-          const imageLeft = imageRect.left - stageRect.left
-          const imageTop = imageRect.top - stageRect.top
-          const imageCenterX = imageLeft + imageRect.width / 2
-          const markers: AnatomyMarker[] = [
-            {
-              number: 1,
-              left: monoLeft - 23,
-              top: monoCenterY - 10,
-              fromX: monoLeft - 5,
-              fromY: monoCenterY,
-              toX: monoLeft + 1,
-              toY: monoCenterY,
-            },
-            {
-              number: 2,
-              left: monoLeft + monogramRect.width + 5,
-              top: monoCenterY - 10,
-              fromX: monoLeft + monogramRect.width + 5,
-              fromY: monoCenterY,
-              toX: monoCenterX,
-              toY: monoCenterY,
-            },
-            {
-              number: 3,
-              left: imageCenterX - 10,
-              top: Math.max(6, imageTop - 34),
-              fromX: imageCenterX,
-              fromY: Math.max(6, imageTop - 34) + 20,
-              toX: imageCenterX,
-              toY: imageTop + 1,
-            },
-          ]
-          setMeasures({ width: stageRect.width, height: stageRect.height, markers })
-        }
-        return
-      }
-
-      const targets = Array.from(stage.querySelectorAll<HTMLElement>(selector))
-      const markers = targets.map((target, index) => {
-        const rect = target.getBoundingClientRect()
-        const left = rect.left - stageRect.left
-        const top = rect.top - stageRect.top
-        const centerX = left + rect.width / 2
-
-        const markerSize = 20
-        const markerTop = Math.max(6, top - 36)
-        const markerCenterX = centerX
-        return {
-          number: index + 1,
-          left: markerCenterX - markerSize / 2,
-          top: markerTop,
-          fromX: markerCenterX,
-          fromY: markerTop + markerSize,
-          toX: centerX,
-          toY: kind === 'group'
-            ? top + rect.height * 0.2
-            : top + 1,
-        }
-      })
-
-      setMeasures({
-        width: stageRect.width,
-        height: stageRect.height,
-        markers,
-      })
-    }
-
-    measure()
-    const observer = typeof ResizeObserver === 'undefined'
-      ? undefined
-      : new ResizeObserver(measure)
-    observer?.observe(stage)
-    const observedTargets = kind === 'group'
-      ? stage.querySelectorAll(selector)
-      : stage.querySelectorAll('[data-testid="avatar-anatomy-monogram"], [data-testid="avatar-anatomy-image"]')
-    observedTargets.forEach((target) => observer?.observe(target))
-    window.addEventListener('resize', measure)
-
-    return () => {
-      observer?.disconnect()
-      window.removeEventListener('resize', measure)
-    }
-  }, [kind, selector, stageRef])
-
-  return measures
-}
-
-function AnatomyOverlay({ measures }: { measures: AnatomyMeasures }) {
-  return (
-    <>
-      {measures.width > 0 && measures.height > 0 && (
-        <svg
-          className="coin-avatar-anatomy-leaders"
-          viewBox={`0 0 ${measures.width} ${measures.height}`}
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          {measures.markers.map((marker) => (
-            <line
-              key={marker.number}
-              x1={marker.fromX}
-              y1={marker.fromY}
-              x2={marker.toX}
-              y2={marker.toY}
-            />
-          ))}
-        </svg>
-      )}
-      {measures.markers.map((marker) => (
-        <span
-          key={marker.number}
-          className="coin-avatar-anatomy-marker"
-          style={{ left: marker.left, top: marker.top }}
-          aria-hidden="true"
-        >
-          {marker.number}
-        </span>
-      ))}
-    </>
-  )
-}
-
-function AvatarGroupAnatomy() {
-  const stageRef = useRef<HTMLDivElement>(null)
-  const measures = useAnatomyMeasures(
-    stageRef,
-    '[data-testid^="avatar-group-anatomy-child-"]',
-    'group',
-  )
-
-  return (
-    <div className="coin-avatar-anatomy-stage coin-avatar-group-anatomy-stage" ref={stageRef}>
-      <span className="coin-avatar-anatomy-zoom-note">Enlarged view · 1.7×</span>
-      <div className="coin-avatar-anatomy-live coin-avatar-group-anatomy-live" aria-hidden="true">
-        <AvatarGroup modes={avatarGroupModes('M')} testID="avatar-group-anatomy-root">
-          {PEOPLE.slice(0, 3).map((person, index) => (
-            <Avatar
-              key={person.monogram}
-              style="Monogram"
-              monogram={person.monogram}
-              testID={`avatar-group-anatomy-child-${index + 1}`}
-            />
-          ))}
-        </AvatarGroup>
-      </div>
-      <AnatomyOverlay measures={measures} />
-    </div>
-  )
-}
-
-function AvatarAnatomy() {
-  const stageRef = useRef<HTMLDivElement>(null)
-  const measures = useAnatomyMeasures(stageRef, '', 'avatar-pair')
-
-  return (
-    <div className="coin-avatar-anatomy-stage coin-avatar-single-anatomy-stage" ref={stageRef}>
-      <span className="coin-avatar-anatomy-zoom-note">Enlarged view · 1.35×</span>
-      <div className="coin-avatar-anatomy-live coin-avatar-anatomy-pair" aria-hidden="true">
-        <div className="coin-avatar-anatomy-sample">
-          <GuideAvatar size="M" style="Monogram" monogram="MS" testID="avatar-anatomy-monogram" />
-          <span>Monogram</span>
-        </div>
-        <div className="coin-avatar-anatomy-sample">
-          <GuideAvatar size="M" style="Image" testID="avatar-anatomy-image" />
-          <span>Image</span>
-        </div>
-      </div>
-      <AnatomyOverlay measures={measures} />
-    </div>
-  )
-}
-
 function AvatarGroupCard({
   count = 3,
   size = 'M',
@@ -439,47 +171,6 @@ function AvatarCard({
   )
 }
 
-function SourceList({
-  figmaUrl,
-  storybookUrl,
-  stories,
-}: {
-  figmaUrl: string
-  storybookUrl: string
-  stories: readonly { label: string; url: string }[]
-}) {
-  return (
-    <>
-      <div className="sources-grid">
-        <a href={figmaUrl} target="_blank" rel="noreferrer">
-          <span className="source-index">01</span>
-          <div>
-            <h3>Coin Components Library</h3>
-            <p>Public component master and exposed properties</p>
-          </div>
-          <span className="coin-avatar-source-arrow" aria-hidden="true">↗</span>
-        </a>
-        <a href={storybookUrl} target="_blank" rel="noreferrer">
-          <span className="source-index">02</span>
-          <div>
-            <h3>Canonical Storybook</h3>
-            <p>Docs page and public example behavior</p>
-          </div>
-          <span className="coin-avatar-source-arrow" aria-hidden="true">↗</span>
-        </a>
-      </div>
-      <div className="coin-avatar-story-links">
-        {stories.map((story) => (
-          <a key={story.label} className="source-link" href={story.url} target="_blank" rel="noreferrer">
-            {story.label}
-            <span aria-hidden="true">↗</span>
-          </a>
-        ))}
-      </div>
-    </>
-  )
-}
-
 export function AvatarGroupGuide() {
   const [count, setCount] = useState(3)
   const [size, setSize] = useState<AvatarSize>('M')
@@ -492,14 +183,25 @@ export function AvatarGroupGuide() {
       description:
         'The group layers its child Avatars in order. The last child sits in front, while a cutout keeps the next face visible.',
       body: (
-        <div className="anatomy-card coin-avatar-anatomy-card">
-          <AvatarGroupAnatomy />
-          <ol className="anatomy-list">
-            <li><b>First child</b><span>It starts at the back of the visual order and gives the group its first face.</span></li>
-            <li><b>Middle child</b><span>It overlaps the first child and sits behind the last.</span></li>
-            <li><b>Last child</b><span>The final child is drawn in front. Child order therefore changes which face leads.</span></li>
-          </ol>
-        </div>
+        <Anatomy
+          title="Avatar Group"
+          parts={[
+            { name: 'First child', note: 'It starts at the back of the visual order and gives the group its first face.', target: byTestId('avatar-group-anatomy-child-1'), side: 'top' },
+            { name: 'Middle child', note: 'It overlaps the first child and sits behind the last.', target: byTestId('avatar-group-anatomy-child-2'), side: 'top' },
+            { name: 'Last child', note: 'The final child is drawn in front. Child order therefore changes which face leads.', target: byTestId('avatar-group-anatomy-child-3'), side: 'top' },
+          ]}
+        >
+          <AvatarGroup modes={avatarGroupModes('M')}>
+            {PEOPLE.slice(0, 3).map((person, index) => (
+              <Avatar
+                key={person.monogram}
+                style="Monogram"
+                monogram={person.monogram}
+                testID={`avatar-group-anatomy-child-${index + 1}`}
+              />
+            ))}
+          </AvatarGroup>
+        </Anatomy>
       ),
     },
     configuration: {
@@ -651,15 +353,16 @@ export function AvatarGroupGuide() {
       description:
         'The guide uses the Coin component master, the canonical Storybook examples, and the installed public implementation.',
       body: (
-        <>
-          <SourceList figmaUrl={AVATAR_GROUP_FIGMA} storybookUrl={AVATAR_GROUP_STORYBOOK} stories={AVATAR_GROUP_STORIES} />
-          <div className="verification-note">
-            <span>Checked 23 September 2026</span>
-            <p>
-              The declared and installed <code>jfs-components</code> version is <code>0.1.60</code>; the earlier registry check on 23 September also returned <code>0.1.60</code>. A fresh registry lookup could not be confirmed during recovery because registry DNS was unavailable. Figma’s Avatar Size mode sets L/M/S/XS to 42/36/29/14 px. The public group derives its count from children and uses token-owned overlap; it exposes no count or gap choice. Storybook’s custom-gap example has no gap control. Keep child sizes aligned with the group owner.
-            </p>
-          </div>
-        </>
+        <Sources
+          checked="23 September 2026"
+          figmaUrl={AVATAR_GROUP_FIGMA}
+          figmaDescription="Public component master and exposed properties"
+          storybookUrl={AVATAR_GROUP_STORYBOOK}
+          storybookDescription="Docs page and public example behavior"
+          stories={AVATAR_GROUP_STORIES}
+        >
+          The declared and installed <code>jfs-components</code> version is <code>0.1.60</code>; the earlier registry check on 23 September also returned <code>0.1.60</code>. A fresh registry lookup could not be confirmed during recovery because registry DNS was unavailable. Figma’s Avatar Size mode sets L/M/S/XS to 42/36/29/14 px. The public group derives its count from children and uses token-owned overlap; it exposes no count or gap choice. Storybook’s custom-gap example has no gap control. Keep child sizes aligned with the group owner.
+        </Sources>
       ),
     },
   }
@@ -744,14 +447,23 @@ export function AvatarGuide() {
       description:
         'Avatar keeps the outer size and shape while its content style changes. The markers point to the real component instance.',
       body: (
-        <div className="anatomy-card coin-avatar-anatomy-card">
-          <AvatarAnatomy />
-          <ol className="anatomy-list">
-            <li><b>Circle and border</b><span>Avatar Size sets the token-owned width and height; its default radius resolves to a circle.</span></li>
-            <li><b>Monogram content</b><span>The Monogram style centers the supplied text and uses Avatar label tokens.</span></li>
-            <li><b>Image content</b><span>The Image style crops a supplied image source into the same circular frame.</span></li>
-          </ol>
-        </div>
+        <Anatomy
+          title="Avatar"
+          parts={[
+            { name: 'Circle and border', note: 'Avatar Size sets the token-owned width and height; its default radius resolves to a circle.', target: byTestId('avatar-anatomy-monogram'), side: 'left' },
+            { name: 'Monogram content', note: 'The Monogram style centers the supplied text and uses Avatar label tokens.', target: `${byTestId('avatar-anatomy-monogram')} [dir="auto"]`, side: 'top' },
+            { name: 'Image content', note: 'The Image style crops a supplied image source into the same circular frame.', target: `${byTestId('avatar-anatomy-image')} img`, side: 'top' },
+          ]}
+        >
+          <SpecimenRow>
+            <Specimen caption="Monogram">
+              <GuideAvatar size="M" style="Monogram" monogram="MS" testID="avatar-anatomy-monogram" />
+            </Specimen>
+            <Specimen caption="Image">
+              <GuideAvatar size="M" style="Image" testID="avatar-anatomy-image" />
+            </Specimen>
+          </SpecimenRow>
+        </Anatomy>
       ),
     },
     configuration: {
@@ -880,15 +592,16 @@ export function AvatarGuide() {
       description:
         'The guide compares the exposed Figma property with the installed package and the canonical published stories.',
       body: (
-        <>
-          <SourceList figmaUrl={AVATAR_FIGMA} storybookUrl={AVATAR_STORYBOOK} stories={AVATAR_STORIES} />
-          <div className="verification-note">
-            <span>Checked 23 September 2026</span>
-            <p>
-              The declared and installed <code>jfs-components</code> version is <code>0.1.60</code>; the earlier registry check on 23 September also returned <code>0.1.60</code>. A fresh registry lookup could not be confirmed during recovery because registry DNS was unavailable. Figma exposes Image and Monogram plus monogram text; Storybook also demonstrates size and remote-image examples. Supply a person-specific <code>imageSource</code>; the package fallback is only a preview. Loading replaces Avatar content with a neutral, token-backed Skeleton inside an active <code>SkeletonGroup</code>. This version drops its typed accessibility label and keeps role <code>image</code> on the press wrapper, so examples remain non-interactive.
-            </p>
-          </div>
-        </>
+        <Sources
+          checked="23 September 2026"
+          figmaUrl={AVATAR_FIGMA}
+          figmaDescription="Public component master and exposed properties"
+          storybookUrl={AVATAR_STORYBOOK}
+          storybookDescription="Docs page and public example behavior"
+          stories={AVATAR_STORIES}
+        >
+          The declared and installed <code>jfs-components</code> version is <code>0.1.60</code>; the earlier registry check on 23 September also returned <code>0.1.60</code>. A fresh registry lookup could not be confirmed during recovery because registry DNS was unavailable. Figma exposes Image and Monogram plus monogram text; Storybook also demonstrates size and remote-image examples. Supply a person-specific <code>imageSource</code>; the package fallback is only a preview. Loading replaces Avatar content with a neutral, token-backed Skeleton inside an active <code>SkeletonGroup</code>. This version drops its typed accessibility label and keeps role <code>image</code> on the press wrapper, so examples remain non-interactive.
+        </Sources>
       ),
     },
   }
@@ -951,12 +664,3 @@ function AvatarVisual({
   )
 }
 
-export function isAvatarGroupLocation() {
-  if (typeof window === 'undefined') return false
-  return new URLSearchParams(window.location.search).get('component') === 'avatargroup'
-}
-
-export function isAvatarLocation() {
-  if (typeof window === 'undefined') return false
-  return new URLSearchParams(window.location.search).get('component') === 'avatar'
-}
