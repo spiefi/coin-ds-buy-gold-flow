@@ -16,20 +16,14 @@ import {
   type GuideSectionSlots,
 } from './ComponentGuideTemplate'
 import {
-  AnatomyKey,
-  AnatomyOverlay,
   Readout,
   Segment,
   SourceCards,
   Toggle,
   classes,
-  clampPin,
-  measureBox,
   storyUrl,
-  useAnatomyLayout,
-  type AnatomyLayout,
-  type AnatomyShape,
 } from './GuideParts'
+import { Anatomy, Specimen as AnatomySpecimen, SpecimenRow } from './guide-kit'
 
 const FIGMA_URL =
   'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=7522-7658'
@@ -62,91 +56,8 @@ function stateMessage(state: ControlState) {
 // Anatomy
 // ---------------------------------------------------------------------------
 
-function readControlAnatomy(frame: HTMLDivElement): AnatomyLayout | null {
-  const pause = frame.querySelector<HTMLElement>('[data-autoplay-anatomy="pause"] > *')
-  const play = frame.querySelector<HTMLElement>('[data-autoplay-anatomy="play"] > *')
-  const pauseIcon = pause?.firstElementChild as HTMLElement | null | undefined
-  const playIcon = play?.firstElementChild as HTMLElement | null | undefined
-  if (!pause || !play || !pauseIcon || !playIcon || !pause.offsetWidth) return null
-
-  const frameRect = frame.getBoundingClientRect()
-  const width = frameRect.width
-  const height = frameRect.height
-  const pauseBox = measureBox(pause, frameRect)
-  const playBox = measureBox(play, frameRect)
-  const pauseIconBox = measureBox(pauseIcon, frameRect)
-  const playIconBox = measureBox(playIcon, frameRect)
-  const pauseBottom = pauseBox.top + pauseBox.height
-  const playBottom = playBox.top + playBox.height
-  const dimY = Math.max(pauseBottom, playBottom) + 20
-
-  const shapes: AnatomyShape[] = [
-    { kind: 'bounds', box: pauseBox },
-    { kind: 'bounds', box: playBox },
-    { kind: 'child', box: pauseIconBox },
-    { kind: 'child', box: playIconBox },
-    {
-      kind: 'dimension',
-      path: `M ${pauseBox.left} ${dimY - 4} V ${dimY + 4} M ${pauseBox.left} ${dimY} H ${pauseBox.left + pauseBox.width} M ${pauseBox.left + pauseBox.width} ${dimY - 4} V ${dimY + 4}`,
-      label: `${pause.offsetWidth} × ${pause.offsetHeight}`,
-      x: pauseBox.left + pauseBox.width / 2,
-      y: dimY + 18,
-    },
-    {
-      kind: 'dimension',
-      path: `M ${playIconBox.left} ${dimY - 4} V ${dimY + 4} M ${playIconBox.left} ${dimY} H ${playIconBox.left + playIconBox.width} M ${playIconBox.left + playIconBox.width} ${dimY - 4} V ${dimY + 4}`,
-      label: `icon ${playIcon.offsetWidth}`,
-      x: playIconBox.left + playIconBox.width / 2,
-      y: dimY + 18,
-    },
-  ]
-
-  const containerPin = clampPin(pauseBox.left - 42, pauseBox.top + pauseBox.height / 2, width, height)
-  const pausePin = clampPin(pauseIconBox.left + pauseIconBox.width / 2, pauseBox.top - 40, width, height)
-  const playPin = clampPin(playIconBox.left + playIconBox.width / 2, playBox.top - 40, width, height)
-
-  return {
-    width,
-    height,
-    shapes,
-    pins: [
-      {
-        number: 1,
-        ...containerPin,
-        path: `M ${containerPin.x + 11} ${containerPin.y} H ${pauseBox.left - 3}`,
-      },
-      {
-        number: 2,
-        ...pausePin,
-        path: `M ${pausePin.x} ${pausePin.y + 11} V ${pauseIconBox.top - 2}`,
-      },
-      {
-        number: 3,
-        ...playPin,
-        path: `M ${playPin.x} ${playPin.y + 11} V ${playIconBox.top - 2}`,
-      },
-    ],
-  }
-}
-
-function AutoplayControlAnatomy() {
-  const ref = useRef<HTMLDivElement>(null)
-  const layout = useAnatomyLayout(ref, readControlAnatomy)
-  return (
-    <div className="coin-guide-anatomy-stage is-dark coin-autoplay-anatomy-stage" ref={ref}>
-      <span className="coin-guide-zoom-note">Enlarged view · 2.5×</span>
-      <div className="coin-autoplay-anatomy-live" inert>
-        <div data-autoplay-anatomy="pause">
-          <AutoplayControl state="pause" />
-        </div>
-        <div data-autoplay-anatomy="play">
-          <AutoplayControl state="play" />
-        </div>
-      </div>
-      <AnatomyOverlay layout={layout} />
-    </div>
-  )
-}
+const ANATOMY_PAUSE = '.gk-specimen:first-child [role="button"]'
+const ANATOMY_PLAY = '.gk-specimen:last-child [role="button"]'
 
 // ---------------------------------------------------------------------------
 // Specimens
@@ -329,20 +240,30 @@ export function AutoplayControlGuide() {
       description:
         'The control is a single pressable circle. Its state property decides whether the icon is pause or play.',
       body: (
-        <div className="anatomy-card coin-guide-anatomy-card">
-          <AutoplayControlAnatomy />
-          <ol className="anatomy-list coin-guide-anatomy-list">
-            <AnatomyKey number={1} label="Container">
-              A 36 × 36 circle. Width, height, radius, and the white fill come from Autoplay Control tokens.
-            </AnatomyKey>
-            <AnatomyKey number={2} label="Pause icon">
-              Shown for <code>state="pause"</code>, the default, while content advances.
-            </AnatomyKey>
-            <AnatomyKey number={3} label="Play icon">
-              Shown for <code>state="play"</code>, while content is stopped. Both icons are 24 px and black.
-            </AnatomyKey>
-          </ol>
-        </div>
+        <Anatomy
+          title="Autoplay Control"
+          surface="dark"
+          parts={[
+            { name: 'Container', note: 'A 36 × 36 circle. Width, height, radius, and the white fill come from Autoplay Control tokens.', target: ANATOMY_PAUSE, side: 'left', at: 0.25 },
+            { name: 'Pause icon', note: 'Shown for state="pause", the default, while content advances.', target: `${ANATOMY_PAUSE} > *`, side: 'left', at: 0.75 },
+            { name: 'Play icon', note: 'Shown for state="play", while content is stopped. Both icons are 24 px and black.', target: `${ANATOMY_PLAY} > *`, side: 'right' },
+          ]}
+          marks={[
+            { kind: 'outline', target: ANATOMY_PAUSE },
+            { kind: 'outline', target: ANATOMY_PLAY },
+            { kind: 'size', target: ANATOMY_PAUSE, side: 'top', label: 'both' },
+            { kind: 'size', target: `${ANATOMY_PLAY} > *`, side: 'top' },
+          ]}
+        >
+          <SpecimenRow>
+            <AnatomySpecimen caption="pause">
+              <AutoplayControl state="pause" />
+            </AnatomySpecimen>
+            <AnatomySpecimen caption="play">
+              <AutoplayControl state="play" />
+            </AnatomySpecimen>
+          </SpecimenRow>
+        </Anatomy>
       ),
     },
     configuration: {

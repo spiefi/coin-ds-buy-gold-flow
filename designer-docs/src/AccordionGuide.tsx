@@ -1,10 +1,4 @@
-import {
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import {
   Accordion,
   Button,
@@ -18,23 +12,20 @@ import {
   ComponentGuideTemplate,
   type GuideSectionSlots,
 } from './ComponentGuideTemplate'
+import { Anatomy, Segment, Sources, byTestId } from './guide-kit'
 
 const FIGMA_URL =
   'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=1291-4846'
 const STORYBOOK_URL =
   'https://jfs-components-storybook.vercel.app/?path=/docs/components-accordion--docs'
-const STORYBOOK_DEFAULT_URL =
-  'https://jfs-components-storybook.vercel.app/iframe.html?id=components-accordion--default&viewMode=story'
-const STORYBOOK_CONTAINED_URL =
-  'https://jfs-components-storybook.vercel.app/iframe.html?id=components-accordion--contained&viewMode=story'
-const STORYBOOK_EXPANDED_URL =
-  'https://jfs-components-storybook.vercel.app/iframe.html?id=components-accordion--expanded&viewMode=story'
-const STORYBOOK_DISABLED_URL =
-  'https://jfs-components-storybook.vercel.app/iframe.html?id=components-accordion--disabled&viewMode=story'
-const STORYBOOK_LIST_URL =
-  'https://jfs-components-storybook.vercel.app/iframe.html?id=components-accordion--with-list-items&viewMode=story'
-const STORYBOOK_GROUP_URL =
-  'https://jfs-components-storybook.vercel.app/iframe.html?id=components-accordion--accordion-group&viewMode=story'
+const STORYBOOK_STORIES = [
+  { label: 'Open default story', id: 'components-accordion--default' },
+  { label: 'Open contained story', id: 'components-accordion--contained' },
+  { label: 'Open expanded story', id: 'components-accordion--expanded' },
+  { label: 'Open disabled story', id: 'components-accordion--disabled' },
+  { label: 'Open list-item story', id: 'components-accordion--with-list-items' },
+  { label: 'Open group story', id: 'components-accordion--accordion-group' },
+] as const
 
 type ColorMode = 'Light' | 'Dark'
 
@@ -61,54 +52,6 @@ function primaryButtonModes(colorMode: ColorMode = 'Light'): Modes {
   } as Modes
 }
 
-function SmallArrow() {
-  return (
-    <svg viewBox="0 0 16 16" aria-hidden="true">
-      <path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" />
-    </svg>
-  )
-}
-
-function SourceLink({ href, children }: { href: string; children: string }) {
-  return (
-    <a className="source-link" href={href} target="_blank" rel="noreferrer">
-      <span>{children}</span>
-      <SmallArrow />
-    </a>
-  )
-}
-
-function Segment<T extends string>({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string
-  value: T
-  options: readonly T[]
-  onChange: (value: T) => void
-}) {
-  return (
-    <fieldset className="control-group">
-      <legend>{label}</legend>
-      <div className="segmented-control">
-        {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            className={value === option ? 'is-selected' : ''}
-            aria-pressed={value === option}
-            onClick={() => onChange(option)}
-          >
-            {option}
-          </button>
-        ))}
-      </div>
-    </fieldset>
-  )
-}
-
 function AccordionExample({
   title = 'Accordion title',
   contained = false,
@@ -120,6 +63,7 @@ function AccordionExample({
   children,
   disableTruncation = false,
   className,
+  testID,
 }: {
   title?: string
   contained?: boolean
@@ -131,6 +75,7 @@ function AccordionExample({
   children?: ReactNode
   disableTruncation?: boolean
   className?: string
+  testID?: string
 }) {
   const modes = useMemo(() => accordionModes(colorMode), [colorMode])
   const props = expanded === undefined ? { defaultExpanded } : { expanded }
@@ -149,6 +94,7 @@ function AccordionExample({
         modes={modes}
         disableTruncation={disableTruncation}
         accessibilityLabel={title}
+        testID={testID}
         style={{ width: '100%' }}
       >
         {children ?? (
@@ -164,228 +110,6 @@ function AccordionExample({
 
 function AccordionText({ text, modes }: { text: string; modes: Modes }) {
   return <Text text={text} modes={modes} />
-}
-
-type AnatomyRect = { left: number; top: number; width: number; height: number }
-type AnatomyMark = {
-  number: number
-  target: AnatomyRect
-  marker: { left: number; top: number }
-}
-type AnatomyMetrics = { width: number; height: number; marks: AnatomyMark[] }
-
-const ANATOMY_MARKER_SIZE = 24
-
-function rectRelativeTo(node: Element, frameRect: DOMRect): AnatomyRect {
-  const rect = node.getBoundingClientRect()
-  return {
-    left: rect.left - frameRect.left,
-    top: rect.top - frameRect.top,
-    width: rect.width,
-    height: rect.height,
-  }
-}
-
-function findExactText(root: Element, text: string) {
-  return Array.from(root.querySelectorAll<HTMLElement>('*'))
-    .filter((node) => node.textContent?.trim() === text)
-    .sort((first, second) => {
-      const firstRect = first.getBoundingClientRect()
-      const secondRect = second.getBoundingClientRect()
-      return firstRect.width * firstRect.height - secondRect.width * secondRect.height
-    })[0]
-}
-
-function AccordionAnatomy() {
-  const modes = useMemo(() => accordionModes('Light'), [])
-  const frameRef = useRef<HTMLDivElement>(null)
-  const [metrics, setMetrics] = useState<AnatomyMetrics | null>(null)
-
-  useLayoutEffect(() => {
-    const frame = frameRef.current
-    if (!frame) return
-
-    let active = true
-
-    const measure = () => {
-      if (!active) return
-      const frameRect = frame.getBoundingClientRect()
-      const component = frame.querySelector<HTMLElement>(
-        '.coin-accordion-anatomy-component .coin-accordion-example > *',
-      )
-      const header = component?.querySelector<HTMLElement>('[role="button"]')
-      const title = component ? findExactText(component, 'Payment methods') : undefined
-      const icons = header ? Array.from(header.querySelectorAll('svg')) : []
-      const icon = icons[icons.length - 1]
-      const directChildren = component ? Array.from(component.children) : []
-      const headerChild = header
-        ? directChildren.find((child) => child === header || child.contains(header))
-        : undefined
-      const headerIndex = headerChild ? directChildren.indexOf(headerChild) : -1
-      const content =
-        headerIndex >= 0
-          ? directChildren.slice(headerIndex + 1).find((child) => {
-              const rect = child.getBoundingClientRect()
-              return rect.width > 0 && rect.height > 0
-            })
-          : undefined
-
-      if (!component || !header || !title || !icon || !content) return
-
-      const componentRect = rectRelativeTo(component, frameRect)
-      const targets = [
-        rectRelativeTo(header, frameRect),
-        rectRelativeTo(title, frameRect),
-        rectRelativeTo(icon, frameRect),
-        rectRelativeTo(content, frameRect),
-        {
-          left: componentRect.left,
-          top: componentRect.top + Math.max(0, componentRect.height - 1),
-          width: componentRect.width,
-          height: 1,
-        },
-      ]
-      const safeInset = 10
-      const clamp = (value: number, max: number) =>
-        Math.min(
-          Math.max(value, safeInset),
-          Math.max(safeInset, max - ANATOMY_MARKER_SIZE - safeInset),
-        )
-      const desiredMarkers = [
-        {
-          left: targets[0].left - ANATOMY_MARKER_SIZE - 18,
-          top: targets[0].top + targets[0].height / 2 - ANATOMY_MARKER_SIZE / 2,
-        },
-        {
-          left: targets[1].left + targets[1].width / 2 - ANATOMY_MARKER_SIZE / 2,
-          top: targets[1].top - ANATOMY_MARKER_SIZE - 18,
-        },
-        {
-          left: targets[2].left + targets[2].width + 18,
-          top: targets[2].top + targets[2].height / 2 - ANATOMY_MARKER_SIZE / 2,
-        },
-        {
-          left: targets[3].left + targets[3].width + 18,
-          top: targets[3].top + targets[3].height / 2 - ANATOMY_MARKER_SIZE / 2,
-        },
-        {
-          left: targets[4].left - ANATOMY_MARKER_SIZE - 18,
-          top: targets[4].top + targets[4].height / 2 - ANATOMY_MARKER_SIZE / 2,
-        },
-      ]
-      const nextMetrics: AnatomyMetrics = {
-        width: frameRect.width,
-        height: frameRect.height,
-        marks: targets.map((target, index) => ({
-          number: index + 1,
-          target,
-          marker: {
-            left: clamp(desiredMarkers[index].left, frameRect.width),
-            top: clamp(desiredMarkers[index].top, frameRect.height),
-          },
-        })),
-      }
-      setMetrics((previous) => {
-        if (!previous) return nextMetrics
-        const closeEnough = (first: number, second: number) => Math.abs(first - second) < 0.25
-        const same =
-          closeEnough(previous.width, nextMetrics.width) &&
-          closeEnough(previous.height, nextMetrics.height) &&
-          previous.marks.length === nextMetrics.marks.length &&
-          previous.marks.every((mark, index) => {
-            const next = nextMetrics.marks[index]
-            return (
-              closeEnough(mark.target.left, next.target.left) &&
-              closeEnough(mark.target.top, next.target.top) &&
-              closeEnough(mark.target.width, next.target.width) &&
-              closeEnough(mark.target.height, next.target.height) &&
-              closeEnough(mark.marker.left, next.marker.left) &&
-              closeEnough(mark.marker.top, next.marker.top)
-            )
-          })
-        return same ? previous : nextMetrics
-      })
-    }
-
-    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure)
-    observer?.observe(frame)
-    const animationFrame = requestAnimationFrame(() => {
-      measure()
-      const component = frame.querySelector<HTMLElement>(
-        '.coin-accordion-anatomy-component .coin-accordion-example > *',
-      )
-      const header = component?.querySelector<HTMLElement>('[role="button"]')
-      const title = component ? findExactText(component, 'Payment methods') : undefined
-      const icons = header ? Array.from(header.querySelectorAll('svg')) : []
-      const icon = icons[icons.length - 1]
-      const directChildren = component ? Array.from(component.children) : []
-      const headerChild = header
-        ? directChildren.find((child) => child === header || child.contains(header))
-        : undefined
-      const headerIndex = headerChild ? directChildren.indexOf(headerChild) : -1
-      const content =
-        headerIndex >= 0
-          ? directChildren.slice(headerIndex + 1).find((child) => {
-              const rect = child.getBoundingClientRect()
-              return rect.width > 0 && rect.height > 0
-            })
-          : undefined
-      ;[component, header, title, icon, content].forEach((node) => {
-        if (node) observer?.observe(node)
-      })
-    })
-    void document.fonts?.ready.then(measure)
-    window.addEventListener('resize', measure)
-    return () => {
-      active = false
-      cancelAnimationFrame(animationFrame)
-      observer?.disconnect()
-      window.removeEventListener('resize', measure)
-    }
-  }, [])
-
-  return (
-    <div ref={frameRef} className="coin-accordion-anatomy-live">
-      <div className="coin-accordion-anatomy-component">
-        <AccordionExample title="Payment methods" defaultExpanded>
-          <AccordionText
-            text="Review the payment methods available for this account."
-            modes={modes}
-          />
-        </AccordionExample>
-      </div>
-      {metrics ? (
-        <>
-          <svg
-            className="coin-accordion-anatomy-leaders"
-            viewBox={`0 0 ${metrics.width} ${metrics.height}`}
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            {metrics.marks.map((mark) => (
-              <line
-                key={mark.number}
-                x1={mark.marker.left + ANATOMY_MARKER_SIZE / 2}
-                y1={mark.marker.top + ANATOMY_MARKER_SIZE / 2}
-                x2={mark.target.left + mark.target.width / 2}
-                y2={mark.target.top + mark.target.height / 2}
-              />
-            ))}
-          </svg>
-          {metrics.marks.map((mark) => (
-            <span
-              className="coin-accordion-anatomy-pin"
-              style={{ left: mark.marker.left, top: mark.marker.top }}
-              key={mark.number}
-              aria-hidden="true"
-            >
-              {mark.number}
-            </span>
-          ))}
-        </>
-      ) : null}
-    </div>
-  )
 }
 
 function AccordionStateCard({
@@ -499,33 +223,24 @@ export function AccordionGuide() {
       description:
         'The header makes a clear promise, the indicator shows whether it is open, and the content slot reveals supporting detail when people ask for it.',
       body: (
-        <div className="anatomy-card coin-accordion-anatomy-card">
-          <div className="anatomy-stage coin-accordion-anatomy-stage">
-            <AccordionAnatomy />
-          </div>
-          <ol className="anatomy-list coin-accordion-anatomy-list">
-            <li>
-              <b>Header</b>
-              <span>The title is the promise people use to decide whether to open the section.</span>
-            </li>
-            <li>
-              <b>Label</b>
-              <span>Keep the header short enough to remain scannable in a narrow host.</span>
-            </li>
-            <li>
-              <b>Indicator</b>
-              <span>The public component switches between add and minus icons as it opens and closes.</span>
-            </li>
-            <li>
-              <b>Divider</b>
-              <span>The component’s bottom border separates the open section from the following content.</span>
-            </li>
-            <li>
-              <b>Content slot</b>
-              <span>Put supporting details or related public rows here; keep primary actions visible in the page flow.</span>
-            </li>
-          </ol>
-        </div>
+        <Anatomy
+          title="Accordion"
+          specimenWidth={360}
+          parts={[
+            { name: 'Header', note: 'The title is the promise people use to decide whether to open the section.', target: `${byTestId('accordion-anatomy')} > [role="button"]`, side: 'left' },
+            { name: 'Label', note: 'Keep the header short enough to remain scannable in a narrow host.', target: `${byTestId('accordion-anatomy')} [role="button"] [dir="auto"]`, side: 'top', at: 0.15 },
+            { name: 'Indicator', note: 'The public component switches between add and minus icons as it opens and closes.', target: `${byTestId('accordion-anatomy')} [role="button"] svg`, side: 'right' },
+            { name: 'Divider', note: 'The component’s bottom border separates the open section from the following content.', target: byTestId('accordion-anatomy'), side: 'bottom' },
+            { name: 'Content slot', note: 'Put supporting details or related public rows here; keep primary actions visible in the page flow.', target: `${byTestId('accordion-anatomy')} > :last-child`, side: 'left' },
+          ]}
+        >
+          <AccordionExample title="Payment methods" defaultExpanded testID="accordion-anatomy">
+            <AccordionText
+              text="Review the payment methods available for this account."
+              modes={lightModes}
+            />
+          </AccordionExample>
+        </Anatomy>
       ),
     },
     configuration: {
@@ -757,40 +472,16 @@ export function AccordionGuide() {
       description:
         'This guide records the public Accordion contract, the inspected Figma source, and the published story configurations used by the examples.',
       body: (
-        <>
-          <div className="sources-grid">
-            <a href={FIGMA_URL} target="_blank" rel="noreferrer">
-              <span className="source-index">01</span>
-              <div>
-                <h3>Coin Components Library</h3>
-                <p>Accordion component set · node 1291:4846</p>
-              </div>
-              <SmallArrow />
-            </a>
-            <a href={STORYBOOK_URL} target="_blank" rel="noreferrer">
-              <span className="source-index">02</span>
-              <div>
-                <h3>Accordion Storybook</h3>
-                <p>Default, contained, expanded, disabled, list, and group examples</p>
-              </div>
-              <SmallArrow />
-            </a>
-          </div>
-          <div className="verification-note">
-            <span>Checked 21 September 2026</span>
-            <p>
-              Examples use public <code>Accordion</code>, <code>ListItem</code>, <code>IconCapsule</code>, <code>MoneyValue</code>, and <code>Text</code> exports from <code>jfs-components</code> 0.1.60. The package registry latest is also 0.1.60. The Accordion derives its state from public props and pointer interaction; the guide does not pass the internal <code>Accordion States</code> mode. The Figma reference includes a 445px header and content-driven open example, while package height follows its children and token padding. React Native Web can apply the package's requested LayoutAnimation immediately; the guide leaves that shipped behavior unchanged.
-            </p>
-          </div>
-          <div className="coin-accordion-source-links">
-            <SourceLink href={STORYBOOK_DEFAULT_URL}>Open default story</SourceLink>
-            <SourceLink href={STORYBOOK_CONTAINED_URL}>Open contained story</SourceLink>
-            <SourceLink href={STORYBOOK_EXPANDED_URL}>Open expanded story</SourceLink>
-            <SourceLink href={STORYBOOK_DISABLED_URL}>Open disabled story</SourceLink>
-            <SourceLink href={STORYBOOK_LIST_URL}>Open list-item story</SourceLink>
-            <SourceLink href={STORYBOOK_GROUP_URL}>Open group story</SourceLink>
-          </div>
-        </>
+        <Sources
+          checked="21 September 2026"
+          figmaUrl={FIGMA_URL}
+          figmaDescription="Accordion component set · node 1291:4846"
+          storybookUrl={STORYBOOK_URL}
+          storybookDescription="Default, contained, expanded, disabled, list, and group examples"
+          stories={STORYBOOK_STORIES}
+        >
+          Examples use public <code>Accordion</code>, <code>ListItem</code>, <code>IconCapsule</code>, <code>MoneyValue</code>, and <code>Text</code> exports from <code>jfs-components</code> 0.1.60. The package registry latest is also 0.1.60. The Accordion derives its state from public props and pointer interaction; the guide does not pass the internal <code>Accordion States</code> mode. The Figma reference includes a 445px header and content-driven open example, while package height follows its children and token padding. React Native Web can apply the package's requested LayoutAnimation immediately; the guide leaves that shipped behavior unchanged.
+        </Sources>
       ),
     },
   }

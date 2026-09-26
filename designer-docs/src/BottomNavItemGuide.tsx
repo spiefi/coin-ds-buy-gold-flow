@@ -18,20 +18,14 @@ import {
   type GuideSectionSlots,
 } from './ComponentGuideTemplate'
 import {
-  AnatomyKey,
-  AnatomyOverlay,
   Readout,
   Segment,
   SourceCards,
   Toggle,
   classes,
-  clampPin,
-  measureBox,
   storyUrl,
-  useAnatomyLayout,
-  type AnatomyLayout,
-  type AnatomyShape,
 } from './GuideParts'
+import { Anatomy, byTestId } from './guide-kit'
 
 const FIGMA_URL =
   'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=306-92'
@@ -240,119 +234,22 @@ function formatPx(value: number) {
 // Anatomy
 // ---------------------------------------------------------------------------
 
-function readItemAnatomy(frame: HTMLDivElement): AnatomyLayout | null {
-  const item = frame.querySelector<HTMLElement>('[data-bottomnav-anatomy] [role="tab"]')
-  const icon = item?.children[0] as HTMLElement | undefined
-  const label = item?.children[1] as HTMLElement | undefined
-  if (!item || !icon || !label || !item.offsetWidth) return null
-
-  const frameRect = frame.getBoundingClientRect()
-  const width = frameRect.width
-  const height = frameRect.height
-  const itemBox = measureBox(item, frameRect)
-  const iconBox = measureBox(icon, frameRect)
-  const labelBox = measureBox(label, frameRect)
-  const scale = itemBox.width / item.offsetWidth
-  const iconBottom = iconBox.top + iconBox.height
-  const labelBottom = labelBox.top + labelBox.height
-  const itemRight = itemBox.left + itemBox.width
-  const itemBottom = itemBox.top + itemBox.height
-  const gap = (labelBox.top - iconBottom) / scale
-
-  const dimX = itemRight + 20
-  const tick = (y: number) => `M ${dimX - 4} ${y} H ${dimX + 4}`
-  const shapes: AnatomyShape[] = [
-    { kind: 'bounds', box: itemBox },
-    { kind: 'child', box: iconBox },
-    { kind: 'child', box: labelBox },
-    {
-      kind: 'dimension',
-      path: `${tick(iconBox.top)} M ${dimX} ${iconBox.top} V ${iconBottom} ${tick(iconBottom)}`,
-      label: formatPx(Math.round(icon.offsetHeight)),
-      x: dimX + 10,
-      y: iconBox.top + iconBox.height / 2 + 4,
-      align: 'start',
-    },
-    {
-      kind: 'dimension',
-      path: `M ${dimX} ${iconBottom} V ${labelBox.top} ${tick(labelBox.top)}`,
-      label: formatPx(Math.round(gap)),
-      x: dimX + 10,
-      y: (iconBottom + labelBox.top) / 2 + 4,
-      align: 'start',
-    },
-    {
-      kind: 'dimension',
-      path: `M ${dimX} ${labelBox.top} V ${labelBottom} ${tick(labelBottom)}`,
-      label: formatPx(Math.round(label.offsetHeight)),
-      x: dimX + 10,
-      y: labelBox.top + labelBox.height / 2 + 4,
-      align: 'start',
-    },
-    {
-      kind: 'dimension',
-      path: `M ${itemBox.left} ${itemBox.top - 22} V ${itemBox.top - 14} M ${itemBox.left} ${itemBox.top - 18} H ${itemRight} M ${itemRight} ${itemBox.top - 22} V ${itemBox.top - 14}`,
-      label: `${formatPx(item.offsetWidth)} × ${formatPx(item.offsetHeight)}`,
-      x: itemBox.left + itemBox.width / 2,
-      y: itemBox.top - 28,
-    },
-  ]
-
-  const iconPin = clampPin(itemBox.left - 46, iconBox.top + iconBox.height / 2, width, height)
-  const labelPin = clampPin(itemBox.left - 46, labelBox.top + labelBox.height / 2, width, height)
-  const itemPin = clampPin(itemBox.left + itemBox.width / 2, itemBottom + 34, width, height)
-
-  return {
-    width,
-    height,
-    shapes,
-    pins: [
-      { number: 1, ...iconPin, path: `M ${iconPin.x + 11} ${iconPin.y} H ${iconBox.left - 3}` },
-      { number: 2, ...labelPin, path: `M ${labelPin.x + 11} ${labelPin.y} H ${labelBox.left - 3}` },
-      { number: 3, ...itemPin, path: `M ${itemPin.x} ${itemPin.y - 11} V ${itemBottom + 3}` },
-    ],
-  }
-}
-
-function BottomNavItemAnatomy() {
-  const ref = useRef<HTMLDivElement>(null)
-  const layout = useAnatomyLayout(ref, readItemAnatomy)
-  return (
-    <div className="coin-guide-anatomy-stage coin-bottomnav-anatomy-stage" ref={ref}>
-      <span className="coin-guide-zoom-note">Enlarged view · 3×</span>
-      <div className="coin-bottomnav-anatomy-live" data-bottomnav-anatomy="" inert>
-        <BottomNavItem label="Home" iconName="ic_home" modes={ACTIVE_MODES} />
-      </div>
-      <AnatomyOverlay layout={layout} />
-    </div>
-  )
-}
+const ANATOMY_ITEM = byTestId('bottomnavitem-anatomy')
+const ANATOMY_ICON = `${ANATOMY_ITEM} > :first-child`
+const ANATOMY_LABEL = `${ANATOMY_ITEM} > [dir="auto"]`
 
 // Documentation overlay: outlines each rendered tab so the equal share is visible.
-function readBarTabs(frame: HTMLDivElement): AnatomyLayout | null {
-  const tabs = Array.from(frame.querySelectorAll<HTMLElement>('[role="tab"]'))
-  if (!tabs.length) return null
-  const frameRect = frame.getBoundingClientRect()
-  return {
-    width: frameRect.width,
-    height: frameRect.height,
-    pins: [],
-    shapes: tabs.map((tab) => ({ kind: 'child' as const, box: measureBox(tab, frameRect) })),
-  }
-}
+const TAB_OUTLINES = [{ kind: 'outline', target: '[role="tab"]', variant: 'child', each: true }] as const
 
 function MeasuredBar({ count }: { count: DestinationCount }) {
   const frameRef = useRef<HTMLDivElement>(null)
-  const overlayRef = useRef<HTMLDivElement>(null)
   const metrics = useTabMetrics(frameRef, count)
-  const layout = useAnatomyLayout(overlayRef, readBarTabs)
   const items = destinations(count)
   return (
     <figure className="coin-bottomnav-measured">
-      <div className="coin-bottomnav-measured-frame" ref={overlayRef}>
+      <Anatomy legend={false} scale={1} specimenWidth={320} marks={TAB_OUTLINES} title={`Bottom Nav ${count} items`}>
         <NavBar items={items} value="home" frameRef={frameRef} className="is-compact" />
-        <AnatomyOverlay layout={layout} />
-      </div>
+      </Anatomy>
       <figcaption>
         <b>{count} items</b>
         {metrics ? (
@@ -518,20 +415,23 @@ export function BottomNavItemGuide() {
       description:
         'The item stacks a registry icon over its label. The State mode colors both parts; the label also names the tab.',
       body: (
-        <div className="anatomy-card coin-guide-anatomy-card">
-          <BottomNavItemAnatomy />
-          <ol className="anatomy-list coin-guide-anatomy-list">
-            <AnatomyKey number={1} label="Icon">
-              A 24 px registry icon. State colors it grey when Idle and gold when Active.
-            </AnatomyKey>
-            <AnatomyKey number={2} label="Label">
-              11 px medium text, 6 px below the icon. On the web it also becomes the tab’s spoken name.
-            </AnatomyKey>
-            <AnatomyKey number={3} label="Item">
-              Hugs its content on its own. Inside BottomNav, every item stretches to an equal share of the bar.
-            </AnatomyKey>
-          </ol>
-        </div>
+        <Anatomy
+          title="Bottom Nav Item"
+          parts={[
+            { name: 'Icon', note: 'A 24 px registry icon. State colors it grey when Idle and gold when Active.', target: ANATOMY_ICON, side: 'left' },
+            { name: 'Label', note: '11 px medium text, 6 px below the icon. On the web it also becomes the tab’s spoken name.', target: ANATOMY_LABEL, side: 'left' },
+            { name: 'Item', note: 'Hugs its content on its own. Inside BottomNav, every item stretches to an equal share of the bar.', target: ANATOMY_ITEM, side: 'bottom' },
+          ]}
+          marks={[
+            { kind: 'outline', target: ANATOMY_ITEM },
+            { kind: 'size', target: ANATOMY_ITEM, side: 'top', label: 'both' },
+            { kind: 'size', target: ANATOMY_ICON, side: 'right' },
+            { kind: 'gap', from: ANATOMY_ICON, to: ANATOMY_LABEL },
+            { kind: 'size', target: ANATOMY_LABEL, side: 'right' },
+          ]}
+        >
+          <BottomNavItem testID="bottomnavitem-anatomy" label="Home" iconName="ic_home" modes={ACTIVE_MODES} />
+        </Anatomy>
       ),
     },
     configuration: {

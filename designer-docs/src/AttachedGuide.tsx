@@ -1,7 +1,6 @@
 import {
   useMemo,
   useState,
-  type ReactNode,
 } from 'react'
 import {
   Attached,
@@ -15,11 +14,11 @@ import {
   ComponentGuideTemplate,
   type GuideSectionSlots,
 } from './ComponentGuideTemplate'
+import { Anatomy, Segment, Sources, byTestId, docsUrl } from './guide-kit'
 
 const FIGMA_URL =
   'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=4477-471'
-const STORYBOOK_URL =
-  'https://jfs-components-storybook.vercel.app/?path=/docs/components-attached--docs'
+const STORYBOOK_URL = docsUrl('attached')
 const POSITIONS: readonly AttachedPosition[] = [
   'top-left',
   'top',
@@ -36,56 +35,6 @@ const lightModes: Modes = { 'Color Mode': 'Light' } as Modes
 const mainIconModes: Modes = { ...lightModes, 'Icon Capsule Size': 'M' } as Modes
 const badgeIconModes: Modes = { ...lightModes, 'Icon Capsule Size': 'XS' } as Modes
 
-function SmallArrow() {
-  return (
-    <svg viewBox="0 0 16 16" aria-hidden="true">
-      <path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" />
-    </svg>
-  )
-}
-
-function SourceLink({ href, children }: { href: string; children: string }) {
-  return (
-    <a className="source-link" href={href} target="_blank" rel="noreferrer">
-      <span>{children}</span>
-      <SmallArrow />
-    </a>
-  )
-}
-
-function Segment<T extends string>({
-  label,
-  value,
-  options,
-  onChange,
-  display = (option) => option,
-}: {
-  label: string
-  value: T
-  options: readonly T[]
-  onChange: (value: T) => void
-  display?: (value: T) => string
-}) {
-  return (
-    <fieldset className="control-group">
-      <legend>{label}</legend>
-      <div className="segmented-control">
-        {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            className={value === option ? 'is-selected' : ''}
-            aria-pressed={value === option}
-            onClick={() => onChange(option)}
-          >
-            {display(option)}
-          </button>
-        ))}
-      </div>
-    </fieldset>
-  )
-}
-
 function AttachedMark({
   position = 'bottom-right',
   circular = true,
@@ -93,6 +42,7 @@ function AttachedMark({
   badgeSizeMode = 'XS',
   mainIcon = 'ic_cart',
   badgeIcon = 'ic_rupee',
+  testID,
 }: {
   position?: AttachedPosition
   circular?: boolean
@@ -100,9 +50,11 @@ function AttachedMark({
   badgeSizeMode?: 'XS' | 'M'
   mainIcon?: string
   badgeIcon?: string
+  testID?: string
 }) {
   return (
     <Attached
+      testID={testID}
       position={position}
       circular={circular}
       modes={lightModes}
@@ -112,6 +64,7 @@ function AttachedMark({
             iconName={badgeIcon}
             modes={badgeSizeMode === 'M' ? mainIconModes : badgeIconModes}
             accessibilityLabel="Attached secondary signal"
+            testID={testID ? `${testID}-badge` : undefined}
           />
         ) : undefined
       }
@@ -120,29 +73,9 @@ function AttachedMark({
         iconName={mainIcon}
         modes={mainIconModes}
         accessibilityLabel="Main item"
+        testID={testID ? `${testID}-main` : undefined}
       />
     </Attached>
-  )
-}
-
-function AttachedAnatomy() {
-  return (
-    <figure className="coin-attached-anatomy-figure">
-      <div className="coin-attached-anatomy-live">
-        <div className="coin-attached-anatomy-specimen">
-          <div className="coin-attached-anatomy-component"><AttachedMark /></div>
-          <svg className="coin-attached-anatomy-leaders" viewBox="0 0 200 130" preserveAspectRatio="none" aria-hidden="true">
-            <line x1="48" y1="42" x2="79" y2="56" />
-            <line x1="151" y1="74" x2="115" y2="80" />
-          </svg>
-          <span className="coin-attached-anatomy-pin coin-attached-pin-main">1</span>
-          <span className="coin-attached-anatomy-pin coin-attached-pin-badge">2</span>
-          <span className="coin-attached-anatomy-label coin-attached-label-main">Main bounds</span>
-          <span className="coin-attached-anatomy-label coin-attached-label-badge">Attachment anchor / ring</span>
-        </div>
-      </div>
-      <figcaption>The markers sit beside the fixed specimen and explain the rendered main and badge slots.</figcaption>
-    </figure>
   )
 }
 
@@ -253,17 +186,16 @@ export function AttachedGuide() {
         description:
           'Attached keeps a subordinate badge connected to the content it qualifies. The badge can straddle an edge or corner without changing the main item’s layout footprint.',
         body: (
-          <div className="anatomy-card coin-attached-anatomy-card">
-            <div className="anatomy-stage coin-attached-anatomy-stage">
-              <AttachedAnatomy />
-            </div>
-            <ol className="anatomy-list">
-              <li><b>Main bounds</b><span>The child in the main slot establishes the size and the visual object people identify first.</span></li>
-              <li><b>Attachment</b><span>The badge slot is centered on the selected anchor and can straddle the main edge.</span></li>
-              <li><b>Anchor / ring</b><span>Position chooses one of nine anchors; the token ring separates a compact signal from the main mark.</span></li>
-              <li><b>Host slack</b><span>Leave whitespace around the composition because the badge can extend beyond the main bounds.</span></li>
-            </ol>
-          </div>
+          <Anatomy
+            title="Attached"
+            parts={[
+              { name: 'Main bounds', note: 'The child in the main slot establishes the size and the visual object people identify first.', target: byTestId('attached-anatomy-main'), side: 'left' },
+              { name: 'Attachment', note: 'The badge slot is centered on the selected anchor and can straddle the main edge.', target: byTestId('attached-anatomy-badge'), side: 'right' },
+              { name: 'Anchor / ring', note: 'Position chooses one of nine anchors; the token ring separates a compact signal from the main mark.', target: `div:has(> ${byTestId('attached-anatomy-badge')})`, side: 'bottom' },
+            ]}
+          >
+            <AttachedMark testID="attached-anatomy" />
+          </Anatomy>
         ),
       },
       configuration: {
@@ -370,14 +302,19 @@ export function AttachedGuide() {
         description:
           'This guide uses the published Attached API, the Coin Components Library node, and the canonical Storybook fixtures.',
         body: (
-          <>
-            <div className="sources-grid">
-              <a href={FIGMA_URL} target="_blank" rel="noreferrer"><span className="source-index">01</span><div><h3>Coin Components Library</h3><p>Attached component set · node 4477:471</p></div><SmallArrow /></a>
-              <a href={STORYBOOK_URL} target="_blank" rel="noreferrer"><span className="source-index">02</span><div><h3>Attached Storybook</h3><p>Default, all positions, corner, and capsule badge stories</p></div><SmallArrow /></a>
-            </div>
-            <div className="verification-note"><span>Checked 22 September 2026</span><p>Examples use public <code>Attached</code> and <code>IconCapsule</code> exports from <code>jfs-components</code> 0.1.60. The package source defaults <code>circular</code> to <code>true</code>, while its JSDoc says <code>false</code>; the guide uses the actual runtime default when omitted and exposes the supported choice. Badge placement waits for layout measurement, and the badge does not expand the parent layout footprint. The capsule story enlarges its children with style dimensions; this guide uses the native Icon Capsule Size modes M and XS so both child capsules keep their component-owned circular geometry.</p></div>
-            <div className="coin-attached-source-links"><SourceLink href="https://jfs-components-storybook.vercel.app/iframe.html?id=components-attached--capsule-badge&viewMode=story">Open capsule badge story</SourceLink><SourceLink href="https://jfs-components-storybook.vercel.app/iframe.html?id=components-attached--all-positions&viewMode=story">Open all positions story</SourceLink></div>
-          </>
+          <Sources
+            checked="22 September 2026"
+            figmaUrl={FIGMA_URL}
+            figmaDescription="Attached component set · node 4477:471"
+            storybookUrl={STORYBOOK_URL}
+            storybookDescription="Default, all positions, corner, and capsule badge stories"
+            stories={[
+              { label: 'Open capsule badge story', id: 'components-attached--capsule-badge' },
+              { label: 'Open all positions story', id: 'components-attached--all-positions' },
+            ]}
+          >
+            Examples use public <code>Attached</code> and <code>IconCapsule</code> exports from <code>jfs-components</code> 0.1.60. The package source defaults <code>circular</code> to <code>true</code>, while its JSDoc says <code>false</code>; the guide uses the actual runtime default when omitted and exposes the supported choice. Badge placement waits for layout measurement, and the badge does not expand the parent layout footprint. The capsule story enlarges its children with style dimensions; this guide uses the native Icon Capsule Size modes M and XS so both child capsules keep their component-owned circular geometry.
+          </Sources>
         ),
       },
     }),

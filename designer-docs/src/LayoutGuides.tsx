@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useId, useLayoutEffect, useMemo, useState } from 'react'
 import {
   Badge,
   Button,
@@ -18,6 +18,7 @@ import {
   MobilePageNav,
   useGuidePageNavigation,
 } from './GuideNavigation'
+import { Anatomy, Segment, byTestId } from './guide-kit'
 
 export type LayoutGuideKey = 'hstack' | 'vstack' | 'stack' | 'breadcrumbs'
 
@@ -160,37 +161,6 @@ function SourceLink({
         <path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" />
       </svg>
     </a>
-  )
-}
-
-function Segment<T extends string>({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string
-  value: T
-  options: readonly T[]
-  onChange: (value: T) => void
-}) {
-  return (
-    <fieldset className="control-group">
-      <legend>{label}</legend>
-      <div className="segmented-control">
-        {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            className={value === option ? 'is-selected' : ''}
-            aria-pressed={value === option}
-            onClick={() => onChange(option)}
-          >
-            {option}
-          </button>
-        ))}
-      </div>
-    </fieldset>
   )
 }
 
@@ -376,159 +346,14 @@ function StackPreview({
   )
 }
 
-type AnatomyDirection = 'horizontal' | 'vertical'
-
-type MeasuredRect = {
-  left: number
-  top: number
-  width: number
-  height: number
-}
-
-type LayoutAnatomyMetrics = {
-  component: MeasuredRect
-  children: MeasuredRect[]
-  gaps: MeasuredRect[]
-  padding: MeasuredRect[]
-  cross: MeasuredRect
-}
-
-function LayoutAnatomyFrame({
-  direction,
-  showPadding = true,
-  children,
-}: {
-  direction: AnatomyDirection
-  showPadding?: boolean
-  children: React.ReactNode
-}) {
-  const frameRef = useRef<HTMLDivElement>(null)
-  const [metrics, setMetrics] = useState<LayoutAnatomyMetrics | null>(null)
-
-  useLayoutEffect(() => {
-    const frame = frameRef.current
-    if (!frame) return
-
-    const measure = () => {
-      const slot = frame.querySelector<HTMLElement>('[data-layout-anatomy-slot]')
-      const component = frame.querySelector<HTMLElement>('[data-layout-anatomy-component]')
-      if (!slot || !component) return
-      const badgeNodes = Array.from(
-        slot.querySelectorAll<HTMLElement>('[data-testid^="layout-anatomy-child-"]'),
-      )
-      if (badgeNodes.length < 2) return
-
-      const slotRect = slot.getBoundingClientRect()
-      const componentRect = component.getBoundingClientRect()
-      const localRect = (rect: DOMRect): MeasuredRect => ({
-        left: rect.left - slotRect.left,
-        top: rect.top - slotRect.top,
-        width: rect.width,
-        height: rect.height,
-      })
-      const componentBounds = localRect(componentRect)
-      const badgeRects = badgeNodes.map((node) => localRect(node.getBoundingClientRect()))
-      const childLeft = Math.min(...badgeRects.map((rect) => rect.left))
-      const childTop = Math.min(...badgeRects.map((rect) => rect.top))
-      const childRight = Math.max(...badgeRects.map((rect) => rect.left + rect.width))
-      const childBottom = Math.max(...badgeRects.map((rect) => rect.top + rect.height))
-      const childBounds: MeasuredRect = {
-        left: childLeft,
-        top: childTop,
-        width: Math.max(0, childRight - childLeft),
-        height: Math.max(0, childBottom - childTop),
-      }
-      const gaps = badgeRects.slice(0, -1).map((rect, index): MeasuredRect => {
-        const next = badgeRects[index + 1]
-        if (direction === 'horizontal') {
-          return {
-            left: rect.left + rect.width,
-            top: Math.min(rect.top, next.top),
-            width: Math.max(0, next.left - (rect.left + rect.width)),
-            height: Math.max(rect.height, next.height),
-          }
-        }
-        return {
-          left: Math.min(rect.left, next.left),
-          top: rect.top + rect.height,
-          width: Math.max(rect.width, next.width),
-          height: Math.max(0, next.top - (rect.top + rect.height)),
-        }
-      }).filter((rect) => rect.width > 0.5 && rect.height > 0.5)
-      const padding = showPadding
-        ? [
-            { left: componentBounds.left, top: componentBounds.top, width: componentBounds.width, height: Math.max(0, childTop - componentBounds.top) },
-            { left: componentBounds.left, top: childBottom, width: componentBounds.width, height: Math.max(0, (componentBounds.top + componentBounds.height) - childBottom) },
-            { left: componentBounds.left, top: childTop, width: Math.max(0, childLeft - componentBounds.left), height: childBounds.height },
-            { left: childRight, top: childTop, width: Math.max(0, (componentBounds.left + componentBounds.width) - childRight), height: childBounds.height },
-          ].filter((rect) => rect.width > 0.5 && rect.height > 0.5)
-        : []
-      const cross = direction === 'horizontal'
-        ? { left: childLeft, top: childTop + childBounds.height / 2, width: childBounds.width, height: 1 }
-        : { left: childLeft, top: childTop, width: 1, height: childBounds.height }
-
-      setMetrics({ component: componentBounds, children: badgeRects, gaps, padding, cross })
-    }
-
-    const animationFrame = requestAnimationFrame(measure)
-    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure)
-    observer?.observe(frame)
-    const observedSlot = frame.querySelector<HTMLElement>('[data-layout-anatomy-slot]')
-    if (observedSlot) observer?.observe(observedSlot)
-    frame.querySelectorAll<HTMLElement>('[data-testid^="layout-anatomy-child-"]').forEach((node) => observer?.observe(node))
-    return () => {
-      cancelAnimationFrame(animationFrame)
-      observer?.disconnect()
-    }
-  }, [direction])
-
-  const axis = direction === 'horizontal' ? '→' : '↓'
-  return (
-    <div ref={frameRef} className={classes('layout-anatomy-frame', 'layout-anatomy-frame-' + direction)}>
-      <div className="layout-anatomy-direction">
-        <span aria-hidden="true">{axis}</span>
-        <strong>{direction === 'horizontal' ? 'Direction across the row' : 'Direction down the column'}</strong>
-      </div>
-      <div className="layout-anatomy-slot" data-layout-anatomy-slot>
-        {metrics ? (
-          <div className="layout-inspector-bands" aria-hidden="true">
-            {metrics.padding.map((rect, index) => (
-              <span className="layout-inspector-band layout-inspector-band-padding" style={rect} key={'padding-' + index} />
-            ))}
-            {metrics.gaps.map((rect, index) => (
-              <span className="layout-inspector-band layout-inspector-band-gap" style={rect} key={'gap-' + index} />
-            ))}
-            <span className="layout-inspector-cross-axis" style={metrics.cross} />
-          </div>
-        ) : null}
-        {children}
-        {metrics ? (
-          <div className="layout-inspector-outlines" aria-hidden="true">
-            <span className="layout-inspector-component-bound" style={metrics.component} />
-            {metrics.children.map((rect, index) => (
-              <span className="layout-inspector-child-bound" style={rect} key={'child-' + index} />
-            ))}
-          </div>
-        ) : null}
-      </div>
-      <p className="layout-anatomy-caption">Coin badges show the slot contents. Outlines and arrows explain the layout.</p>
-      <div className="layout-inspector-legend" aria-label="Diagram key">
-        <span><i className="layout-inspector-swatch layout-inspector-swatch-host" />Host</span>
-        <span><i className="layout-inspector-swatch layout-inspector-swatch-component" />Component bounds</span>
-        <span><i className="layout-inspector-swatch layout-inspector-swatch-child" />Children</span>
-        {showPadding ? <span><i className="layout-inspector-swatch layout-inspector-swatch-padding" />Owner padding</span> : null}
-        <span><i className="layout-inspector-swatch layout-inspector-swatch-gap" />Gap</span>
-      </div>
-    </div>
-  )
-}
-
 function BreadcrumbTrail({
   variant = 'default',
   modes = {},
+  showTopline = true,
 }: {
   variant?: BreadcrumbVariant
   modes?: Modes
+  showTopline?: boolean
 }) {
   const [selectedAncestor, setSelectedAncestor] = useState<string | null>(null)
   const exampleId = useId().replace(/:/g, '')
@@ -538,9 +363,11 @@ function BreadcrumbTrail({
 
   return (
     <div id={exampleId} className={classes('layout-breadcrumb-reference', 'layout-breadcrumb-reference-' + variant)}>
-      <div className="layout-breadcrumb-reference-topline">
-        <span>{storyLabel} trail</span>
-      </div>
+      {showTopline ? (
+        <div className="layout-breadcrumb-reference-topline">
+          <span>{storyLabel} trail</span>
+        </div>
+      ) : null}
       <nav aria-label={`${storyLabel} Breadcrumbs example`}>
         <ol className="layout-breadcrumb-trail">
           {items.map((item, index) => (
@@ -829,154 +656,127 @@ function Playground({
   )
 }
 
+const H_ROOT = byTestId('layout-anatomy-h')
+const H_PAID = byTestId('layout-anatomy-child-h-1')
+const H_DUE = byTestId('layout-anatomy-child-h-2')
+const H_NEW = byTestId('layout-anatomy-child-h-3')
+
 function HStackAnatomy({ modes }: { modes: Modes }) {
   return (
-    <div className="anatomy-card layout-anatomy-card">
-      <div className="anatomy-stage layout-anatomy-stage">
-        <LayoutAnatomyFrame direction="horizontal">
-          <div className="layout-anatomy-component" data-layout-anatomy-component>
-            <HStack
-              modes={{ ...modes, 'Slot gap': 'M', Padding: 'Default' }}
-              alignVertical="center"
-              justifyHorizontal="flex-start"
-              style={{ alignSelf: 'center' }}
-            >
-              <LiveBadge childId="layout-anatomy-child-h-1" title="Paid" alignSelf="auto" />
-              <LiveBadge childId="layout-anatomy-child-h-2" title="Due" detail="today" long alignSelf="auto" />
-              <LiveBadge childId="layout-anatomy-child-h-3" title="New" alignSelf="auto" />
-            </HStack>
-          </div>
-        </LayoutAnatomyFrame>
-      </div>
-      <ol className="anatomy-list">
-        <li>
-          <b>Row direction</b>
-          <span>Children are arranged left to right. Reverse changes visual direction only; DOM order stays the same.</span>
-        </li>
-        <li>
-          <b>Token gap</b>
-          <span>Use Slot gap to set rhythm. Keep spacing owned by HStack instead of adding child margins.</span>
-        </li>
-        <li>
-          <b>Cross-axis alignment</b>
-          <span>Figma exposes the variant named “Aligment”: Top Left maps to the top edge and Left centers the row vertically.</span>
-        </li>
-        <li>
-          <b>Owner padding</b>
-          <span>Default supplies the inset around the slot. Use None when the surrounding owner already supplies that edge.</span>
-        </li>
-      </ol>
-    </div>
+    <Anatomy
+      title="HStack"
+      parts={[
+        { name: 'Row direction', note: 'Children are arranged left to right. Reverse changes visual direction only; DOM order stays the same.', target: H_ROOT, side: 'top' },
+        { name: 'Token gap', note: 'Use Slot gap to set rhythm. Keep spacing owned by HStack instead of adding child margins.', between: [H_PAID, H_DUE], side: 'top' },
+        { name: 'Cross-axis alignment', note: 'Figma exposes the variant named “Aligment”: Top Left maps to the top edge and Left centers the row vertically.', target: H_DUE, side: 'bottom' },
+        { name: 'Owner padding', note: 'Default supplies the inset around the slot. Use None when the surrounding owner already supplies that edge.', target: H_ROOT, side: 'right' },
+      ]}
+      marks={[
+        { kind: 'outline', target: H_ROOT, variant: 'bounds' },
+        { kind: 'padding', target: H_ROOT },
+        { kind: 'outline', target: H_PAID, variant: 'child' },
+        { kind: 'outline', target: H_DUE, variant: 'child' },
+        { kind: 'outline', target: H_NEW, variant: 'child' },
+        { kind: 'gap', from: H_PAID, to: H_DUE },
+        { kind: 'gap', from: H_DUE, to: H_NEW },
+      ]}
+    >
+      <HStack
+        testID="layout-anatomy-h"
+        modes={{ ...modes, 'Slot gap': 'M', Padding: 'Default' }}
+        alignVertical="center"
+        justifyHorizontal="flex-start"
+      >
+        <LiveBadge childId="layout-anatomy-child-h-1" title="Paid" alignSelf="auto" />
+        <LiveBadge childId="layout-anatomy-child-h-2" title="Due" detail="today" long alignSelf="auto" />
+        <LiveBadge childId="layout-anatomy-child-h-3" title="New" alignSelf="auto" />
+      </HStack>
+    </Anatomy>
   )
 }
+
+const V_ROOT = byTestId('layout-anatomy-v')
+const V_PAID = byTestId('layout-anatomy-child-v-1')
+const V_DUE = byTestId('layout-anatomy-child-v-2')
+const V_NEW = byTestId('layout-anatomy-child-v-3')
 
 function VStackAnatomy({ modes }: { modes: Modes }) {
   return (
-    <div className="anatomy-card layout-anatomy-card">
-      <div className="anatomy-stage layout-anatomy-stage">
-        <LayoutAnatomyFrame direction="vertical">
-          <div className="layout-anatomy-component" data-layout-anatomy-component>
-            <VStack
-              modes={{ ...modes, 'Slot gap': 'M', Padding: 'Default' }}
-              style={{ alignSelf: 'center' }}
-            >
-              <LiveBadge childId="layout-anatomy-child-v-1" title="Paid" />
-              <LiveBadge childId="layout-anatomy-child-v-2" title="Due" detail="today" long />
-              <LiveBadge childId="layout-anatomy-child-v-3" title="New" />
-            </VStack>
-          </div>
-        </LayoutAnatomyFrame>
-      </div>
-      <ol className="anatomy-list">
-        <li>
-          <b>Column direction</b>
-          <span>Children follow a vertical page-flow order. Reverse is available when the content order genuinely needs it.</span>
-        </li>
-        <li>
-          <b>Token gap</b>
-          <span>Slot gap sets the repeated rhythm between children and remains consistent as content grows.</span>
-        </li>
-        <li>
-          <b>Cross-axis edge</b>
-          <span>Direct children share the owner’s cross-axis edge, while wrap flows into a new column only inside a height boundary.</span>
-        </li>
-        <li>
-          <b>Padding</b>
-          <span>Default or None comes from the component mode. Do not recreate its inset with local wrappers.</span>
-        </li>
-      </ol>
-    </div>
+    <Anatomy
+      title="VStack"
+      parts={[
+        { name: 'Column direction', note: 'Children follow a vertical page-flow order. Reverse is available when the content order genuinely needs it.', target: V_ROOT, side: 'left', at: 0.85 },
+        { name: 'Token gap', note: 'Slot gap sets the repeated rhythm between children and remains consistent as content grows.', between: [V_PAID, V_DUE], side: 'left' },
+        { name: 'Cross-axis edge', note: 'Direct children share the owner’s cross-axis edge, while wrap flows into a new column only inside a height boundary.', target: V_DUE, side: 'left' },
+        { name: 'Padding', note: 'Default or None comes from the component mode. Do not recreate its inset with local wrappers.', target: V_ROOT, side: 'top' },
+      ]}
+      marks={[
+        { kind: 'outline', target: V_ROOT, variant: 'bounds' },
+        { kind: 'padding', target: V_ROOT },
+        { kind: 'outline', target: V_PAID, variant: 'child' },
+        { kind: 'outline', target: V_DUE, variant: 'child' },
+        { kind: 'outline', target: V_NEW, variant: 'child' },
+        { kind: 'gap', from: V_PAID, to: V_DUE },
+        { kind: 'gap', from: V_DUE, to: V_NEW },
+      ]}
+    >
+      <VStack testID="layout-anatomy-v" modes={{ ...modes, 'Slot gap': 'M', Padding: 'Default' }}>
+        <LiveBadge childId="layout-anatomy-child-v-1" title="Paid" />
+        <LiveBadge childId="layout-anatomy-child-v-2" title="Due" detail="today" long />
+        <LiveBadge childId="layout-anatomy-child-v-3" title="New" />
+      </VStack>
+    </Anatomy>
   )
 }
 
+const S_ROOT = byTestId('layout-anatomy-stack')
+const S_PAID = byTestId('layout-anatomy-child-stack-1')
+const S_DUE = byTestId('layout-anatomy-child-stack-2')
+
 function StackAnatomy({ modes }: { modes: Modes }) {
   return (
-    <div className="anatomy-card layout-anatomy-card">
-      <div className="anatomy-stage layout-anatomy-stage">
-        <LayoutAnatomyFrame direction="vertical" showPadding={false}>
-          <div className="layout-anatomy-component" data-layout-anatomy-component>
-            <Stack
-              modes={{ ...modes, 'Slot gap': 'M' }}
-              layoutDirection="vertical"
-              fillWidth
-              style={{ width: 220, alignSelf: 'center' }}
-            >
-              <LiveBadge childId="layout-anatomy-child-stack-1" title="Paid" />
-              <LiveBadge childId="layout-anatomy-child-stack-2" title="Due" detail="today" long />
-            </Stack>
-          </div>
-        </LayoutAnatomyFrame>
-      </div>
-      <ol className="anatomy-list">
-        <li>
-          <b>Direction</b>
-          <span>Set layoutDirection to vertical or horizontal. The default is vertical.</span>
-        </li>
-        <li>
-          <b>Token gap</b>
-          <span>Slot gap provides repeated separation. Stack has no padding, wrap, or reverse control.</span>
-        </li>
-        <li>
-          <b>Cross-axis fit</b>
-          <span>fillWidth makes these vertical children share the host edge. Fixed child dimensions still win.</span>
-        </li>
-      </ol>
-    </div>
+    <Anatomy
+      title="Stack"
+      parts={[
+        { name: 'Direction', note: 'Set layoutDirection to vertical or horizontal. The default is vertical.', target: S_ROOT, side: 'left', at: 0.1 },
+        { name: 'Token gap', note: 'Slot gap provides repeated separation. Stack has no padding, wrap, or reverse control.', between: [S_PAID, S_DUE], side: 'left' },
+        { name: 'Cross-axis fit', note: 'fillWidth makes these vertical children share the host edge. Fixed child dimensions still win.', target: S_DUE, side: 'left' },
+      ]}
+      marks={[
+        { kind: 'outline', target: S_ROOT, variant: 'bounds' },
+        { kind: 'outline', target: S_PAID, variant: 'child' },
+        { kind: 'outline', target: S_DUE, variant: 'child' },
+        { kind: 'gap', from: S_PAID, to: S_DUE },
+      ]}
+    >
+      <Stack
+        testID="layout-anatomy-stack"
+        modes={{ ...modes, 'Slot gap': 'M' }}
+        layoutDirection="vertical"
+        fillWidth
+        style={{ width: 220 }}
+      >
+        <LiveBadge childId="layout-anatomy-child-stack-1" title="Paid" />
+        <LiveBadge childId="layout-anatomy-child-stack-2" title="Due" detail="today" long />
+      </Stack>
+    </Anatomy>
   )
 }
 
 function BreadcrumbsAnatomy() {
   return (
-    <div className="anatomy-card layout-anatomy-card layout-breadcrumb-anatomy">
-      <div className="anatomy-stage layout-anatomy-stage">
-        <div className="layout-breadcrumb-anatomy-stage">
-          <BreadcrumbTrail variant="default" />
-          <div className="layout-breadcrumb-callouts" aria-hidden="true">
-            <span><b>1</b> Ancestor link</span>
-            <span><b>2</b> Separator</span>
-            <span><b>3</b> Current page</span>
-          </div>
-        </div>
-      </div>
-      <ol className="anatomy-list">
-        <li>
-          <b>Breadcrumb trail</b>
-          <span>The published component communicates hierarchy without replacing the page title or primary navigation.</span>
-        </li>
-        <li>
-          <b>Ancestor links</b>
-          <span>Items are ordered from the broadest ancestor toward the current page. Each ancestor can take people back one level.</span>
-        </li>
-        <li>
-          <b>Automatic chevrons</b>
-          <span>Separators express the path between items. Do not add manual punctuation or duplicate chevrons.</span>
-        </li>
-        <li>
-          <b>Current page</b>
-          <span>The last item is current unless an explicit current item is supplied. The current page is identified in the published story.</span>
-        </li>
-      </ol>
-    </div>
+    <Anatomy
+      title="Breadcrumbs"
+      specimenWidth={320}
+      parts={[
+        { name: 'Breadcrumb trail', note: 'The published component communicates hierarchy without replacing the page title or primary navigation.', target: '.layout-breadcrumb-trail', side: 'left' },
+        { name: 'Ancestor links', note: 'Items are ordered from the broadest ancestor toward the current page. Each ancestor can take people back one level.', target: '.layout-breadcrumb-link', side: 'top' },
+        { name: 'Automatic chevrons', note: 'Separators express the path between items. Do not add manual punctuation or duplicate chevrons.', target: '.layout-breadcrumb-separator', side: 'bottom' },
+        { name: 'Current page', note: 'The last item is current unless an explicit current item is supplied. The published story identifies the current page.', target: '.layout-breadcrumb-current', side: 'right' },
+      ]}
+    >
+      <BreadcrumbTrail variant="default" showTopline={false} />
+    </Anatomy>
   )
 }
 

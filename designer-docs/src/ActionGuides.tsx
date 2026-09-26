@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import {
   ActionFooter,
   ActionTile,
@@ -19,6 +19,7 @@ import {
   ComponentGuideTemplate,
   type GuideSectionSlots,
 } from './ComponentGuideTemplate'
+import { Anatomy, Segment, Specimen, SpecimenRow, byTestId } from './guide-kit'
 import attachmentSample from './assets/attachment-sample.svg'
 
 type ColorMode = 'Light' | 'Dark'
@@ -108,37 +109,6 @@ function surfaceModes(colorMode: ColorMode = 'Light'): Modes {
   } as Modes
 }
 
-function Segment<T extends string>({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string
-  value: T
-  options: readonly T[]
-  onChange: (value: T) => void
-}) {
-  return (
-    <fieldset className="control-group">
-      <legend>{label}</legend>
-      <div className="segmented-control">
-        {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            className={value === option ? 'is-selected' : ''}
-            aria-pressed={value === option}
-            onClick={() => onChange(option)}
-          >
-            {option}
-          </button>
-        ))}
-      </div>
-    </fieldset>
-  )
-}
-
 function SmallArrow() {
   return (
     <svg viewBox="0 0 16 16" aria-hidden="true">
@@ -215,153 +185,7 @@ function SpecimenCard({
   )
 }
 
-type AnatomyRect = { left: number; top: number; width: number; height: number }
-type AnatomyPoint = { left: number; top: number }
-type AnatomyMark = { number: number; marker: AnatomyPoint; path: string }
-type AnatomyMetrics = {
-  width: number
-  height: number
-  marks: AnatomyMark[]
-  decorations?: string[]
-}
-
-const ACTION_ANATOMY_MARKER_SIZE = 26
-
-function anatomyRect(node: Element, frameRect: DOMRect): AnatomyRect {
-  const rect = node.getBoundingClientRect()
-  return {
-    left: rect.left - frameRect.left,
-    top: rect.top - frameRect.top,
-    width: rect.width,
-    height: rect.height,
-  }
-}
-
-function anatomyUnion(rects: AnatomyRect[]): AnatomyRect {
-  const left = Math.min(...rects.map((rect) => rect.left))
-  const top = Math.min(...rects.map((rect) => rect.top))
-  const right = Math.max(...rects.map((rect) => rect.left + rect.width))
-  const bottom = Math.max(...rects.map((rect) => rect.top + rect.height))
-  return { left, top, width: right - left, height: bottom - top }
-}
-
-function findAnatomyText(root: Element, text: string) {
-  return Array.from(root.querySelectorAll<HTMLElement>('*'))
-    .filter((node) => node.textContent?.trim() === text)
-    .sort((first, second) => {
-      const firstRect = first.getBoundingClientRect()
-      const secondRect = second.getBoundingClientRect()
-      return firstRect.width * firstRect.height - secondRect.width * secondRect.height
-    })[0]
-}
-
-function clampAnatomyMarker(point: AnatomyPoint, width: number, height: number) {
-  const inset = 4
-  return {
-    left: Math.min(Math.max(point.left, inset), width - ACTION_ANATOMY_MARKER_SIZE - inset),
-    top: Math.min(Math.max(point.top, inset), height - ACTION_ANATOMY_MARKER_SIZE - inset),
-  }
-}
-
-function anatomyMetricsMatch(first: AnatomyMetrics | null, second: AnatomyMetrics) {
-  if (!first) return false
-  const signature = (value: AnatomyMetrics) =>
-    JSON.stringify(value, (_key, item) =>
-      typeof item === 'number' ? Math.round(item * 10) / 10 : item,
-    )
-  return signature(first) === signature(second)
-}
-
-function useActionAnatomy(
-  ref: { current: HTMLDivElement | null },
-  read: (frame: HTMLDivElement) => AnatomyMetrics | null,
-) {
-  const [metrics, setMetrics] = useState<AnatomyMetrics | null>(null)
-
-  useLayoutEffect(() => {
-    const frame = ref.current
-    if (!frame) return
-    let active = true
-    const measure = () => {
-      const next = read(frame)
-      if (next) setMetrics((current) => (anatomyMetricsMatch(current, next) ? current : next))
-    }
-    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure)
-    observer?.observe(frame)
-    frame
-      .querySelectorAll('[data-coin-example], button, [role="img"], img')
-      .forEach((node) => observer?.observe(node))
-    const frameId = requestAnimationFrame(measure)
-    void document.fonts?.ready.then(() => {
-      if (active) measure()
-    })
-    window.addEventListener('resize', measure)
-    return () => {
-      active = false
-      cancelAnimationFrame(frameId)
-      observer?.disconnect()
-      window.removeEventListener('resize', measure)
-    }
-  }, [read, ref])
-
-  return metrics
-}
-
-function ActionAnatomyOverlay({ metrics }: { metrics: AnatomyMetrics | null }) {
-  if (!metrics) return null
-  return (
-    <>
-      <svg
-        className="action-anatomy-leaders"
-        viewBox={`0 0 ${metrics.width} ${metrics.height}`}
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        {metrics.decorations?.map((path, index) => <path d={path} key={`decoration-${index}`} />)}
-        {metrics.marks.map((mark) => <path d={mark.path} key={mark.number} />)}
-      </svg>
-      {metrics.marks.map((mark) => (
-        <span
-          className="action-anatomy-pin"
-          style={{ left: mark.marker.left, top: mark.marker.top }}
-          key={mark.number}
-          aria-hidden="true"
-        >
-          {mark.number}
-        </span>
-      ))}
-    </>
-  )
-}
-
-function AnatomyLegendItem({
-  number,
-  label,
-  children,
-}: {
-  number: number
-  label: string
-  children: ReactNode
-}) {
-  return (
-    <li>
-      <span className="action-anatomy-key" aria-hidden="true">{number}</span>
-      <b>{label}</b>
-      <span>{children}</span>
-    </li>
-  )
-}
-
-function ActionFooterExample({
-  title,
-  actionCount = '2',
-  layout = 'Horizontal',
-  colorMode = 'Light',
-  primaryLabel = 'Continue',
-  secondaryLabel = 'Back',
-  equalPriority = false,
-  onAction,
-}: {
+type ActionFooterConfig = {
   title?: string
   actionCount?: FooterActionCount
   layout?: FooterLayout
@@ -370,7 +194,18 @@ function ActionFooterExample({
   secondaryLabel?: string
   equalPriority?: boolean
   onAction?: (label: string) => void
-}) {
+}
+
+function ActionFooterInstance({
+  title,
+  actionCount = '2',
+  layout = 'Horizontal',
+  colorMode = 'Light',
+  primaryLabel = 'Continue',
+  secondaryLabel = 'Back',
+  equalPriority = false,
+  onAction,
+}: ActionFooterConfig) {
   const modes = useMemo(() => footerModes(colorMode), [colorMode])
   const primaryModes = useMemo(() => buttonModes(colorMode, 'Primary'), [colorMode])
   const secondaryModes = useMemo(
@@ -400,23 +235,29 @@ function ActionFooterExample({
   )
 
   return (
+    <ActionFooter
+      title={title}
+      modes={modes}
+      accessibilityLabel={title ? `${title} actions` : 'Screen actions'}
+    >
+      {layout === 'Horizontal' ? (
+        <ButtonGroup modes={modes}>{actions}</ButtonGroup>
+      ) : (
+        <Stack layoutDirection="vertical" fillWidth modes={modes}>
+          {actions}
+        </Stack>
+      )}
+    </ActionFooter>
+  )
+}
+
+function ActionFooterExample(props: ActionFooterConfig) {
+  return (
     <div
-      className={classes('coin-action-footer-example', colorMode === 'Dark' && 'is-dark-example')}
+      className={classes('coin-action-footer-example', props.colorMode === 'Dark' && 'is-dark-example')}
       data-coin-example="action-footer"
     >
-      <ActionFooter
-        title={title}
-        modes={modes}
-        accessibilityLabel={title ? `${title} actions` : 'Screen actions'}
-      >
-        {layout === 'Horizontal' ? (
-          <ButtonGroup modes={modes}>{actions}</ButtonGroup>
-        ) : (
-          <Stack layoutDirection="vertical" fillWidth modes={modes}>
-            {actions}
-          </Stack>
-        )}
-      </ActionFooter>
+      <ActionFooterInstance {...props} />
     </div>
   )
 }
@@ -473,251 +314,6 @@ function AdditemExample({
           state === 'preview' ? 'Receipt attachment preview' : 'Add an attachment'
         }
       />
-    </div>
-  )
-}
-
-function readFooterAnatomy(frame: HTMLDivElement): AnatomyMetrics | null {
-  const component = frame.querySelector<HTMLElement>('[data-coin-example="action-footer"]')
-  const title = component ? findAnatomyText(component, 'Confirm payment') : undefined
-  const buttons = component ? Array.from(component.querySelectorAll<HTMLElement>('button')) : []
-  if (!component || !title || buttons.length < 2) return null
-
-  const frameRect = frame.getBoundingClientRect()
-  const surface = anatomyRect(component, frameRect)
-  const titleRect = anatomyRect(title, frameRect)
-  const actions = anatomyUnion(buttons.map((button) => anatomyRect(button, frameRect)))
-  const titleX = titleRect.left + titleRect.width / 2
-  const titleY = titleRect.top - 5
-  const bracketY = Math.min(surface.top + surface.height - 6, actions.top + actions.height + 9)
-  const actionRight = actions.left + actions.width
-  const surfaceTargetX = surface.left + 24
-  const isNarrow = frameRect.width <= 420
-  const titleMarker = clampAnatomyMarker(
-    { left: titleX - ACTION_ANATOMY_MARKER_SIZE / 2, top: surface.top - 42 },
-    frameRect.width,
-    frameRect.height,
-  )
-  const actionsMarker = clampAnatomyMarker(
-    isNarrow
-      ? {
-          left: surface.left + surface.width - ACTION_ANATOMY_MARKER_SIZE,
-          top: surface.top + surface.height + 14,
-        }
-      : {
-          left: surface.left + surface.width + 17,
-          top: bracketY - ACTION_ANATOMY_MARKER_SIZE / 2,
-        },
-    frameRect.width,
-    frameRect.height,
-  )
-  const surfaceMarker = clampAnatomyMarker(
-    { left: surfaceTargetX - ACTION_ANATOMY_MARKER_SIZE / 2, top: surface.top + surface.height + 14 },
-    frameRect.width,
-    frameRect.height,
-  )
-  const titleMarkerX = titleMarker.left + ACTION_ANATOMY_MARKER_SIZE / 2
-  const titleMarkerY = titleMarker.top + ACTION_ANATOMY_MARKER_SIZE / 2
-  const actionsMarkerX = actionsMarker.left + ACTION_ANATOMY_MARKER_SIZE / 2
-  const actionsMarkerY = actionsMarker.top + ACTION_ANATOMY_MARKER_SIZE / 2
-  const surfaceMarkerX = surfaceMarker.left + ACTION_ANATOMY_MARKER_SIZE / 2
-  const surfaceMarkerY = surfaceMarker.top + ACTION_ANATOMY_MARKER_SIZE / 2
-
-  return {
-    width: frameRect.width,
-    height: frameRect.height,
-    decorations: [
-      `M ${actions.left} ${bracketY - 6} V ${bracketY} H ${actionRight} V ${bracketY - 6}`,
-    ],
-    marks: [
-      {
-        number: 1,
-        marker: titleMarker,
-        path: `M ${titleMarkerX} ${titleMarkerY} V ${titleY - 8} H ${titleX} V ${titleY}`,
-      },
-      {
-        number: 2,
-        marker: actionsMarker,
-        path: isNarrow
-          ? `M ${actionsMarkerX} ${actionsMarkerY} V ${bracketY + 12} H ${actionRight} V ${bracketY}`
-          : `M ${actionsMarkerX} ${actionsMarkerY} H ${actionRight + 12} V ${bracketY} H ${actionRight}`,
-      },
-      {
-        number: 3,
-        marker: surfaceMarker,
-        path: `M ${surfaceMarkerX} ${surfaceMarkerY} H ${surfaceTargetX} V ${surface.top + surface.height + 2}`,
-      },
-    ],
-  }
-}
-
-function readTileAnatomy(frame: HTMLDivElement): AnatomyMetrics | null {
-  const component = frame.querySelector<HTMLElement>('[data-coin-example="action-tile"]')
-  const surface = component?.firstElementChild
-  const icon = component?.querySelector<HTMLElement>('[role="img"]')
-  const label = component ? findAnatomyText(component, 'Cards') : undefined
-  if (!component || !surface || !icon || !label) return null
-
-  const frameRect = frame.getBoundingClientRect()
-  const surfaceRect = anatomyRect(surface, frameRect)
-  const iconRect = anatomyRect(icon, frameRect)
-  const labelRect = anatomyRect(label, frameRect)
-  const iconY = iconRect.top + iconRect.height / 2
-  const labelY = labelRect.top + labelRect.height / 2
-  const boundaryY = surfaceRect.top + surfaceRect.height - 14
-  const iconMarker = clampAnatomyMarker(
-    { left: surfaceRect.left - 44, top: iconY - ACTION_ANATOMY_MARKER_SIZE / 2 },
-    frameRect.width,
-    frameRect.height,
-  )
-  const labelMarker = clampAnatomyMarker(
-    { left: surfaceRect.left - 44, top: labelY - ACTION_ANATOMY_MARKER_SIZE / 2 },
-    frameRect.width,
-    frameRect.height,
-  )
-  const boundaryMarker = clampAnatomyMarker(
-    { left: surfaceRect.left + surfaceRect.width + 17, top: boundaryY - ACTION_ANATOMY_MARKER_SIZE / 2 },
-    frameRect.width,
-    frameRect.height,
-  )
-
-  return {
-    width: frameRect.width,
-    height: frameRect.height,
-    marks: [
-      {
-        number: 1,
-        marker: iconMarker,
-        path: `M ${iconMarker.left + ACTION_ANATOMY_MARKER_SIZE / 2} ${iconMarker.top + ACTION_ANATOMY_MARKER_SIZE / 2} H ${iconRect.left - 5}`,
-      },
-      {
-        number: 2,
-        marker: labelMarker,
-        path: `M ${labelMarker.left + ACTION_ANATOMY_MARKER_SIZE / 2} ${labelMarker.top + ACTION_ANATOMY_MARKER_SIZE / 2} H ${labelRect.left - 5}`,
-      },
-      {
-        number: 3,
-        marker: boundaryMarker,
-        path: `M ${boundaryMarker.left + ACTION_ANATOMY_MARKER_SIZE / 2} ${boundaryMarker.top + ACTION_ANATOMY_MARKER_SIZE / 2} H ${surfaceRect.left + surfaceRect.width + 2}`,
-      },
-    ],
-  }
-}
-
-function readAdditemAnatomy(frame: HTMLDivElement): AnatomyMetrics | null {
-  const examples = Array.from(
-    frame.querySelectorAll<HTMLElement>('[data-coin-example="additem"]'),
-  )
-  const emptyCell = examples[0]?.querySelector<HTMLElement>('button')
-  const previewCell = examples[1]?.querySelector<HTMLElement>('button')
-  const addIcon = emptyCell?.querySelector<SVGElement>('svg')
-  const thumbnail = previewCell?.querySelector<HTMLElement>('img')
-  const previewButtons = examples[1]
-    ? Array.from(examples[1].querySelectorAll<HTMLElement>('button'))
-    : []
-  const remove = previewButtons[1]
-  if (!emptyCell || !previewCell || !addIcon || !thumbnail || !remove) return null
-
-  const frameRect = frame.getBoundingClientRect()
-  const emptyRect = anatomyRect(emptyCell, frameRect)
-  const previewRect = anatomyRect(previewCell, frameRect)
-  const iconRect = anatomyRect(addIcon, frameRect)
-  const thumbnailRect = anatomyRect(thumbnail, frameRect)
-  const removeRect = anatomyRect(remove, frameRect)
-  const cellMarker = clampAnatomyMarker(
-    { left: emptyRect.left - 43, top: emptyRect.top + 7 },
-    frameRect.width,
-    frameRect.height,
-  )
-  const iconMarker = clampAnatomyMarker(
-    {
-      left: iconRect.left + iconRect.width / 2 - ACTION_ANATOMY_MARKER_SIZE / 2,
-      top: emptyRect.top + emptyRect.height + 17,
-    },
-    frameRect.width,
-    frameRect.height,
-  )
-  const thumbnailMarker = clampAnatomyMarker(
-    {
-      left: thumbnailRect.left + 6 - ACTION_ANATOMY_MARKER_SIZE / 2,
-      top: previewRect.top + previewRect.height + 17,
-    },
-    frameRect.width,
-    frameRect.height,
-  )
-  const removeMarker = clampAnatomyMarker(
-    {
-      left: Math.max(previewRect.left + previewRect.width, removeRect.left + removeRect.width) + 17,
-      top: removeRect.top + removeRect.height / 2 - ACTION_ANATOMY_MARKER_SIZE / 2,
-    },
-    frameRect.width,
-    frameRect.height,
-  )
-
-  return {
-    width: frameRect.width,
-    height: frameRect.height,
-    marks: [
-      {
-        number: 1,
-        marker: cellMarker,
-        path: `M ${cellMarker.left + ACTION_ANATOMY_MARKER_SIZE / 2} ${cellMarker.top + ACTION_ANATOMY_MARKER_SIZE / 2} H ${emptyRect.left - 4}`,
-      },
-      {
-        number: 2,
-        marker: iconMarker,
-        path: `M ${iconMarker.left + ACTION_ANATOMY_MARKER_SIZE / 2} ${iconMarker.top + ACTION_ANATOMY_MARKER_SIZE / 2} V ${iconRect.top + iconRect.height + 2}`,
-      },
-      {
-        number: 3,
-        marker: thumbnailMarker,
-        path: `M ${thumbnailMarker.left + ACTION_ANATOMY_MARKER_SIZE / 2} ${thumbnailMarker.top + ACTION_ANATOMY_MARKER_SIZE / 2} V ${thumbnailRect.top + thumbnailRect.height + 4}`,
-      },
-      {
-        number: 4,
-        marker: removeMarker,
-        path: `M ${removeMarker.left + ACTION_ANATOMY_MARKER_SIZE / 2} ${removeMarker.top + ACTION_ANATOMY_MARKER_SIZE / 2} H ${removeRect.left + removeRect.width + 4}`,
-      },
-    ],
-  }
-}
-
-function ActionFooterAnatomy() {
-  const ref = useRef<HTMLDivElement>(null)
-  const metrics = useActionAnatomy(ref, readFooterAnatomy)
-  return (
-    <div ref={ref} className="action-anatomy-live action-footer-anatomy-live">
-      <div className="action-anatomy-component action-footer-anatomy-component">
-        <ActionFooterExample title="Confirm payment" actionCount="2" />
-      </div>
-      <ActionAnatomyOverlay metrics={metrics} />
-    </div>
-  )
-}
-
-function ActionTileAnatomy() {
-  const ref = useRef<HTMLDivElement>(null)
-  const metrics = useActionAnatomy(ref, readTileAnatomy)
-  return (
-    <div ref={ref} className="action-anatomy-live action-tile-anatomy-live">
-      <div className="action-anatomy-component action-tile-anatomy-component">
-        <ActionTileExample label="Cards" iconName="ic_cards" actionable={false} />
-      </div>
-      <ActionAnatomyOverlay metrics={metrics} />
-    </div>
-  )
-}
-
-function AdditemAnatomy() {
-  const ref = useRef<HTMLDivElement>(null)
-  const metrics = useActionAnatomy(ref, readAdditemAnatomy)
-  return (
-    <div ref={ref} className="action-anatomy-live additem-anatomy-live">
-      <div className="action-anatomy-component additem-anatomy-pair">
-        <AdditemExample />
-        <AdditemExample state="preview" />
-      </div>
-      <ActionAnatomyOverlay metrics={metrics} />
     </div>
   )
 }
@@ -972,16 +568,17 @@ const actionFooterSections: GuideSectionSlots = {
     title: 'Three parts keep the next step anchored',
     description: 'The optional title, action group, and token-owned surface form one bottom action region.',
     body: (
-      <div className="anatomy-card action-anatomy-card">
-        <div className="anatomy-stage action-anatomy-stage action-footer-anatomy-stage">
-          <ActionFooterAnatomy />
-        </div>
-        <ol className="anatomy-list">
-          <AnatomyLegendItem number={1} label="Title">Optional context above the actions. Omit it when the decision is already clear.</AnatomyLegendItem>
-          <AnatomyLegendItem number={2} label="Action group">A public ButtonGroup or Stack owns horizontal or vertical button layout.</AnatomyLegendItem>
-          <AnatomyLegendItem number={3} label="Surface">ActionFooter owns background, shadow, padding, radius, and mode resolution.</AnatomyLegendItem>
-        </ol>
-      </div>
+      <Anatomy
+        title="Action Footer"
+        specimenWidth={360}
+        parts={[
+          { name: 'Title', note: 'Optional context above the actions. Omit it when the decision is already clear.', target: '[role="heading"] [dir="auto"]', side: 'top' },
+          { name: 'Action group', note: 'A public ButtonGroup or Stack owns horizontal or vertical button layout.', target: '[role="heading"] + div', side: 'right' },
+          { name: 'Surface', note: 'ActionFooter owns background, shadow, padding, radius, and mode resolution.', target: '[role="toolbar"]', side: 'bottom' },
+        ]}
+      >
+        <ActionFooterInstance title="Confirm payment" actionCount="2" />
+      </Anatomy>
     ),
   },
   configuration: {
@@ -1090,16 +687,20 @@ const actionTileSections: GuideSectionSlots = {
     title: 'One icon, one label, one boundary',
     description: 'The fixed tile keeps its destination compact. The icon capsule inherits the owner modes supplied to ActionTile.',
     body: (
-      <div className="anatomy-card action-anatomy-card">
-        <div className="anatomy-stage action-anatomy-stage tile-anatomy-stage">
-          <ActionTileAnatomy />
-        </div>
-        <ol className="anatomy-list">
-          <AnatomyLegendItem number={1} label="Icon capsule">Reinforces the destination and receives the owner’s full mode object.</AnatomyLegendItem>
-          <AnatomyLegendItem number={2} label="Label">Names one destination with a short, familiar term.</AnatomyLegendItem>
-          <AnatomyLegendItem number={3} label="Tile boundary">ActionTile owns the fixed 168 × 90 surface and token-driven styling.</AnatomyLegendItem>
-        </ol>
-      </div>
+      <Anatomy
+        title="Action Tile"
+        parts={[
+          { name: 'Icon capsule', note: 'Reinforces the destination and receives the owner’s full mode object.', target: byTestId('action-tile-anatomy-icon'), side: 'left' },
+          { name: 'Label', note: 'Names one destination with a short, familiar term.', target: '[dir="auto"]', side: 'left' },
+          { name: 'Tile boundary', note: 'ActionTile owns the fixed 168 × 90 surface and token-driven styling.', target: ':scope > div', side: 'right' },
+        ]}
+      >
+        <ActionTile
+          label="Cards"
+          icon={<IconCapsule iconName="ic_cards" testID="action-tile-anatomy-icon" />}
+          modes={actionTileModes('Light')}
+        />
+      </Anatomy>
     ),
   },
   configuration: {
@@ -1193,17 +794,36 @@ const additemSections: GuideSectionSlots = {
     title: 'Empty and preview reveal different parts',
     description: 'The 44 × 44 cell keeps the add icon, thumbnail, and optional remove affordance within one fixed boundary.',
     body: (
-      <div className="anatomy-card action-anatomy-card">
-        <div className="anatomy-stage action-anatomy-stage additem-anatomy-stage">
-          <AdditemAnatomy />
-        </div>
-        <ol className="anatomy-list">
-          <AnatomyLegendItem number={1} label="44 × 44 cell">The fixed boundary is the target and visual container.</AnatomyLegendItem>
-          <AnatomyLegendItem number={2} label="Add icon">Identifies the empty state as an attachment trigger.</AnatomyLegendItem>
-          <AnatomyLegendItem number={3} label="Thumbnail">Confirms which visual asset was selected.</AnatomyLegendItem>
-          <AnatomyLegendItem number={4} label="Remove affordance">Appears only when onRemove is supplied for a preview.</AnatomyLegendItem>
-        </ol>
-      </div>
+      <Anatomy
+        title="Add Item"
+        parts={[
+          { name: '44 × 44 cell', note: 'The fixed boundary is the target and visual container.', target: byTestId('additem-anatomy-empty'), side: 'left' },
+          { name: 'Add icon', note: 'Identifies the empty state as an attachment trigger.', target: `${byTestId('additem-anatomy-empty')} [role="img"]`, side: 'top' },
+          { name: 'Thumbnail', note: 'Confirms which visual asset was selected.', target: `${byTestId('additem-anatomy-preview')} img`, side: 'top', at: 0.15 },
+          { name: 'Remove affordance', note: 'Appears only when onRemove is supplied for a preview.', target: `${byTestId('additem-anatomy-preview')} [role="button"]`, side: 'right' },
+        ]}
+      >
+        <SpecimenRow>
+          <Specimen caption="Empty">
+            <Additem
+              state="empty"
+              modes={additemModes()}
+              accessibilityLabel="Add an attachment"
+              testID="additem-anatomy-empty"
+            />
+          </Specimen>
+          <Specimen caption="Preview">
+            <Additem
+              state="preview"
+              imageSource={attachmentSample}
+              onRemove={() => undefined}
+              modes={additemModes()}
+              accessibilityLabel="Receipt attachment preview"
+              testID="additem-anatomy-preview"
+            />
+          </Specimen>
+        </SpecimenRow>
+      </Anatomy>
     ),
   },
   configuration: {

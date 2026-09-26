@@ -18,6 +18,7 @@ import {
   MobilePageNav,
   useGuidePageNavigation,
 } from './GuideNavigation'
+import { Anatomy, Segment, byTestId } from './guide-kit'
 
 const FIGMA_URL =
   'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=3574-181'
@@ -83,6 +84,7 @@ interface CoinButtonProps extends ModeOptions {
   fill?: boolean
   onPress?: () => void
   className?: string
+  testID?: string
 }
 
 function CoinButton({
@@ -93,6 +95,7 @@ function CoinButton({
   fill = false,
   onPress,
   className,
+  testID,
   ...options
 }: CoinButtonProps) {
   const modes = useMemo(() => buttonModes(options), [options])
@@ -110,6 +113,7 @@ function CoinButton({
           loading={loading}
           onPress={onPress}
           accessibilityLabel={label}
+          testID={testID}
           style={fill ? { width: '100%' } : undefined}
           leading={
             iconPlacement === 'Start' || iconPlacement === 'Both' ? (
@@ -131,41 +135,6 @@ function CoinButton({
         />
       </SkeletonGroup>
     </div>
-  )
-}
-
-interface SegmentedControlProps<T extends string> {
-  label: string
-  value: T
-  options: readonly T[]
-  onChange: (value: T) => void
-  display?: (value: T) => string
-}
-
-function SegmentedControl<T extends string>({
-  label,
-  value,
-  options,
-  onChange,
-  display = (option) => option,
-}: SegmentedControlProps<T>) {
-  return (
-    <fieldset className="control-group">
-      <legend>{label}</legend>
-      <div className="segmented-control">
-        {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            className={value === option ? 'is-selected' : ''}
-            aria-pressed={value === option}
-            onClick={() => onChange(option)}
-          >
-            {display(option)}
-          </button>
-        ))}
-      </div>
-    </fieldset>
   )
 }
 
@@ -335,24 +304,24 @@ export function ButtonGuide() {
                   />
                 </label>
 
-                <SegmentedControl
+                <Segment
                   label="Type"
                   value={type}
                   options={['default', 'fixed', 'glass'] as const}
                   onChange={setType}
-                  display={(option) =>
+                  format={(option) =>
                     option[0].toUpperCase() + option.slice(1)
                   }
                 />
 
                 <div className="control-row">
-                  <SegmentedControl
+                  <Segment
                     label="Size"
                     value={size}
                     options={['M', 'S', 'XS'] as const}
                     onChange={setSize}
                   />
-                  <SegmentedControl
+                  <Segment
                     label="Emphasis"
                     value={emphasis}
                     options={['High', 'Medium', 'Low'] as const}
@@ -360,7 +329,7 @@ export function ButtonGuide() {
                   />
                 </div>
 
-                <SegmentedControl
+                <Segment
                   label="Intent"
                   value={intent}
                   options={['Brand', 'System'] as const}
@@ -368,7 +337,7 @@ export function ButtonGuide() {
                 />
 
                 {intent === 'Brand' ? (
-                  <SegmentedControl
+                  <Segment
                     label="Appearance"
                     value={brandAppearance}
                     options={[
@@ -380,25 +349,25 @@ export function ButtonGuide() {
                     onChange={setBrandAppearance}
                   />
                 ) : (
-                  <SegmentedControl
+                  <Segment
                     label="Meaning"
                     value={systemAppearance}
                     options={['positive', 'warning', 'negative'] as const}
                     onChange={setSystemAppearance}
-                    display={(option) =>
+                    format={(option) =>
                       option[0].toUpperCase() + option.slice(1)
                     }
                   />
                 )}
 
                 <div className="control-row">
-                  <SegmentedControl
+                  <Segment
                     label="Icon"
                     value={iconPlacement}
                     options={['None', 'Start', 'End'] as const}
                     onChange={setIconPlacement}
                   />
-                  <SegmentedControl
+                  <Segment
                     label="Theme"
                     value={colorMode}
                     options={['Light', 'Dark'] as const}
@@ -432,55 +401,27 @@ export function ButtonGuide() {
 
           <section id="anatomy" className="doc-section anchor-section">
             <SectionHeader eyebrow="Anatomy" title="Four purposeful parts">
-              Keep the component simple. The label is required; icons and the
-              start slot are supporting tools.
+              Keep the component simple. The label is required; the start slot
+              and end icon are supporting tools. Most actions need one at most,
+              and many need neither.
             </SectionHeader>
 
-            <div className="anatomy-card">
-              <div className="anatomy-stage">
-                <div className="anatomy-button-wrap">
-                  <span className="anatomy-callout anatomy-callout-top anatomy-callout-container">
-                    <b>1</b> Container
-                  </span>
-                  <span className="anatomy-callout anatomy-callout-bottom anatomy-callout-start">
-                    <b>2</b> Start slot
-                  </span>
-                  <span className="anatomy-callout anatomy-callout-top anatomy-callout-label">
-                    <b>3</b> Label
-                  </span>
-                  <span className="anatomy-callout anatomy-callout-bottom anatomy-callout-end">
-                    <b>4</b> End icon
-                  </span>
-                  <CoinButton
-                    label="Move money"
-                    iconPlacement="Both"
-                    appearance="Primary"
-                  />
-                </div>
-              </div>
-              <ol className="anatomy-list">
-                <li>
-                  <b>Container</b>
-                  <span>Holds the action and resolves its visual treatment.</span>
-                </li>
-                <li>
-                  <b>Start slot</b>
-                  <span>Optional. Use for an icon that clarifies the action.</span>
-                </li>
-                <li>
-                  <b>Label</b>
-                  <span>Required. Name the outcome in one to three words.</span>
-                </li>
-                <li>
-                  <b>End icon</b>
-                  <span>Optional. Use when direction or continuation matters.</span>
-                </li>
-              </ol>
-            </div>
-            <p className="anatomy-footnote">
-              The start slot and end icon are both available. Most actions only
-              need one, and many need neither.
-            </p>
+            <Anatomy
+              title="Button"
+              parts={[
+                { name: 'Container', note: 'Holds the action and resolves its visual treatment.', target: byTestId('button-anatomy'), side: 'left' },
+                { name: 'Start slot', note: 'Optional. Use for an icon that clarifies the action.', target: `${byTestId('button-anatomy')} > :first-child`, side: 'bottom' },
+                { name: 'Label', note: 'Required. Name the outcome in one to three words.', target: `${byTestId('button-anatomy')} [dir="auto"]`, side: 'top' },
+                { name: 'End icon', note: 'Optional. Use when direction or continuation matters.', target: `${byTestId('button-anatomy')} > :last-child`, side: 'bottom' },
+              ]}
+            >
+              <CoinButton
+                label="Move money"
+                iconPlacement="Both"
+                appearance="Primary"
+                testID="button-anatomy"
+              />
+            </Anatomy>
           </section>
 
           <section id="configuration" className="doc-section anchor-section">

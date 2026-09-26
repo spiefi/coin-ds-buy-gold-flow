@@ -1,7 +1,6 @@
 import {
   useLayoutEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -18,15 +17,15 @@ import {
   MobilePageNav,
   useGuidePageNavigation,
 } from './GuideNavigation'
+import { Anatomy, Segment, Sources, docsUrl } from './guide-kit'
 
 const FIGMA_URL =
   'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=4005-2906'
-const STORYBOOK_URL =
-  'https://jfs-components-storybook.vercel.app/?path=/docs/components-accordioncheckbox--docs'
-const STORYBOOK_DEFAULT_URL =
-  'https://jfs-components-storybook.vercel.app/iframe.html?id=components-accordioncheckbox--default&viewMode=story'
-const STORYBOOK_SELECT_ALL_URL =
-  'https://jfs-components-storybook.vercel.app/iframe.html?id=components-accordioncheckbox--controlled-select-all&viewMode=story'
+const STORYBOOK_URL = docsUrl('accordioncheckbox')
+const STORYBOOK_STORIES = [
+  { label: 'Open default story', id: 'components-accordioncheckbox--default' },
+  { label: 'Open controlled select-all story', id: 'components-accordioncheckbox--controlled-select-all' },
+] as const
 
 type ColorMode = 'Light' | 'Dark'
 
@@ -62,37 +61,6 @@ function SourceLink({ href, children }: { href: string; children: string }) {
       <span>{children}</span>
       <SmallArrow />
     </a>
-  )
-}
-
-function Segment<T extends string>({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string
-  value: T
-  options: readonly T[]
-  onChange: (value: T) => void
-}) {
-  return (
-    <fieldset className="control-group">
-      <legend>{label}</legend>
-      <div className="segmented-control">
-        {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            className={value === option ? 'is-selected' : ''}
-            aria-pressed={value === option}
-            onClick={() => onChange(option)}
-          >
-            {option}
-          </button>
-        ))}
-      </div>
-    </fieldset>
   )
 }
 
@@ -189,241 +157,6 @@ function AccordionExample({
   )
 }
 
-type AnatomyRect = {
-  left: number
-  top: number
-  width: number
-  height: number
-}
-
-type AnatomyMark = {
-  number: number
-  target: AnatomyRect
-  marker: { left: number; top: number }
-}
-
-type AnatomyMetrics = {
-  width: number
-  height: number
-  marks: AnatomyMark[]
-}
-
-const ANATOMY_MARKER_SIZE = 24
-
-function rectRelativeTo(node: Element, frameRect: DOMRect): AnatomyRect {
-  const rect = node.getBoundingClientRect()
-  return {
-    left: rect.left - frameRect.left,
-    top: rect.top - frameRect.top,
-    width: rect.width,
-    height: rect.height,
-  }
-}
-
-function unionRects(rects: AnatomyRect[]): AnatomyRect {
-  const left = Math.min(...rects.map((rect) => rect.left))
-  const top = Math.min(...rects.map((rect) => rect.top))
-  const right = Math.max(...rects.map((rect) => rect.left + rect.width))
-  const bottom = Math.max(...rects.map((rect) => rect.top + rect.height))
-  return { left, top, width: right - left, height: bottom - top }
-}
-
-function findExactText(root: Element, text: string) {
-  return Array.from(root.querySelectorAll<HTMLElement>('*'))
-    .filter((node) => node.textContent?.trim() === text)
-    .sort((first, second) => {
-      const firstRect = first.getBoundingClientRect()
-      const secondRect = second.getBoundingClientRect()
-      return firstRect.width * firstRect.height - secondRect.width * secondRect.height
-    })[0]
-}
-
-function AnatomyExample() {
-  const modes = useMemo(() => coinModes('Light'), [])
-  const anatomyRef = useRef<HTMLDivElement>(null)
-  const [metrics, setMetrics] = useState<AnatomyMetrics | null>(null)
-
-  useLayoutEffect(() => {
-    const frame = anatomyRef.current
-    if (!frame) return
-
-    const safeInset = 10
-    const clamp = (value: number, max: number) =>
-      Math.min(
-        Math.max(value, safeInset),
-        Math.max(safeInset, max - ANATOMY_MARKER_SIZE - safeInset),
-      )
-
-    const measure = () => {
-      const frameRect = frame.getBoundingClientRect()
-      const component = frame.querySelector<HTMLElement>('.accordion-anatomy-component > *')
-      const header = component?.querySelector<HTMLElement>('[role="button"]')
-      const checkbox = component?.querySelector<HTMLElement>('[role="checkbox"]')
-      const title = component ? findExactText(component, 'Axis Bank') : undefined
-      const subtitle = component ? findExactText(component, '3 accounts') : undefined
-      const chevrons = header ? Array.from(header.querySelectorAll('svg')) : []
-      const chevron = chevrons[chevrons.length - 1]
-
-      if (!component || !header || !checkbox || !title || !subtitle || !chevron) return
-
-      const directChildren = Array.from(component.children)
-      const headerChild = directChildren.find((child) => child === header || child.contains(header))
-      const headerIndex = headerChild ? directChildren.indexOf(headerChild) : -1
-      const afterHeader = headerIndex >= 0 ? directChildren.slice(headerIndex + 1) : []
-      const divider = afterHeader.length > 1 ? afterHeader[0] : undefined
-      const content = afterHeader.length > 1 ? afterHeader[afterHeader.length - 1] : undefined
-
-      if (!divider || !content) return
-
-      const checkboxRect = rectRelativeTo(checkbox, frameRect)
-      const titleRect = unionRects([
-        rectRelativeTo(title, frameRect),
-        rectRelativeTo(subtitle, frameRect),
-      ])
-      const chevronRect = rectRelativeTo(chevron, frameRect)
-      const dividerRect = rectRelativeTo(divider, frameRect)
-      const contentRect = rectRelativeTo(content, frameRect)
-      const targetRects = [checkboxRect, titleRect, chevronRect, dividerRect, contentRect]
-      const desiredMarkers = [
-        {
-          left: checkboxRect.left - ANATOMY_MARKER_SIZE - 24,
-          top: checkboxRect.top + checkboxRect.height / 2 - ANATOMY_MARKER_SIZE / 2,
-        },
-        {
-          left: titleRect.left + titleRect.width / 2 - ANATOMY_MARKER_SIZE / 2,
-          top: titleRect.top - ANATOMY_MARKER_SIZE - 22,
-        },
-        {
-          left: chevronRect.left + chevronRect.width + 22,
-          top: chevronRect.top + chevronRect.height / 2 - ANATOMY_MARKER_SIZE / 2,
-        },
-        {
-          left: dividerRect.left - ANATOMY_MARKER_SIZE - 24,
-          top: dividerRect.top + dividerRect.height / 2 - ANATOMY_MARKER_SIZE / 2,
-        },
-        {
-          left: contentRect.left + contentRect.width + 24,
-          top: contentRect.top + contentRect.height / 2 - ANATOMY_MARKER_SIZE / 2,
-        },
-      ]
-
-      const nextMetrics: AnatomyMetrics = {
-        width: frameRect.width,
-        height: frameRect.height,
-        marks: targetRects.map((target, index) => ({
-          number: index + 1,
-          target,
-          marker: {
-            left: clamp(desiredMarkers[index].left, frameRect.width),
-            top: clamp(desiredMarkers[index].top, frameRect.height),
-          },
-        })),
-      }
-      setMetrics((previous) => {
-        if (!previous) return nextMetrics
-        const closeEnough = (first: number, second: number) => Math.abs(first - second) < 0.25
-        const same =
-          closeEnough(previous.width, nextMetrics.width) &&
-          closeEnough(previous.height, nextMetrics.height) &&
-          previous.marks.length === nextMetrics.marks.length &&
-          previous.marks.every((mark, index) => {
-            const next = nextMetrics.marks[index]
-            return (
-              closeEnough(mark.target.left, next.target.left) &&
-              closeEnough(mark.target.top, next.target.top) &&
-              closeEnough(mark.target.width, next.target.width) &&
-              closeEnough(mark.target.height, next.target.height) &&
-              closeEnough(mark.marker.left, next.marker.left) &&
-              closeEnough(mark.marker.top, next.marker.top)
-            )
-          })
-        return same ? previous : nextMetrics
-      })
-    }
-
-    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure)
-    observer?.observe(frame)
-    const animationFrame = requestAnimationFrame(() => {
-      measure()
-      const component = frame.querySelector<HTMLElement>('.accordion-anatomy-component > *')
-      const header = component?.querySelector<HTMLElement>('[role="button"]')
-      const checkbox = component?.querySelector<HTMLElement>('[role="checkbox"]')
-      const title = component ? findExactText(component, 'Axis Bank') : undefined
-      const subtitle = component ? findExactText(component, '3 accounts') : undefined
-      const chevrons = header ? Array.from(header.querySelectorAll('svg')) : []
-      const chevron = chevrons[chevrons.length - 1]
-      const directChildren = component ? Array.from(component.children) : []
-      const headerChild = header
-        ? directChildren.find((child) => child === header || child.contains(header))
-        : undefined
-      const headerIndex = headerChild ? directChildren.indexOf(headerChild) : -1
-      const afterHeader = headerIndex >= 0 ? directChildren.slice(headerIndex + 1) : []
-      const divider = afterHeader.length > 1 ? afterHeader[0] : undefined
-      const content = afterHeader.length > 1 ? afterHeader[afterHeader.length - 1] : undefined
-      ;[component, header, checkbox, title, subtitle, chevron, divider, content].forEach((node) => {
-        if (node) observer?.observe(node)
-      })
-    })
-    window.addEventListener('resize', measure)
-    return () => {
-      cancelAnimationFrame(animationFrame)
-      observer?.disconnect()
-      window.removeEventListener('resize', measure)
-    }
-  }, [])
-
-  return (
-    <div ref={anatomyRef} className="accordion-anatomy-live">
-      <div className="accordion-anatomy-component">
-        <AccordionCheckbox
-          title="Axis Bank"
-          subtitle="3 accounts"
-          expanded
-          checked
-          modes={modes}
-          style={{ width: '100%' }}
-        >
-          <CheckboxGroup modes={modes} accessibilityLabel="Account choices">
-            <CheckboxItem modes={modes}>Savings • 0245</CheckboxItem>
-            <CheckboxItem modes={modes}>Current • 1182</CheckboxItem>
-            <CheckboxItem modes={modes}>Fixed deposit • 9073</CheckboxItem>
-          </CheckboxGroup>
-        </AccordionCheckbox>
-      </div>
-      {metrics ? (
-        <>
-          <svg
-            className="accordion-anatomy-leaders"
-            viewBox={`0 0 ${metrics.width} ${metrics.height}`}
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            {metrics.marks.map((mark) => (
-              <line
-                key={mark.number}
-                x1={mark.marker.left + ANATOMY_MARKER_SIZE / 2}
-                y1={mark.marker.top + ANATOMY_MARKER_SIZE / 2}
-                x2={mark.target.left + mark.target.width / 2}
-                y2={mark.target.top + mark.target.height / 2}
-              />
-            ))}
-          </svg>
-          {metrics.marks.map((mark) => (
-            <span
-              className="accordion-callout"
-              style={{ left: mark.marker.left, top: mark.marker.top }}
-              key={mark.number}
-              aria-hidden="true"
-            >
-              <b>{mark.number}</b>
-            </span>
-          ))}
-        </>
-      ) : null}
-    </div>
-  )
-}
-
 function StateCard({
   label,
   detail,
@@ -493,6 +226,7 @@ export function AccordionCheckboxGuide() {
   const [colorMode, setColorMode] = useState<ColorMode>('Light')
   const [subtitleVisible, setSubtitleVisible] = useState(true)
   const modes = useMemo(() => coinModes(colorMode), [colorMode])
+  const anatomyModes = useMemo(() => coinModes('Light'), [])
 
   useLayoutEffect(() => {
     const previousTitle = document.title
@@ -599,18 +333,32 @@ export function AccordionCheckboxGuide() {
             <SectionHeader eyebrow="Anatomy" title="Five parts make the relationship clear">
               The header combines selection and disclosure. The divider and content slot only appear when the group is open.
             </SectionHeader>
-            <div className="anatomy-card accordion-anatomy-card">
-              <div className="anatomy-stage accordion-anatomy-stage">
-                <AnatomyExample />
-              </div>
-              <ol className="anatomy-list">
-                <li><b>Checkbox</b><span>Selects the group. It does not open the content.</span></li>
-                <li><b>Title + subtitle</b><span>Names the group and gives a short piece of supporting context.</span></li>
-                <li><b>Chevron</b><span>Shows whether the content slot is collapsed or open.</span></li>
-                <li><b>Divider</b><span>Separates the header from the options when expanded.</span></li>
-                <li><b>Content slot</b><span>Usually contains a public CheckboxGroup of CheckboxItems.</span></li>
-              </ol>
-            </div>
+            <Anatomy
+              title="Accordion Checkbox"
+              specimenWidth={445}
+              parts={[
+                { name: 'Checkbox', note: 'Selects the group. It does not open the content.', target: '[role="button"] [role="checkbox"]', side: 'left' },
+                { name: 'Title + subtitle', note: 'Names the group and gives a short piece of supporting context.', target: '[role="button"] > div > div:last-child', side: 'top', at: 0.1 },
+                { name: 'Chevron', note: 'Shows whether the content slot is collapsed or open.', target: '[role="button"] > :last-child', side: 'right' },
+                { name: 'Divider', note: 'Separates the header from the options when expanded.', target: '[role="presentation"]', side: 'left' },
+                { name: 'Content slot', note: 'Usually contains a public CheckboxGroup of CheckboxItems.', target: '[role="presentation"] + div', side: 'right' },
+              ]}
+            >
+              <AccordionCheckbox
+                title="Axis Bank"
+                subtitle="3 accounts"
+                expanded
+                checked
+                modes={anatomyModes}
+                style={{ width: '100%' }}
+              >
+                <CheckboxGroup modes={anatomyModes} accessibilityLabel="Account choices">
+                  <CheckboxItem modes={anatomyModes}>Savings • 0245</CheckboxItem>
+                  <CheckboxItem modes={anatomyModes}>Current • 1182</CheckboxItem>
+                  <CheckboxItem modes={anatomyModes}>Fixed deposit • 9073</CheckboxItem>
+                </CheckboxGroup>
+              </AccordionCheckbox>
+            </Anatomy>
           </section>
 
           <section id="configuration" className="doc-section anchor-section">
@@ -732,15 +480,16 @@ export function AccordionCheckboxGuide() {
             <SectionHeader eyebrow="Sources" title="Grounded in the published component">
               The guide separates documented Coin configuration from behavior supplied by the public package at runtime.
             </SectionHeader>
-            <div className="sources-grid">
-              <a href={FIGMA_URL} target="_blank" rel="noreferrer"><span className="source-index">01</span><div><h3>Coin Components Library</h3><p>Accordion / Checkbox component set · node 4005:2906</p></div><SmallArrow /></a>
-              <a href={STORYBOOK_URL} target="_blank" rel="noreferrer"><span className="source-index">02</span><div><h3>AccordionCheckbox Storybook</h3><p>Default, Expanded, Disabled, and Controlled Select All stories</p></div><SmallArrow /></a>
-            </div>
-            <div className="verification-note">
-              <span>Checked 18 September 2026</span>
-              <p>Examples use public <code>AccordionCheckbox</code>, <code>CheckboxGroup</code>, and <code>CheckboxItem</code> exports from jfs-components 0.1.60. The npm registry latest is also 0.1.60. The component forwards modes to its slot and exposes separate checked/expanded callbacks; consumer select-all wiring is shown explicitly in context. The public disabled prop disables the parent header controls; pass disabled to nested rows when those rows must also be unavailable. In the local React Native Web preview, open/close changes immediately because the package’s LayoutAnimation request does not produce a smooth transition here; the guide does not shim it. In this web build, checkbox keyboard activation can also toggle expansion; child choices do not respond to Space. This is a known package limitation.</p>
-            </div>
-            <div className="accordion-source-links"><SourceLink href={STORYBOOK_DEFAULT_URL}>Open default story</SourceLink><SourceLink href={STORYBOOK_SELECT_ALL_URL}>Open controlled select-all story</SourceLink></div>
+            <Sources
+              checked="18 September 2026"
+              figmaUrl={FIGMA_URL}
+              figmaDescription="Accordion / Checkbox component set · node 4005:2906"
+              storybookUrl={STORYBOOK_URL}
+              storybookDescription="Default, Expanded, Disabled, and Controlled Select All stories"
+              stories={STORYBOOK_STORIES}
+            >
+              Examples use public <code>AccordionCheckbox</code>, <code>CheckboxGroup</code>, and <code>CheckboxItem</code> exports from jfs-components 0.1.60. The npm registry latest is also 0.1.60. The component forwards modes to its slot and exposes separate checked/expanded callbacks; consumer select-all wiring is shown explicitly in context. The public disabled prop disables the parent header controls; pass disabled to nested rows when those rows must also be unavailable. In the local React Native Web preview, open/close changes immediately because the package’s LayoutAnimation request does not produce a smooth transition here; the guide does not shim it. In this web build, checkbox keyboard activation can also toggle expansion; child choices do not respond to Space. This is a known package limitation.
+            </Sources>
           </section>
         </article>
         <footer><span>Coin designer documentation</span><a href="#overview">Back to top ↑</a></footer>

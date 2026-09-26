@@ -13,19 +13,13 @@ import {
   type GuideSectionSlots,
 } from './ComponentGuideTemplate'
 import {
-  AnatomyKey,
-  AnatomyOverlay,
   Readout,
   Segment,
   SourceCards,
   classes,
-  clampPin,
-  measureBox,
   storyUrl,
-  useAnatomyLayout,
-  type AnatomyLayout,
-  type AnatomyShape,
 } from './GuideParts'
+import { Anatomy, byTestId } from './guide-kit'
 
 const FIGMA_URL =
   'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=2018-4119'
@@ -81,6 +75,8 @@ type ChildOptions = {
   smallPay?: boolean
   unavailable?: 'request'
   onAction?: (label: string) => void
+  /** Adds testIDs so documentation diagrams can find each child. */
+  testIDPrefix?: string
 }
 
 function childNames(composition: Composition) {
@@ -97,8 +93,10 @@ function groupChildren({
   smallPay = false,
   unavailable,
   onAction,
+  testIDPrefix,
 }: ChildOptions): ReactNode[] {
   const press = (label: string) => (onAction ? () => onAction(label) : undefined)
+  const testID = (name: string) => (testIDPrefix ? `${testIDPrefix}-${name}` : undefined)
 
   if (composition === 'icons') {
     return ICON_ACTIONS.map((action) => (
@@ -119,8 +117,15 @@ function groupChildren({
       modes={REQUEST_MODES}
       disabled={unavailable === 'request'}
       onPress={press('Request')}
+      testID={testID('request')}
     />,
-    <Button key="pay" label="Pay" modes={payModes} onPress={press('Pay')} />,
+    <Button
+      key="pay"
+      label="Pay"
+      modes={payModes}
+      onPress={press('Pay')}
+      testID={testID('pay')}
+    />,
   ]
 
   if (composition === 'buttons') return textActions
@@ -131,6 +136,7 @@ function groupChildren({
       iconName="ic_split"
       accessibilityLabel="Split bill"
       onPress={press('Split bill')}
+      testID={testID('split')}
     />,
     ...textActions,
   ]
@@ -384,113 +390,42 @@ function HostRow({
 // Anatomy
 // ---------------------------------------------------------------------------
 
-function readGroupAnatomy(frame: HTMLDivElement): AnatomyLayout | null {
-  const host = frame.querySelector<HTMLElement>('[data-buttongroup-host]')
-  const group = host?.firstElementChild
-  const children = group ? Array.from(group.children) : []
-  if (!group || children.length !== 3) return null
-
-  const frameRect = frame.getBoundingClientRect()
-  const width = frameRect.width
-  const height = frameRect.height
-  const scale = host ? renderedScale(host) : 1
-  const px = (value: number) => formatWidth(Math.round((value / scale) * 10) / 10)
-  const groupBox = measureBox(group, frameRect)
-  const [icon, request, pay] = children.map((child) => measureBox(child, frameRect))
-  const gaps = [
-    { left: icon.left + icon.width, right: request.left },
-    { left: request.left + request.width, right: pay.left },
-  ]
-  const top = groupBox.top
-  const bottom = groupBox.top + groupBox.height
-
-  const shapes: AnatomyShape[] = [
-    { kind: 'bounds', box: groupBox },
-    ...gaps.map((gap) => ({
-      kind: 'gap' as const,
-      box: { left: gap.left, top, width: gap.right - gap.left, height: groupBox.height },
-    })),
-    ...[icon, request, pay].map((box) => ({ kind: 'child' as const, box })),
-  ]
-
-  // Measured widths sit below the row.
-  const dimensionY = bottom + 18
-  ;[icon, request, pay].forEach((box) => {
-    shapes.push({
-      kind: 'dimension',
-      path: `M ${box.left + 1} ${dimensionY - 4} V ${dimensionY + 4} M ${box.left + 1} ${dimensionY} H ${box.left + box.width - 1} M ${box.left + box.width - 1} ${dimensionY - 4} V ${dimensionY + 4}`,
-      label: px(box.width),
-      x: box.left + box.width / 2,
-      y: dimensionY + 17,
-    })
-  })
-  gaps.forEach((gap) => {
-    shapes.push({
-      kind: 'dimension',
-      path: '',
-      label: px(gap.right - gap.left),
-      x: (gap.left + gap.right) / 2,
-      y: dimensionY + 17,
-    })
-  })
-
-  const rowPin = clampPin(groupBox.left - 30, top + groupBox.height / 2, width, height)
-  const iconCenter = icon.left + icon.width / 2
-  const gapCenter = (gaps[0].left + gaps[0].right) / 2
-  const iconPin = clampPin(iconCenter - 18, top - 40, width, height)
-  const gapPin = clampPin(gapCenter + 22, top - 40, width, height)
-  const bracketY = top - 12
-  const buttonsPin = clampPin(
-    (request.left + pay.left + pay.width) / 2,
-    top - 38,
-    width,
-    height,
-  )
-
-  shapes.push({
-    kind: 'dimension',
-    path: `M ${request.left + 1} ${bracketY + 5} V ${bracketY} H ${pay.left + pay.width - 1} V ${bracketY + 5}`,
-    label: '',
-    x: 0,
-    y: 0,
-  })
-
-  return {
-    width,
-    height,
-    shapes,
-    pins: [
-      { number: 1, ...rowPin, path: `M ${rowPin.x + 11} ${rowPin.y} H ${groupBox.left - 3}` },
-      { number: 2, ...iconPin, path: `M ${iconPin.x} ${iconPin.y + 11} L ${iconCenter} ${top - 3}` },
-      { number: 3, ...gapPin, path: `M ${gapPin.x} ${gapPin.y + 11} L ${gapCenter} ${top - 3}` },
-      { number: 4, ...buttonsPin, path: `M ${buttonsPin.x} ${buttonsPin.y + 11} V ${bracketY}` },
-    ],
-  }
-}
+const ANATOMY_MODES = groupModes('M', 'Medium')
+const ANATOMY_ID = 'buttongroup-anatomy'
+// ButtonGroup exposes no testID, so its root is the specimen's only child.
+const ANATOMY_ROW = ':scope > div'
+const ANATOMY_ICON = byTestId(`${ANATOMY_ID}-split`)
+const ANATOMY_REQUEST = byTestId(`${ANATOMY_ID}-request`)
+const ANATOMY_PAY = byTestId(`${ANATOMY_ID}-pay`)
 
 function ButtonGroupAnatomy() {
-  const ref = useRef<HTMLDivElement>(null)
-  const layout = useAnatomyLayout(ref, readGroupAnatomy)
-  const [scale, setScale] = useState(1)
   return (
-    <div className="coin-guide-anatomy-stage coin-buttongroup-anatomy-stage" ref={ref}>
-      <span className="coin-guide-zoom-note">
-        {scale < 0.999
-          ? `320 px host · shown at ${Math.round(scale * 100)}%`
-          : '320 px host · actual size'}
-      </span>
-      <div className="coin-buttongroup-anatomy-live">
-        <FitWidth width={320} onScaleChange={setScale}>
-          <GroupSpecimen
-            composition="mixed"
-            host={320}
-            strict
-            className="coin-buttongroup-anatomy-host"
-          />
-        </FitWidth>
-      </div>
-      <AnatomyOverlay layout={layout} />
-    </div>
+    <Anatomy
+      title="Button Group"
+      specimenWidth={320}
+      scale={1}
+      parts={[
+        { name: 'Row', note: 'Fills the width its host provides, centers children vertically, and adds no padding or background.', target: ANATOMY_ROW, side: 'left' },
+        { name: 'Icon action', note: 'A direct IconButton child keeps its own circular size instead of stretching.', target: ANATOMY_ICON, side: 'top' },
+        { name: 'Gap', note: 'One token gap, buttonGroup/gap, separates every pair of neighbors.', between: [ANATOMY_ICON, ANATOMY_REQUEST], side: 'top' },
+        { name: 'Text actions', note: 'Every Button child stretches, so the Buttons share the remaining width equally.', target: ANATOMY_REQUEST, side: 'top' },
+      ]}
+      marks={[
+        { kind: 'outline', target: ANATOMY_ROW, variant: 'bounds' },
+        { kind: 'outline', target: ANATOMY_ICON, variant: 'child' },
+        { kind: 'outline', target: ANATOMY_REQUEST, variant: 'child' },
+        { kind: 'outline', target: ANATOMY_PAY, variant: 'child' },
+        { kind: 'gap', from: ANATOMY_ICON, to: ANATOMY_REQUEST },
+        { kind: 'gap', from: ANATOMY_REQUEST, to: ANATOMY_PAY },
+        { kind: 'size', target: ANATOMY_ICON, side: 'bottom' },
+        { kind: 'size', target: ANATOMY_REQUEST, side: 'bottom' },
+        { kind: 'size', target: ANATOMY_PAY, side: 'bottom' },
+      ]}
+    >
+      <ButtonGroup modes={ANATOMY_MODES}>
+        {groupChildren({ composition: 'mixed', testIDPrefix: ANATOMY_ID })}
+      </ButtonGroup>
+    </Anatomy>
   )
 }
 
@@ -598,23 +533,7 @@ export function ButtonGroupGuide() {
       description:
         'ButtonGroup has no surface of its own. It places its children in one row, separates them with a token gap, and decides which children stretch.',
       body: (
-        <div className="anatomy-card coin-guide-anatomy-card">
-          <ButtonGroupAnatomy />
-          <ol className="anatomy-list coin-guide-anatomy-list">
-            <AnatomyKey number={1} label="Row">
-              Fills the width its host provides, centers children vertically, and adds no padding or background.
-            </AnatomyKey>
-            <AnatomyKey number={2} label="Icon action">
-              A direct IconButton child keeps its own circular size instead of stretching.
-            </AnatomyKey>
-            <AnatomyKey number={3} label="Gap">
-              One token gap, <code>buttonGroup/gap</code>, separates every pair of neighbors.
-            </AnatomyKey>
-            <AnatomyKey number={4} label="Text actions">
-              Every Button child stretches, so the Buttons share the remaining width equally.
-            </AnatomyKey>
-          </ol>
-        </div>
+        <ButtonGroupAnatomy />
       ),
     },
     configuration: {

@@ -57,6 +57,8 @@ Reference guide: `src/BadgeGuide.tsx`.
   numbered legend are drawn for you, and pins stay visible on mobile.
 - `target` is a CSS selector inside the specimen. Prefer `byTestId()` on a
   `testID` the component exposes; otherwise use a short structural selector.
+- To point at empty space (a gap), use `between: [fromSelector, toSelector]`
+  instead of `target`.
 - `side` is where the pin sits: `top`, `right`, `bottom`, or `left`. Spread
   parts across sides so leaders stay short. `at` (0–1) moves the landing point
   along the target's facing edge.
@@ -66,10 +68,19 @@ Reference guide: `src/BadgeGuide.tsx`.
 - Several variants in one diagram: wrap them in `<SpecimenRow>` and
   `<Specimen caption="…">`.
 - `surface="dark"` for components designed for dark or media backgrounds.
+- `marks` adds measured teaching marks, keyed under the legend automatically:
+  `{ kind: 'outline', target, variant: 'bounds' | 'child' }`,
+  `{ kind: 'gap', from, to }` (hatched band plus its px size), and
+  `{ kind: 'size', target, side, label: 'both' }` (dimension line in real px,
+  e.g. "44 × 44"), and `{ kind: 'padding', target }` (inset bands read from
+  the element's real padding; it warns if there is none). Keep size marks off
+  the sides that carry pins. Add `each: true` to outline every match.
+- Measured examples outside the anatomy section (e.g. Sizing) use
+  `<Anatomy legend={false} marks={…}>`: a compact stage with marks only.
 
 **Self-check:** in `npm run dev`, Anatomy warns in the console with a
 `[guide-kit]` prefix when a target matches nothing, pins overlap or are clipped,
-or copy is too long. Read all results at once with `window.__guideKit`. An
+a size label is covered by a pin, or copy is too long. Read all results at once with `window.__guideKit`. An
 empty list for every diagram means the anatomy is correct at that width. Check
 1280 px and 390 px.
 

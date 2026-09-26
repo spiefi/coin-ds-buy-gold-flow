@@ -123,12 +123,16 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin: 0;
   padding: 28px 30px;
+}
+
+.gk-anatomy-legend ol {
+  margin: 0;
+  padding: 0;
   list-style: none;
 }
 
-.gk-anatomy-legend li {
+.gk-anatomy-legend ol > li {
   display: grid;
   grid-template-columns: 22px minmax(0, 6.5rem) minmax(0, 1fr);
   gap: 12px;
@@ -137,7 +141,7 @@
   border-bottom: 1px solid var(--line);
 }
 
-.gk-anatomy-legend li:last-child {
+.gk-anatomy-legend ol > li:last-child {
   border-bottom: 0;
 }
 
@@ -150,7 +154,7 @@
   line-height: 1.35;
 }
 
-.gk-anatomy-legend li > span:last-child {
+.gk-anatomy-legend ol > li > span:last-child {
   color: var(--muted);
   font-size: 0.86rem;
   line-height: 1.45;
@@ -189,14 +193,128 @@
     padding: 18px 20px;
   }
 
-  .gk-anatomy-legend li {
+  .gk-anatomy-legend ol > li {
     grid-template-columns: 22px minmax(0, 1fr);
     row-gap: 4px;
   }
 
-  .gk-anatomy-legend li > span:last-child {
+  .gk-anatomy-legend ol > li > span:last-child {
     grid-column: 2;
   }
+}
+
+.gk-anatomy.is-bare {
+  grid-template-columns: 1fr;
+  border-radius: 16px;
+}
+
+.gk-anatomy.is-bare .gk-anatomy-stage {
+  min-height: 0;
+  padding: 20px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+/* Measured marks --------------------------------------------------------- */
+
+.gk-anatomy {
+  --gk-bounds: #6b4aa0;
+  --gk-child: #3f7dc0;
+  --gk-gap: #c98a2b;
+}
+
+.gk-anatomy.is-dark {
+  --gk-bounds: #c9b0ee;
+  --gk-child: #7eb6f0;
+  --gk-gap: #e2b15e;
+}
+
+.gk-anatomy-leaders .gk-mark-bounds {
+  fill: none;
+  stroke: var(--gk-bounds);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.gk-anatomy-leaders .gk-mark-child {
+  fill: none;
+  stroke: var(--gk-child);
+  stroke-width: 1;
+}
+
+.gk-anatomy-leaders .gk-mark-gap {
+  fill: color-mix(in srgb, var(--gk-gap) 28%, transparent);
+  stroke: color-mix(in srgb, var(--gk-gap) 70%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+
+.gk-anatomy-leaders .gk-mark-padding {
+  fill: color-mix(in srgb, var(--gk-bounds) 16%, transparent);
+  stroke: none;
+}
+
+.gk-mark-dimension path {
+  stroke: var(--gk-leader);
+  stroke-width: 1;
+}
+
+.gk-anatomy-leaders .gk-mark-dimension rect {
+  fill: var(--gk-stage);
+  stroke: none;
+}
+
+.gk-mark-dimension text {
+  fill: var(--gk-leader);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.gk-mark-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 14px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.76rem;
+  list-style: none;
+}
+
+.gk-mark-key li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gk-mark-swatch {
+  display: inline-block;
+  width: 16px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.gk-mark-swatch.is-bounds {
+  border: 1.5px dashed var(--gk-bounds);
+}
+
+.gk-mark-swatch.is-child {
+  border: 1px solid var(--gk-child);
+}
+
+.gk-mark-swatch.is-gap {
+  background: color-mix(in srgb, var(--gk-gap) 28%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--gk-gap) 70%, transparent);
+}
+
+.gk-mark-swatch.is-padding {
+  background: color-mix(in srgb, var(--gk-bounds) 16%, transparent);
+}
+
+.gk-mark-swatch.is-size {
+  height: 0;
+  border-top: 1px solid var(--gk-leader);
 }
 
 /* Sources ---------------------------------------------------------------- */

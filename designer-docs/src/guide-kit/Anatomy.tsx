@@ -12,12 +12,25 @@ export type AnatomyPart = {
   /** One short sentence shown in the legend. */
   note: string
   /** CSS selector resolved inside the specimen. Prefer byTestId(). */
-  target: string
+  target?: string
+  /** Point at the space between two elements instead of an element. */
+  between?: readonly [string, string]
   /** Which side of the specimen the pin sits on. */
   side: AnatomySide
   /** Where the leader lands along the target's facing edge, 0–1. Default 0.5. */
   at?: number
 }
+
+/**
+ * Measured teaching marks drawn on the stage. Outlines show component or
+ * child bounds, gaps show the space between two elements, and size marks
+ * label a dimension in unscaled px.
+ */
+export type AnatomyMark =
+  | { kind: 'outline'; target: string; variant?: 'bounds' | 'child'; each?: boolean }
+  | { kind: 'gap'; from: string; to: string; label?: boolean }
+  | { kind: 'size'; target: string; side: AnatomySide; label?: 'auto' | 'both' }
+  | { kind: 'padding'; target: string }
 
 export function byTestId(id: string) {
   return `[data-testid="${id}"]`
@@ -27,15 +40,19 @@ const PIN = 22
 const LANE_GAP = 20
 const PIN_SPACING = PIN + 8
 const STAGE_PADDING = 56
+const BARE_PADDING = 20
 const AUTO_STEPS = [3, 2.5, 2, 1.5] as const
 const AUTO_MAX_WIDTH = 280
-const AUTO_MAX_HEIGHT = 120
+const AUTO_MAX_HEIGHT = 240
 const MAX_NAME_LENGTH = 28
 const MAX_NOTE_LENGTH = 120
 
 type Point = { x: number; y: number }
 type Box = { left: number; top: number; right: number; bottom: number }
 type PinLayout = { number: number; x: number; y: number; anchor: Point; path: string }
+type MarkLayout =
+  | { type: 'rect'; variant: 'bounds' | 'child' | 'gap' | 'padding'; x: number; y: number; w: number; h: number }
+  | { type: 'dimension'; path: string; x: number; y: number; text: string }
 type Geometry = {
   scale: number
   innerWidth: number | undefined
@@ -44,6 +61,7 @@ type Geometry = {
   stageWidth: number
   stageHeight: number
   pins: PinLayout[]
+  marks: MarkLayout[]
   issues: string[]
 }
 
@@ -55,6 +73,7 @@ const INITIAL: Geometry = {
   stageWidth: 0,
   stageHeight: 0,
   pins: [],
+  marks: [],
   issues: [],
 }
 
@@ -149,6 +168,44 @@ function leaderPath(side: AnatomySide, pin: Point, anchor: Point, frame: Box) {
     : `M${pin.x - r} ${pin.y}H${knee}V${anchor.y}H${anchor.x}`
 }
 
+/** The space between two boxes: side by side if they do not overlap horizontally, else stacked. */
+function gapBox(from: Box, to: Box): Box | null {
+  const horizontal = to.left >= from.right - 0.5
+  const box: Box = horizontal
+    ? { left: from.right, right: to.left, top: Math.min(from.top, to.top), bottom: Math.max(from.bottom, to.bottom) }
+    : { left: Math.min(from.left, to.left), right: Math.max(from.right, to.right), top: from.bottom, bottom: to.top }
+  return box.right - box.left > 0 && box.bottom - box.top > 0 ? box : null
+}
+
+const DIMENSION_OFFSET = 12
+const TICK = 4
+
+function formatPx(value: number) {
+  const rounded = Math.round(value * 2) / 2
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)
+}
+
+function dimensionMark(box: Box, side: AnatomySide, text: string): MarkLayout {
+  if (side === 'top' || side === 'bottom') {
+    const y = side === 'top' ? box.top - DIMENSION_OFFSET : box.bottom + DIMENSION_OFFSET
+    return {
+      type: 'dimension',
+      path: `M${box.left} ${y - TICK}V${y + TICK}M${box.left} ${y}H${box.right}M${box.right} ${y - TICK}V${y + TICK}`,
+      x: (box.left + box.right) / 2,
+      y,
+      text,
+    }
+  }
+  const x = side === 'left' ? box.left - DIMENSION_OFFSET : box.right + DIMENSION_OFFSET
+  return {
+    type: 'dimension',
+    path: `M${x - TICK} ${box.top}H${x + TICK}M${x} ${box.top}V${box.bottom}M${x - TICK} ${box.bottom}H${x + TICK}`,
+    x,
+    y: (box.top + box.bottom) / 2,
+    text,
+  }
+}
+
 function signature(geometry: Geometry) {
   return JSON.stringify(geometry, (_key, value) =>
     typeof value === 'number' ? Math.round(value * 10) / 10 : value,
@@ -170,14 +227,20 @@ function report(title: string, issues: string[]) {
 }
 
 export function Anatomy({
-  parts,
+  parts = [],
+  marks = [],
+  legend = true,
   children,
   scale: scaleMode = 'auto',
   specimenWidth,
   surface = 'light',
   title = 'Anatomy',
 }: {
-  parts: readonly AnatomyPart[]
+  parts?: readonly AnatomyPart[]
+  /** false renders only a compact measured stage, e.g. for Sizing examples. */
+  legend?: boolean
+  /** Optional measured outlines, gaps, and dimensions. */
+  marks?: readonly AnatomyMark[]
   children: ReactNode
   /** 'auto' enlarges small specimens in fixed steps (1.5×–3×). */
   scale?: 'auto' | number
@@ -201,7 +264,7 @@ export function Anatomy({
     if (!stage || !inner) return
     const current = geometryRef.current
     const stageWidth = stage.clientWidth
-    const available = Math.max(stageWidth - STAGE_PADDING * 2, 40)
+    const available = Math.max(stageWidth - (legend ? STAGE_PADDING : BARE_PADDING) * 2, 40)
     const innerWidth = specimenWidth ? Math.min(specimenWidth, available) : undefined
     if (innerWidth !== current.innerWidth) {
       setGeometry({ ...current, innerWidth })
@@ -233,9 +296,25 @@ export function Anatomy({
       if (part.note.length > MAX_NOTE_LENGTH) {
         issues.push(`part ${index + 1} note is longer than ${MAX_NOTE_LENGTH} characters`)
       }
-      const node = inner.querySelector(part.target)
+      if (part.between) {
+        const [fromNode, toNode] = part.between.map((selector) => inner.querySelector(selector))
+        if (!fromNode || !toNode) {
+          issues.push(`part ${index + 1} "${part.name}" between [${part.between.join(', ')}] matched nothing`)
+          return null
+        }
+        const box = gapBox(
+          relativeBox(fromNode.getBoundingClientRect(), stageRect),
+          relativeBox(toNode.getBoundingClientRect(), stageRect),
+        )
+        if (!box) {
+          issues.push(`part ${index + 1} "${part.name}" found no space between its targets`)
+          return null
+        }
+        return anchorPoint(box, part.side, part.at ?? 0.5)
+      }
+      const node = part.target ? inner.querySelector(part.target) : null
       if (!node) {
-        issues.push(`part ${index + 1} "${part.name}" target ${part.target} matched nothing`)
+        issues.push(`part ${index + 1} "${part.name}" target ${part.target ?? '(none)'} matched nothing`)
         return null
       }
       const box = relativeBox(node.getBoundingClientRect(), stageRect)
@@ -284,6 +363,115 @@ export function Anatomy({
       }
     }
 
+    const boxOf = (selector: string, label: string) => {
+      const node = inner.querySelector(selector)
+      if (!node) {
+        issues.push(`${label} target ${selector} matched nothing`)
+        return null
+      }
+      return relativeBox(node.getBoundingClientRect(), stageRect)
+    }
+    const markLayouts: MarkLayout[] = []
+    marks.forEach((mark, index) => {
+      const label = `mark ${index + 1} (${mark.kind})`
+      if (mark.kind === 'outline') {
+        const nodes = mark.each
+          ? Array.from(inner.querySelectorAll(mark.target))
+          : [inner.querySelector(mark.target)].filter((node): node is Element => node !== null)
+        if (!nodes.length) issues.push(`${label} target ${mark.target} matched nothing`)
+        for (const node of nodes) {
+          const box = relativeBox(node.getBoundingClientRect(), stageRect)
+          markLayouts.push({
+            type: 'rect',
+            variant: mark.variant ?? 'bounds',
+            x: box.left,
+            y: box.top,
+            w: box.right - box.left,
+            h: box.bottom - box.top,
+          })
+        }
+        return
+      }
+      if (mark.kind === 'gap') {
+        const from = boxOf(mark.from, label)
+        const to = boxOf(mark.to, label)
+        if (!from || !to) return
+        const gap = gapBox(from, to)
+        if (!gap) {
+          issues.push(`${label} found no space between its targets`)
+          return
+        }
+        const horizontal = to.left >= from.right - 0.5
+        markLayouts.push({ type: 'rect', variant: 'gap', x: gap.left, y: gap.top, w: gap.right - gap.left, h: gap.bottom - gap.top })
+        if (mark.label !== false) {
+          const size = (horizontal ? gap.right - gap.left : gap.bottom - gap.top) / scale
+          markLayouts.push(dimensionMark(gap, horizontal ? 'bottom' : 'right', formatPx(size)))
+        }
+        return
+      }
+      if (mark.kind === 'padding') {
+        const node = inner.querySelector<HTMLElement>(mark.target)
+        if (!node) {
+          issues.push(`${label} target ${mark.target} matched nothing`)
+          return
+        }
+        const box = relativeBox(node.getBoundingClientRect(), stageRect)
+        const style = getComputedStyle(node)
+        const [top, right, bottom, left] = [
+          style.paddingTop,
+          style.paddingRight,
+          style.paddingBottom,
+          style.paddingLeft,
+        ].map((value) => (parseFloat(value) || 0) * scale)
+        if (top + right + bottom + left === 0) {
+          issues.push(`${label} target has no padding; remove the mark`)
+          return
+        }
+        const w = box.right - box.left
+        const h = box.bottom - box.top
+        const bands = [
+          { x: box.left, y: box.top, w, h: top },
+          { x: box.left, y: box.bottom - bottom, w, h: bottom },
+          { x: box.left, y: box.top + top, w: left, h: h - top - bottom },
+          { x: box.right - right, y: box.top + top, w: right, h: h - top - bottom },
+        ]
+        for (const band of bands) {
+          if (band.w > 0 && band.h > 0) markLayouts.push({ type: 'rect', variant: 'padding', ...band })
+        }
+        return
+      }
+      const box = boxOf(mark.target, label)
+      if (!box) return
+      const width = (box.right - box.left) / scale
+      const height = (box.bottom - box.top) / scale
+      const text =
+        mark.label === 'both'
+          ? `${formatPx(width)} × ${formatPx(height)}`
+          : formatPx(mark.side === 'top' || mark.side === 'bottom' ? width : height)
+      markLayouts.push(dimensionMark(box, mark.side, text))
+    })
+
+    const dimensions = markLayouts.filter(
+      (mark): mark is Extract<MarkLayout, { type: 'dimension' }> => mark.type === 'dimension',
+    )
+    dimensions.forEach((a, i) => {
+      for (const b of dimensions.slice(i + 1)) {
+        const apart = a.text.length * 3.2 + 6 + b.text.length * 3.2 + 6
+        if (Math.abs(a.x - b.x) < apart - 1 && Math.abs(a.y - b.y) < 16) {
+          issues.push(`size labels "${a.text}" and "${b.text}" overlap`)
+        }
+      }
+    })
+    for (const mark of markLayouts) {
+      if (mark.type !== 'dimension') continue
+      const halfWidth = mark.text.length * 3.2 + 6
+      for (const pin of pins) {
+        if (Math.abs(pin.x - mark.x) < halfWidth + PIN / 2 && Math.abs(pin.y - mark.y) < 9 + PIN / 2) {
+          issues.push(`pin ${pin.number} covers the "${mark.text}" size label`)
+        }
+      }
+    }
+
     const next: Geometry = {
       scale,
       innerWidth,
@@ -292,6 +480,7 @@ export function Anatomy({
       stageWidth,
       stageHeight,
       pins,
+      marks: markLayouts,
       issues,
     }
     if (signature(next) !== signature(current)) setGeometry(next)
@@ -314,12 +503,22 @@ export function Anatomy({
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure)
     observer?.observe(stage)
     observer?.observe(inner)
+    // Components that draw after their own layout pass (charts) change
+    // content without resizing; re-measure once per frame when that happens.
+    let frameId = 0
+    const mutations = new MutationObserver(() => {
+      cancelAnimationFrame(frameId)
+      frameId = requestAnimationFrame(measure)
+    })
+    mutations.observe(inner, { childList: true, subtree: true, attributes: true })
     const settleId = window.setTimeout(measure, 300)
     void document.fonts?.ready.then(measure)
     window.addEventListener('resize', measure)
     inner.addEventListener('load', measure, true)
     return () => {
       observer?.disconnect()
+      mutations.disconnect()
+      cancelAnimationFrame(frameId)
       window.clearTimeout(settleId)
       window.clearTimeout(reportTimer.current)
       window.removeEventListener('resize', measure)
@@ -330,7 +529,7 @@ export function Anatomy({
   const shownScale = Math.round(geometry.scale * 10) / 10
 
   return (
-    <div className={`gk-anatomy${surface === 'dark' ? ' is-dark' : ''}`}>
+    <div className={`gk-anatomy${surface === 'dark' ? ' is-dark' : ''}${legend ? '' : ' is-bare'}`}>
       <div
         className="gk-anatomy-stage"
         ref={stageRef}
@@ -361,6 +560,33 @@ export function Anatomy({
             height={geometry.stageHeight}
             aria-hidden="true"
           >
+            {geometry.marks.map((mark, index) =>
+              mark.type === 'rect' ? (
+                <rect
+                  key={`mark-${index}`}
+                  className={`gk-mark-${mark.variant}`}
+                  x={mark.x}
+                  y={mark.y}
+                  width={Math.max(0, mark.w)}
+                  height={Math.max(0, mark.h)}
+                  rx={mark.variant === 'gap' || mark.variant === 'padding' ? 0 : 4}
+                />
+              ) : (
+                <g className="gk-mark-dimension" key={`mark-${index}`}>
+                  <path d={mark.path} />
+                  <rect
+                    x={mark.x - (mark.text.length * 3.2 + 6)}
+                    y={mark.y - 8}
+                    width={mark.text.length * 6.4 + 12}
+                    height={16}
+                    rx={8}
+                  />
+                  <text x={mark.x} y={mark.y + 3.5} textAnchor="middle">
+                    {mark.text}
+                  </text>
+                </g>
+              ),
+            )}
             {geometry.pins.map((pin) => (
               <g key={pin.number}>
                 <path d={pin.path} />
@@ -380,16 +606,46 @@ export function Anatomy({
           </span>
         ))}
       </div>
-      <ol className="gk-anatomy-legend">
-        {parts.map((part, index) => (
-          <li key={part.name}>
-            <span className="gk-pin" aria-hidden="true">{index + 1}</span>
-            <b>{part.name}</b>
-            <span>{part.note}</span>
-          </li>
-        ))}
-      </ol>
+      {legend && <div className="gk-anatomy-legend">
+        <ol>
+          {parts.map((part, index) => (
+            <li key={part.name}>
+              <span className="gk-pin" aria-hidden="true">{index + 1}</span>
+              <b>{part.name}</b>
+              <span>{part.note}</span>
+            </li>
+          ))}
+        </ol>
+        {marks.length > 0 && <MarkKey marks={marks} />}
+      </div>}
     </div>
+  )
+}
+
+const MARK_KEY: Record<string, string> = {
+  bounds: 'Component bounds',
+  child: 'Child bounds',
+  padding: 'Padding',
+  gap: 'Gap',
+  size: 'Measured size (px)',
+}
+
+function MarkKey({ marks }: { marks: readonly AnatomyMark[] }) {
+  const kinds = new Set<string>()
+  for (const mark of marks) {
+    kinds.add(mark.kind === 'outline' ? (mark.variant ?? 'bounds') : mark.kind)
+    if (mark.kind === 'gap' && mark.label !== false) kinds.add('size')
+  }
+  const order = ['bounds', 'child', 'padding', 'gap', 'size'].filter((kind) => kinds.has(kind))
+  return (
+    <ul className="gk-mark-key" aria-label="Diagram marks">
+      {order.map((kind) => (
+        <li key={kind}>
+          <span className={`gk-mark-swatch is-${kind}`} aria-hidden="true" />
+          {MARK_KEY[kind]}
+        </li>
+      ))}
+    </ul>
   )
 }
 

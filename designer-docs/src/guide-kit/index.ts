@@ -5,6 +5,7 @@ export {
   Specimen,
   SpecimenRow,
   byTestId,
+  type AnatomyMark,
   type AnatomyPart,
   type AnatomySide,
 } from './Anatomy'

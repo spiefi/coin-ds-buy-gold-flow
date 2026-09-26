@@ -1,7 +1,5 @@
 import {
-  useLayoutEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -16,11 +14,20 @@ import {
   ComponentGuideTemplate,
   type GuideSectionSlots,
 } from './ComponentGuideTemplate'
+import { Anatomy, Segment, Sources, docsUrl } from './guide-kit'
 
 const FIGMA_URL =
   'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=4225-1049'
-const STORYBOOK_URL =
-  'https://jfs-components-storybook.vercel.app/?path=/docs/components-arealinechart--docs'
+const STORYBOOK_URL = docsUrl('arealinechart')
+const AREA_STORIES = [
+  { label: 'Open default story', id: 'components-arealinechart--default' },
+  { label: 'Open interactive story', id: 'components-arealinechart--interactive' },
+]
+
+// AreaLineChart exposes no testID; these follow its public render order:
+// [role="img"] > body > [Y axis, plot column > [plot, X axis]].
+const Y_AXIS = '[role="img"] > div > div:first-child'
+const PLOT_COLUMN = '[role="img"] > div > div:last-child'
 
 type Preset = 'trend' | 'comparison' | 'forecast'
 type Curve = 'linear' | 'monotone'
@@ -31,37 +38,6 @@ const LIGHT_CHART_MODES: Modes = {
   'Appearance / DataViz': 'Primary',
   'Emphasis / DataViz': 'High',
 } as Modes
-
-function SmallArrow() {
-  return <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" /></svg>
-}
-
-function SourceLink({ href, children }: { href: string; children: string }) {
-  return <a className="source-link" href={href} target="_blank" rel="noreferrer"><span>{children}</span><SmallArrow /></a>
-}
-
-function Segment<T extends string>({
-  label,
-  value,
-  options,
-  onChange,
-  display = (option) => option,
-}: {
-  label: string
-  value: T
-  options: readonly T[]
-  onChange: (value: T) => void
-  display?: (value: T) => string
-}) {
-  return (
-    <fieldset className="control-group">
-      <legend>{label}</legend>
-      <div className="segmented-control">
-        {options.map((option) => <button key={option} type="button" className={value === option ? 'is-selected' : ''} aria-pressed={value === option} onClick={() => onChange(option)}>{display(option)}</button>)}
-      </div>
-    </fieldset>
-  )
-}
 
 function presetData(preset: Preset): { labels: string[]; series: ChartSeries[]; goalPin?: number } {
   if (preset === 'comparison') {
@@ -177,108 +153,36 @@ function AreaChartExample({
 }
 
 function AreaAnatomy() {
-  const frameRef = useRef<HTMLDivElement>(null)
-  const [metrics, setMetrics] = useState<{
-    width: number
-    height: number
-    marks: Array<{ target: { left: number; top: number; width: number; height: number }; marker: { left: number; top: number } }>
-  } | null>(null)
-
-  useLayoutEffect(() => {
-    const frame = frameRef.current
-    if (!frame) return
-    let active = true
-    let scheduledFrame = 0
-    const markerSize = 24
-    const rect = (node: Element, frameRect: DOMRect) => {
-      const bounds = node.getBoundingClientRect()
-      return {
-        left: bounds.left - frameRect.left,
-        top: bounds.top - frameRect.top,
-        width: bounds.width,
-        height: bounds.height,
-      }
-    }
-    const findVisibleText = (root: Element, text: string) => Array.from(root.querySelectorAll<HTMLElement>('*'))
-      .filter((node) => node.textContent?.trim() === text && node.getBoundingClientRect().width > 0)
-      .sort((first, second) => {
-        const firstBounds = first.getBoundingClientRect()
-        const secondBounds = second.getBoundingClientRect()
-        return firstBounds.width * firstBounds.height - secondBounds.width * secondBounds.height
-      })[0]
-    const clamp = (value: number, max: number) => Math.min(Math.max(value, 10), Math.max(10, max - markerSize - 10))
-    const measure = () => {
-      if (!active) return
-      const frameRect = frame.getBoundingClientRect()
-      const chart = frame.querySelector<HTMLElement>('[role="img"]')
-      if (!chart || frameRect.width === 0 || frameRect.height === 0) return
-      const plot = chart.querySelector<HTMLElement>('svg')
-      const goal = findVisibleText(chart, '725k')
-      const xLabel = findVisibleText(chart, 'Jun')
-      const yLabel = Array.from(chart.querySelectorAll<HTMLElement>('*'))
-        .filter((node) => /^\d+k$/.test(node.textContent?.trim() ?? '') && node.getBoundingClientRect().width > 0)
-        .sort((first, second) => first.getBoundingClientRect().top - second.getBoundingClientRect().top)[0]
-      if (!plot || !goal || !xLabel || !yLabel) return
-      const targets = [yLabel, plot, goal, xLabel].map((node) => rect(node, frameRect))
-      const desired = [
-        { left: targets[0].left - markerSize - 18, top: targets[0].top + targets[0].height / 2 - markerSize / 2 },
-        { left: targets[1].left + targets[1].width * 0.52, top: targets[1].top + targets[1].height * 0.48 - markerSize / 2 },
-        { left: targets[2].left - markerSize - 12, top: targets[2].top + targets[2].height / 2 - markerSize / 2 },
-        { left: targets[3].left + targets[3].width / 2 - markerSize / 2, top: targets[3].top - markerSize - 8 },
-      ]
-      const next = {
-        width: frameRect.width,
-        height: frameRect.height,
-        marks: targets.map((target, index) => ({
-          target,
-          marker: { left: clamp(desired[index].left, frameRect.width), top: clamp(desired[index].top, frameRect.height) },
-        })),
-      }
-      setMetrics(next)
-    }
-    const scheduleMeasure = () => {
-      if (scheduledFrame) return
-      scheduledFrame = requestAnimationFrame(() => {
-        scheduledFrame = 0
-        measure()
-      })
-    }
-    const publicExample = frame.querySelector<HTMLElement>('.coin-area-anatomy-public-example')
-    const mutations = typeof MutationObserver === 'undefined' ? null : new MutationObserver(scheduleMeasure)
-    if (publicExample) mutations?.observe(publicExample, { childList: true, characterData: true, subtree: true })
-    const resize = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(scheduleMeasure)
-    resize?.observe(frame)
-    if (publicExample) resize?.observe(publicExample)
-    scheduleMeasure()
-    void document.fonts?.ready.then(scheduleMeasure)
-    window.addEventListener('resize', scheduleMeasure)
-    return () => {
-      active = false
-      if (scheduledFrame) cancelAnimationFrame(scheduledFrame)
-      mutations?.disconnect()
-      resize?.disconnect()
-      window.removeEventListener('resize', scheduleMeasure)
-    }
-  }, [])
-
+  const { labels, series, goalPin } = presetData('trend')
   return (
-    <div className="coin-area-anatomy-stage">
-      <div ref={frameRef} className="coin-area-anatomy-chart-wrap">
-        <div className="coin-area-anatomy-public-example"><AreaChartExample preset="trend" showArea showDots height={218} /></div>
-        {metrics ? (
-          <>
-            <svg className="coin-area-anatomy-leaders" viewBox={`0 0 ${metrics.width} ${metrics.height}`} preserveAspectRatio="none" aria-hidden="true">
-              {metrics.marks.map((mark, index) => <line key={index} x1={mark.marker.left + 12} y1={mark.marker.top + 12} x2={mark.target.left + mark.target.width / 2} y2={mark.target.top + mark.target.height / 2} />)}
-            </svg>
-            {metrics.marks.map((mark, index) => <span className="coin-area-anatomy-mark" style={{ left: mark.marker.left, top: mark.marker.top }} aria-hidden="true" key={index}>{index + 1}</span>)}
-          </>
-        ) : null}
-      </div>
-      <div className="coin-area-anatomy-labels" aria-label="Chart anatomy labels">
-        <span><b>1</b> Y axis</span><span><b>2</b> Plot and line</span><span><b>3</b> Goal pin</span><span><b>4</b> X axis</span>
-      </div>
-      <p className="coin-area-anatomy-note">The marks describe the rendered chart layers; the plot owns the pointer and x-axis selection behavior.</p>
-    </div>
+    <Anatomy
+      title="Area Line Chart"
+      specimenWidth={320}
+      scale={1}
+      parts={[
+        { name: 'Y axis', note: 'Use one unit and a readable scale so the direction is honest.', target: `${Y_AXIS} > div > :last-child`, side: 'top' },
+        { name: 'Plot', note: 'Area and line show the trend; projected points use the dashed treatment. The plot owns pointer and x-axis selection.', target: `${PLOT_COLUMN} > div:first-child`, side: 'right' },
+        { name: 'Goal pin', note: 'Use a goal pin to call out a meaningful point, not a decorative maximum.', target: 'svg + div > div', side: 'top' },
+        { name: 'X axis', note: 'Keep labels short enough to select and read at the host width.', target: `${PLOT_COLUMN} > div:last-child`, side: 'bottom' },
+      ]}
+    >
+      <AreaLineChart
+        series={series.map((item) => ({ ...item, showArea: true, showLine: true }))}
+        xLabels={labels}
+        curve="linear"
+        height={218}
+        showGrid
+        showDots
+        showLegend={false}
+        goalPin={goalPin == null ? undefined : { value: `${pointValue(series[0].data[goalPin] ?? 0)}k`, atIndex: goalPin }}
+        interactive
+        modes={chartModes()}
+        formatY={(value) => `${value}k`}
+        formatValue={(value) => `${value}k`}
+        accessibilityLabel="trend area line chart"
+        style={{ width: '100%' }}
+      />
+    </Anatomy>
   )
 }
 
@@ -334,7 +238,7 @@ export function AreaLineChartGuide() {
       header: 'Anatomy',
       title: 'Direction, comparison, and detail have distinct jobs',
       description: 'The chart combines axes, a plotted series, optional dots, a legend for comparison, and a goal pin when a target matters.',
-      body: <div className="anatomy-card coin-area-anatomy-card"><div className="anatomy-stage"><AreaAnatomy /></div><ol className="anatomy-list"><li><b>Y axis</b><span>Use one unit and a readable scale so the direction is honest.</span></li><li><b>Plot</b><span>Area and line show the trend; projected points use the dashed treatment.</span></li><li><b>Goal pin</b><span>Use a goal pin to call out a meaningful point, not a decorative maximum.</span></li><li><b>X axis</b><span>Keep labels short enough to select and read at the host width.</span></li></ol></div>,
+      body: <AreaAnatomy />,
     },
     configuration: {
       header: 'Configuration',
@@ -376,14 +280,25 @@ export function AreaLineChartGuide() {
       header: 'Sources',
       title: 'Grounded in the public chart contract',
       description: 'This guide uses the published AreaLineChart API, the inspected Figma master, and the canonical Storybook stories.',
-      body: <><div className="sources-grid"><a href={FIGMA_URL} target="_blank" rel="noreferrer"><span className="source-index">01</span><div><h3>Coin Components Library</h3><p>Area Line Chart · node 4225:1049</p></div><SmallArrow /></a><a href={STORYBOOK_URL} target="_blank" rel="noreferrer"><span className="source-index">02</span><div><h3>Area Line Chart Storybook</h3><p>Default, overlap, forecast, and interactive stories</p></div><SmallArrow /></a></div><div className="verification-note"><span>Checked 22 September 2026</span><p>Examples use public <code>AreaLineChart</code> and its public interaction model from <code>jfs-components</code> 0.1.60. The chart derives a nice tick domain from its data unless y bounds are supplied, and its plot height excludes the x-axis row. Projected points, selected indices, goal pins, curves, grid, dots, and legends are public choices. SVG interaction is keyboard reachable through the public x-axis Pressable in RN Web, but the rendered accessibility tree does not expose full series labels; the guide keeps a visible values table.</p></div><div className="coin-area-source-links"><SourceLink href="https://jfs-components-storybook.vercel.app/iframe.html?id=components-arealinechart--default&viewMode=story">Open default story</SourceLink><SourceLink href="https://jfs-components-storybook.vercel.app/iframe.html?id=components-arealinechart--interactive&viewMode=story">Open interactive story</SourceLink></div></>,
+      body: (
+        <Sources
+          checked="22 September 2026"
+          figmaUrl={FIGMA_URL}
+          figmaDescription="Area Line Chart · node 4225:1049"
+          storybookUrl={STORYBOOK_URL}
+          storybookDescription="Default, overlap, forecast, and interactive stories"
+          stories={AREA_STORIES}
+        >
+          Examples use public <code>AreaLineChart</code> and its public interaction model from <code>jfs-components</code> 0.1.60. The chart derives a nice tick domain from its data unless y bounds are supplied, and its plot height excludes the x-axis row. Projected points, selected indices, goal pins, curves, grid, dots, and legends are public choices. SVG interaction is keyboard reachable through the public x-axis Pressable in RN Web, but the rendered accessibility tree does not expose full series labels; the guide keeps a visible values table.
+        </Sources>
+      ),
     },
   }
 
   return (
     <ComponentGuideTemplate
       metadata={{ slug: 'arealinechart', name: 'Area Line Chart', summary: 'Show a continuous trend and make series comparison legible.', corePrinciple: 'Make direction and comparison legible before detail.', figmaUrl: FIGMA_URL, storybookUrl: STORYBOOK_URL }}
-      playground={<><div className="preview-stage coin-area-preview-stage"><div className="coin-area-preview-host"><AreaChartExample preset={preset} showArea={showArea} showGrid={showGrid} showDots={showDots} curve={curve} /></div><span className="stage-label">Live Coin AreaLineChart · Light</span></div><div className="controls-panel coin-area-controls-panel"><Segment label="Preset" value={preset} options={['trend', 'comparison', 'forecast'] as const} onChange={setPreset} display={(value) => value === 'trend' ? 'Trend' : value === 'comparison' ? 'Comparison' : 'Forecast'} /><Segment label="Curve" value={curve} options={['linear', 'monotone'] as const} onChange={setCurve} /><label className="toggle-row"><input type="checkbox" checked={showArea} onChange={(event) => setShowArea(event.target.checked)} /><span className="toggle-track" /> Show area</label><label className="toggle-row"><input type="checkbox" checked={showGrid} onChange={(event) => setShowGrid(event.target.checked)} /><span className="toggle-track" /> Show grid</label><label className="toggle-row"><input type="checkbox" checked={showDots} onChange={(event) => setShowDots(event.target.checked)} /><span className="toggle-track" /> Show dots</label><div className="coin-area-readout"><span>Interaction</span><strong>Point selection</strong><p>Press an x-axis label or plot point to update the readable selected value.</p></div></div></>}
+      playground={<><div className="preview-stage coin-area-preview-stage"><div className="coin-area-preview-host"><AreaChartExample preset={preset} showArea={showArea} showGrid={showGrid} showDots={showDots} curve={curve} /></div><span className="stage-label">Live Coin AreaLineChart · Light</span></div><div className="controls-panel coin-area-controls-panel"><Segment label="Preset" value={preset} options={['trend', 'comparison', 'forecast'] as const} onChange={setPreset} format={(value) => value === 'trend' ? 'Trend' : value === 'comparison' ? 'Comparison' : 'Forecast'} /><Segment label="Curve" value={curve} options={['linear', 'monotone'] as const} onChange={setCurve} /><label className="toggle-row"><input type="checkbox" checked={showArea} onChange={(event) => setShowArea(event.target.checked)} /><span className="toggle-track" /> Show area</label><label className="toggle-row"><input type="checkbox" checked={showGrid} onChange={(event) => setShowGrid(event.target.checked)} /><span className="toggle-track" /> Show grid</label><label className="toggle-row"><input type="checkbox" checked={showDots} onChange={(event) => setShowDots(event.target.checked)} /><span className="toggle-track" /> Show dots</label><div className="coin-area-readout"><span>Interaction</span><strong>Point selection</strong><p>Press an x-axis label or plot point to update the readable selected value.</p></div></div></>}
       sections={sections}
     />
   )
