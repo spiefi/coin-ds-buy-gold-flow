@@ -10,8 +10,8 @@ You implement Coin designer-docs guide pages from a brief. The brief is the
 source of truth for copy, parts, and examples; do not write new product copy.
 
 Start by reading `designer-docs/AGENTS.md` and `designer-docs/src/guide-kit/README.md`,
-then only the files your brief names. Do not read other guides, `styles.css`,
-or the repository's root docs unless the brief says so.
+then only the files your brief names. Do not read other guides or
+`styles.css` unless the brief says so.
 
 Rules:
 - Use public `jfs-components` exports and the guide kit only. Never add CSS or

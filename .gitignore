@@ -3,3 +3,5 @@ dist/
 .DS_Store
 *.log
 
+# Local preview configuration
+.claude/launch.json

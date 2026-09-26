@@ -1,41 +1,24 @@
-# Coin DS Screen Examples
+# Coin DS documentation
 
-A React Native Web preview project for implementing approved Figma flows with public Coin components from [`jfs-components`](https://www.npmjs.com/package/jfs-components).
+The Coin DS designer documentation site: one guide per public Coin component,
+built with live `jfs-components` examples.
 
-## Current preview
+Live: <https://coin-designer-docs.vercel.app>
 
-- Credit Cards with collapsed and expanded categories
-- Pre-qualified credit-card results
-- Fuel credit-card results
+| Path | Contents |
+| --- | --- |
+| `designer-docs/` | The documentation site ([README](designer-docs/README.md)). |
+| `skills/` | The `coin-component-docs` agent skill for Claude Code and Codex. |
+| `.claude/agents/`, `.codex/agents/` | Docs worker agent definitions. |
+| `.github/workflows/designer-docs.yml` | Verify and deploy on push to `main`. |
 
-The earlier Buy Gold example screens remain in the project but are not the current preview entry point.
+## Working on the site
 
-## Run locally
-
-```bash
+```sh
+cd designer-docs
 npm install
-npm run dev
+npm run dev       # local preview
+npm run verify    # build, guide check, headless browser test
 ```
 
-For the production-equivalent local preview used during QA:
-
-```bash
-npm run build
-npm run preview
-```
-
-## Production build
-
-```bash
-npm run build
-```
-
-The live preview is deployed automatically through GitHub Pages.
-
-## Agent and workflow documentation
-
-- [`AGENTS.md`](./AGENTS.md) — mandatory instructions for all Codex agents and sub-agents
-- [`COIN_DS_CONSUMER_GUIDE.md`](./COIN_DS_CONSUMER_GUIDE.md) — Coin DS consumer rules
-- [`docs/FIGMA_TO_CODE_WORKFLOW.md`](./docs/FIGMA_TO_CODE_WORKFLOW.md) — Ready-for-dev through Human-QA lifecycle
-- [`docs/CODEX_QA_CHECKLIST.md`](./docs/CODEX_QA_CHECKLIST.md) — automated preflight before Human QA
-- [`docs/FIGMA_CONTEXT_SCHEMA.md`](./docs/FIGMA_CONTEXT_SCHEMA.md) — proposed batch context-package contract
+Push to `main` to release; CI verifies and deploys to Vercel.

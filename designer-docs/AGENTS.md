@@ -1,15 +1,9 @@
 # Coin designer docs — agent instructions
 
 This directory is the Coin designer documentation site. It documents public
-Coin components; it is not a product screen.
+Coin components for designers.
 
-## What applies from the repository root
-
-Does **not** apply here: the root "Required reading" list, Coin Rebuild mode,
-Figma context packages, the Ready-for-dev delivery gate, and the screen
-evidence/handoff format. Do not read those documents for docs work.
-
-Still applies:
+## Coin rules
 
 - Use public `jfs-components` exports only, configured through supported
   props, variants, slots, and modes. Never detach, patch internals, recreate a
@@ -18,8 +12,11 @@ Still applies:
   pass the owner's same mode object to the child.
 - Before revising a guide, compare the declared/installed `jfs-components`
   version with `npm view jfs-components version`. Upgrade only with the
-  user's authorization. Report missing capabilities as Coin gaps.
-- The root GitHub publishing rules.
+  user's authorization. Report missing capabilities as Coin gaps (a ticket on
+  the Coin Workflow board), never work around them.
+- Figma is read-only reference: the Coin Components Library for public
+  properties, variants, slots, and modes; Coin Subcomponents only to
+  understand anatomy.
 
 ## Read only what the task needs
 

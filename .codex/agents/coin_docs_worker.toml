@@ -5,7 +5,7 @@ model_reasoning_effort = "max"
 sandbox_mode = "workspace-write"
 developer_instructions = """
 Implement the Coin designer-docs guide assigned by the primary agent. The brief (docs/evidence/<slug>.brief.md) is the source of truth for copy, parts, examples, and component configuration; do not write new product copy.
-Read designer-docs/AGENTS.md and designer-docs/src/guide-kit/README.md first, then only the files the brief names. Do not read other guides, src/styles.css, or the repository root reading list.
+Read designer-docs/AGENTS.md and designer-docs/src/guide-kit/README.md first, then only the files the brief names. Do not read other guides or src/styles.css unless the brief says so.
 Create or edit only the files the brief assigns, normally src/guides/<slug>.guide.tsx. Use public jfs-components exports and the guide kit (Anatomy, Sources, Segment, ExampleCard, DoDont). Never add CSS or edit src/styles.css, src/guide-kit, navigation, the page template, or scripts.
 Never hardcode product colors, patch component internals, detach or recreate Coin components. Forward an owner's mode object to slotted Coin children when the component does not propagate it. Report missing kit or component capabilities instead of working around them.
 Done when npm run build passes and npm run test:browser <slug> reports the guide passing at 1280 and 390 px in headless Chrome. While iterating, await guideKitSurvey(['<slug>']) on the dev server gives the same Anatomy result. If the browser test cannot run, report that limit instead of claiming verification.
