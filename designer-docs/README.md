@@ -32,10 +32,13 @@ with a `[guide-kit]` prefix; `window.__guideKit` lists every diagram's issues.
 ## Checks
 
 ```sh
-npm run build
+npm run verify
 ```
 
-`build` runs the typecheck, the guide check, and the Vite build.
+`verify` runs `build` (typecheck, guide check, Vite build) and then
+`test:browser`, which loads every guide in headless Chrome at 1280 px and
+390 px. It needs Google Chrome (or `npx playwright-core install chromium`).
+Vercel runs only `build`; run `verify` before committing.
 
 ## Vercel
 

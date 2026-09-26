@@ -215,9 +215,12 @@ function signature(geometry: Geometry) {
 const reported = new Set<string>()
 
 function report(title: string, issues: string[]) {
-  if (!import.meta.env.DEV || typeof window === 'undefined') return
+  if (typeof window === 'undefined') return
+  // The store is kept in every build so the headless browser test can read it;
+  // console warnings stay development-only.
   const store = ((window as unknown as { __guideKit?: Record<string, string[]> }).__guideKit ??= {})
   store[title] = issues
+  if (!import.meta.env.DEV) return
   for (const issue of issues) {
     const key = `${window.location.search}|${title}|${issue}`
     if (reported.has(key)) continue

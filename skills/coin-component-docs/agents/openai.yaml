@@ -1,0 +1,4 @@
+interface:
+  display_name: "Coin Component Docs"
+  short_description: "Build visual Coin component documentation pages"
+  default_prompt: "Use $coin-component-docs to check the In progress column in Coin Workflow and build documentation for every eligible ticket."

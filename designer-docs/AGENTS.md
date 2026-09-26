@@ -40,9 +40,15 @@ Do not read other guides or `src/styles.css` unless the task is about them.
 
 ## Verify
 
-- `npm run build` (typecheck, guide check, Vite build).
-- Dev server: `npm run dev -- --port 4178`. On any page run
-  `await guideKitSurvey(['<slug>'])`; `{}` means the guide passed at 1280 px
-  and 390 px.
+- `npm run verify` is required before anything is committed. It runs the
+  build (typecheck, guide check, Vite build) and then `npm run test:browser`,
+  which loads every guide in headless Chrome at 1280 px and 390 px and fails
+  on render errors, title/navigation mismatches, Anatomy self-check issues,
+  pin/legend mismatches, horizontal scroll, or runtime errors.
+  `npm run test:browser <slug>` checks selected guides on its own private
+  build, so parallel workers can run it at the same time.
+- While iterating on the dev server (`npm run dev -- --port 4178`),
+  `await guideKitSurvey(['<slug>'])` on any page gives the same Anatomy
+  result instantly; `{}` means it passes.
 - For final review, one desktop and one 390 px screenshot of the changed
-  sections. Do not screenshot to debug what the survey already reports.
+  sections. Do not screenshot to debug what the tests already report.

@@ -6,7 +6,8 @@ everything visual, so every guide looks the same.
 
 **Rule:** a guide adds no CSS. `npm run build` fails if `src/styles.css`
 grows or a guide uses bespoke anatomy markup, raw Storybook story URLs, its own
-segmented control, or its own route detection.
+segmented control, or its own route detection. `npm run verify` adds a
+headless-browser pass over every guide at 1280 px and 390 px.
 
 ## Add a guide
 
