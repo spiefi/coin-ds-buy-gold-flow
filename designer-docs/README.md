@@ -40,10 +40,14 @@ npm run verify
 390 px. It needs Google Chrome (or `npx playwright-core install chromium`).
 Vercel runs only `build`; run `verify` before committing.
 
-## Vercel
+## Deployment
 
-The Vercel project uses `designer-docs` as its root directory. `vercel.json`
-runs `npm run build` and publishes `dist`.
+Push to `main`. The GitHub Actions workflow
+[`designer-docs.yml`](../.github/workflows/designer-docs.yml) runs
+`npm run verify` and, only if it passes, deploys to Vercel production
+(<https://coin-designer-docs.vercel.app>). Pull requests get the same checks
+and a preview deployment. Do not deploy by hand, so the live site always
+matches `main`. The workflow uses the `VERCEL_TOKEN` repository secret.
 
 ## Source boundary
 

@@ -9,21 +9,23 @@
 - Dev preview: `npm run dev -- --port 4178` from `designer-docs`. If a branch
   switch blanks the page, restart the preview (with `--force` if Vite's cache
   is stale) and check one fresh load.
-- Keep work local during review. After the user approves the full delivery
-  flow, carry it through without asking again: merge the reviewed commit to
-  local `main`, push `origin main`, deploy that exact revision to Vercel. A
-  request limited to a local merge stays local.
-- Vercel: reuse `designer-docs/.vercel/project.json` (project
-  `coin-designer-docs`; last verified scope `spiefson-7899`). Deploy from
-  `designer-docs` with the authenticated CLI and explicit scope. Never relink
-  or create another project. Before retrying an interrupted deployment,
-  inspect its ID, status, and alias.
-- `npm run build` runs during deployment; no extra local pre-release build is
-  needed for an unchanged source.
-- Once Ready, make one targeted check of <https://coin-designer-docs.vercel.app/>:
-  the new guide loads from its route, and one representative interaction works.
-  Report the Git push and the deployment separately if either is blocked. End
-  with the live guide URL.
+- Keep work local during review. After the user approves the release, merge
+  the reviewed commit to local `main` and push `origin main`. Do not ask again
+  at each step. A request limited to a local merge stays local.
+- Deployment is automatic: `.github/workflows/designer-docs.yml` runs
+  `npm run verify` (build, guide check, headless browser test) on every push to
+  `main` that touches `designer-docs/`, and deploys to Vercel production only if
+  it passes. Pull requests get the same checks plus a preview deployment. Never
+  deploy the docs by hand; that would put the live site out of sync with Git.
+- After pushing, follow the "Designer docs" workflow run
+  (`gh run list --workflow designer-docs.yml --limit 1`). If it fails, fix the
+  cause and push again; report the failure rather than deploying manually.
+- Once the run is green, make one targeted check of
+  <https://coin-designer-docs.vercel.app/>: the changed guide loads from its
+  route and one representative interaction works. End with the live guide URL.
+- The workflow needs the `VERCEL_TOKEN` repository secret. If it expires, the
+  deploy job fails visibly; ask the user to replace the secret (never handle
+  the token yourself).
 
 ## Coin Workflow tickets
 

@@ -1,0 +1,81 @@
+name: Designer docs
+
+# Keeps GitHub and Vercel in sync: every change to designer-docs on main is
+# verified (build, guide check, headless browser test of every guide) and only
+# then deployed to production. Pull requests get the same checks and, when they
+# pass, a preview deployment. Do not deploy the docs by hand.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'designer-docs/**'
+      - '.github/workflows/designer-docs.yml'
+  pull_request:
+    paths:
+      - 'designer-docs/**'
+      - '.github/workflows/designer-docs.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: designer-docs-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: designer-docs
+
+env:
+  VERCEL_ORG_ID: team_X0VoDx8wnIAl5BxPYptzkK8K
+  VERCEL_PROJECT_ID: prj_9hD7JPEDcUJ6UsR16Knrn805j6Rh
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: designer-docs/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Chrome is available
+        run: google-chrome --version
+
+      - name: Build, guide check, and browser test
+        run: npm run verify
+
+  deploy:
+    needs: verify
+    # Forked pull requests have no access to the Vercel token.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ] && [ "${{ github.event_name }}" != "pull_request" ]; then
+            target="production"
+            url=$(npx --yes vercel@60 deploy --prod --yes --token "$VERCEL_TOKEN")
+          else
+            target="preview"
+            url=$(npx --yes vercel@60 deploy --yes --token "$VERCEL_TOKEN")
+          fi
+          echo "Deployed ${target}: ${url}"
+          echo "### Designer docs ${target} deployment" >> "$GITHUB_STEP_SUMMARY"
+          echo "${url}" >> "$GITHUB_STEP_SUMMARY"

@@ -38,8 +38,8 @@ User instructions take precedence. The skill's source is
 3. For each verified guide: add the review link as a work note, complete only
    Marcin's contribution, move the ticket to Review, and re-read it.
 4. Report results and review links. After the user approves the release,
-   continue branch → local main → origin main → live Vercel without asking
-   again at each step ([release](references/release-and-tickets.md#release)).
+   merge to local main and push origin main without asking again at each
+   step; CI verifies and deploys to Vercel ([release](references/release-and-tickets.md#release)).
 
 An explicitly named component, batch, model, or lifecycle overrides these
 defaults. A request to edit or explain this skill starts no board work.
