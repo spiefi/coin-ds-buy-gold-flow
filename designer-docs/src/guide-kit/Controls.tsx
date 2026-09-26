@@ -53,10 +53,50 @@ export function OnOff({
   )
 }
 
-export function Readout({ children }: { children: ReactNode }) {
+/** A labelled live value under playground controls, with an optional note. */
+export function Readout({
+  title,
+  value,
+  children,
+}: {
+  title: string
+  value: ReactNode
+  children?: ReactNode
+}) {
   return (
-    <p className="coin-new-readout" role="status">
-      {children}
-    </p>
+    <div className="coin-guide-readout" aria-live="polite">
+      <span>{title}</span>
+      <strong>{value}</strong>
+      {children ? <p>{children}</p> : null}
+    </div>
   )
+}
+
+export function Toggle({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string
+  checked: boolean
+  onChange: (checked: boolean) => void
+}) {
+  return (
+    <div className="toggle-row">
+      <label>
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(event) => onChange(event.target.checked)}
+        />
+        <span className="toggle-track" aria-hidden="true" />
+        {label}
+      </label>
+    </div>
+  )
+}
+
+/** Joins truthy class names. */
+export function classes(...values: Array<string | false | null | undefined>) {
+  return values.filter(Boolean).join(' ')
 }

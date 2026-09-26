@@ -1959,8 +1959,6 @@ p {
   font-size: 0.78rem;
   line-height: 1.4;
 }
-.coin-attached-label-main { left: 0; top: 4px; }
-.coin-attached-label-badge { right: 0; bottom: 4px; }
 
 .coin-attached-position-grid {
   display: grid;
@@ -2132,7 +2130,6 @@ p {
 .coin-area-context > p,
 .coin-allocation-context > p,
 .coin-amount-context > p { margin: 0; color: var(--muted); font-size: 0.82rem; }
-.coin-attached-context-amount { color: var(--ink); font-size: 0.86rem; font-weight: 650; }
 .coin-attached-comparison-row,
 .coin-area-comparison-row,
 .coin-allocation-comparison-row,
@@ -2151,22 +2148,13 @@ p {
 .coin-amount-example { width: 100%; min-width: 0; }
 .coin-area-chart-example { display: grid; gap: 8px; }
 .coin-area-chart-card { display: grid; gap: 16px; }
-.coin-area-selection-readout,
-.coin-area-chart-scale { margin: 0; color: var(--muted); font-size: 0.78rem; }
+.coin-area-selection-readout { margin: 0; color: var(--muted); font-size: 0.78rem; }
 .coin-area-data-details { margin-top: 4px; color: var(--muted); font-size: 0.78rem; }
 .coin-area-data-details summary { cursor: pointer; font-weight: 650; }
 .coin-area-data-details table { width: 100%; margin-top: 9px; border-collapse: collapse; font-size: 0.75rem; }
 .coin-area-data-details th,
 .coin-area-data-details td { padding: 5px 6px; border-bottom: 1px solid var(--line); text-align: left; }
 .coin-area-data-details th { color: var(--ink); font-weight: 650; }
-.coin-area-mark-y { left: 4%; top: 45%; }
-.coin-area-mark-plot { left: 53%; top: 42%; }
-.coin-area-mark-goal { left: 78%; top: 27%; }
-.coin-area-mark-x { left: 51%; bottom: 2px; }
-.coin-allocation-mark-legend { left: 5%; top: 2%; }
-.coin-allocation-mark-current { left: 13%; top: 49%; }
-.coin-allocation-mark-baseline { left: 13%; top: 69%; }
-.coin-allocation-mark-label { left: 13%; bottom: 3%; }
 .coin-allocation-chart-example { display: grid; gap: 7px; }
 .coin-allocation-two-charts { display: grid; width: 100%; gap: 8px; }
 .coin-allocation-config-card,
@@ -2974,13 +2962,6 @@ p {
   font-size: 0.64rem;
 }
 
-.coin-avatar-story-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 18px;
-  margin-top: 18px;
-}
-
 @media (max-width: 620px) {
   .coin-avatar-preview-stage { min-height: 252px; padding: 24px 16px; }
   .coin-avatar-example-grid,
@@ -3032,90 +3013,6 @@ p {
 .layout-docs .layout-comparison-preview {
   min-width: 0;
   max-width: 100%;
-}
-
-.layout-live-item {
-  display: flex;
-  min-width: 0;
-  flex: 0 1 auto;
-  align-items: center;
-  gap: 12px;
-  min-height: 74px;
-  padding: 13px 15px;
-  background: #fff;
-  border: 1px solid #dce1ea;
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(38, 45, 70, 0.07);
-}
-
-.layout-live-component-hstack .layout-live-item,
-.layout-live-component-stack-horizontal .layout-live-item {
-  flex: 0 1 150px;
-  min-width: 100px;
-}
-
-.layout-live-component-hstack.layout-live-component-wrap .layout-live-item {
-  min-width: 136px;
-}
-
-.layout-live-component-vstack .layout-live-item {
-  width: 100%;
-}
-
-.layout-live-component-stack-vertical .layout-live-item {
-  width: auto;
-  max-width: 100%;
-}
-
-.layout-live-component-vstack.layout-live-component-wrap .layout-live-item {
-  width: clamp(112px, calc(50% - 8px), 220px);
-}
-
-.layout-live-item-icon {
-  display: grid;
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
-  place-items: center;
-  background: var(--accent-soft);
-  border-radius: 10px;
-}
-
-.layout-live-item-copy {
-  min-width: 0;
-}
-
-.layout-live-item-title {
-  min-width: 0;
-  font-size: 0.88rem;
-  font-weight: 680;
-  line-height: 1.2;
-  overflow-wrap: anywhere;
-}
-
-.layout-live-item-title > span {
-  display: block;
-}
-
-.layout-live-item-copy > span:not(.layout-fixture-label) {
-  display: block;
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 0.73rem;
-  line-height: 1.25;
-  overflow-wrap: anywhere;
-}
-
-.layout-fixture-label {
-  display: block;
-  margin-top: 0;
-  margin-bottom: 4px;
-  color: var(--quiet);
-  font-size: 0.51rem;
-  font-weight: 760;
-  letter-spacing: 0.08em;
-  line-height: 1.1;
-  text-transform: uppercase;
 }
 
 .layout-live-action {
@@ -3336,11 +3233,6 @@ p {
   padding: 12px;
 }
 
-.layout-breadcrumb-type-grid .layout-breadcrumb-reference-wrapping .layout-breadcrumb-trail,
-.layout-breadcrumb-state-grid .layout-breadcrumb-reference-wrapping .layout-breadcrumb-trail {
-  max-width: 260px;
-}
-
 .layout-breadcrumb-state-grid .state-preview {
   padding: 9px;
 }
@@ -3514,30 +3406,8 @@ p {
     overflow-wrap: anywhere;
   }
 
-  .layout-live-component-hstack:not(.layout-live-component-wrap) .layout-live-item,
-  .layout-live-component-stack-horizontal .layout-live-item {
-    flex: 0 1 150px;
-    min-width: 132px;
-  }
-
-  .layout-live-component-hstack.layout-live-component-wrap .layout-live-item {
-    flex: 0 1 150px;
-    min-width: 150px;
-  }
-
   .layout-preview-stage {
     padding: 24px 16px 46px;
-  }
-
-  .layout-live-item {
-    min-height: 68px;
-    padding: 11px;
-  }
-
-  .layout-live-item-icon {
-    width: 30px;
-    height: 30px;
-    flex-basis: 30px;
   }
 
   .layout-type-grid .type-preview {
@@ -3904,13 +3774,6 @@ p {
   width: min(100%, 360px);
 }
 
-.accordion-source-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 24px;
-  margin-top: 20px;
-}
-
 @media (max-width: 1120px) {
   .accordion-state-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4252,13 +4115,6 @@ p {
   padding: 24px;
 }
 
-.appbar-source-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 24px;
-  margin-top: 20px;
-}
-
 @media (max-width: 860px) {
   .appbar-configuration-grid,
   .appbar-state-grid,
@@ -4584,13 +4440,6 @@ p {
   gap: 12px;
 }
 
-.coin-accordion-source-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 24px;
-  margin-top: 20px;
-}
-
 @media (max-width: 1120px) {
   .coin-accordion-sizing-grid {
     grid-template-columns: 1fr;
@@ -4789,13 +4638,6 @@ p {
 .coin-guide-note.is-warning {
   background: #fff8ec;
   border-color: #ead4ab;
-}
-
-.coin-guide-story-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 22px;
-  margin-top: 18px;
 }
 
 /* Button Group */

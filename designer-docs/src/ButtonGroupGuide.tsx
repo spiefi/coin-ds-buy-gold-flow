@@ -13,22 +13,22 @@ import {
   type GuideSectionSlots,
 } from './ComponentGuideTemplate'
 import {
+  Anatomy,
   Readout,
   Segment,
-  SourceCards,
+  Sources,
+  byTestId,
   classes,
-  storyUrl,
-} from './GuideParts'
-import { Anatomy, byTestId } from './guide-kit'
+} from './guide-kit'
 
 const FIGMA_URL =
   'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=2018-4119'
 const STORYBOOK_URL =
   'https://jfs-components-storybook.vercel.app/?path=/docs/components-buttongroup--docs'
 const STORIES = [
-  { label: 'Default story', url: storyUrl('components-buttongroup--default') },
-  { label: 'With icon and buttons', url: storyUrl('components-buttongroup--with-icon-and-buttons') },
-  { label: 'With modes', url: storyUrl('components-buttongroup--with-modes') },
+  { label: 'Default story', id: 'components-buttongroup--default' },
+  { label: 'With icon and buttons', id: 'components-buttongroup--with-icon-and-buttons' },
+  { label: 'With modes', id: 'components-buttongroup--with-modes' },
 ] as const
 
 type GroupSize = 'M' | 'S' | 'XS'
@@ -741,16 +741,16 @@ export function ButtonGroupGuide() {
       description:
         'The guide renders the public jfs-components ButtonGroup with public IconButton and Button children.',
       body: (
-        <SourceCards
+        <Sources
           figmaUrl={FIGMA_URL}
           figmaDescription="Button group master, node 2018:4119 · no exposed properties"
           storybookUrl={STORYBOOK_URL}
           storybookDescription="ButtonGroup docs, default, mixed-children, and modes stories"
           stories={STORIES}
-          checked="Checked 24 September 2026"
+          checked="24 September 2026"
         >
           Declared, installed, and npm <code>latest</code> are all <code>jfs-components@0.1.60</code>. The Figma master is a 150 × 42 row of three icon actions with Button / Size M, Emphasis Medium, and AppearanceBrand Primary. The package renders each IconButton at 40 px, so the same row measures 144 × 40. In Storybook, the default story’s third icon (<code>ic_menu</code>) is missing from the icon registry, and the modes story passes a token name that ButtonGroup does not read.
-        </SourceCards>
+        </Sources>
       ),
     },
   }

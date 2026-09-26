@@ -16,24 +16,25 @@ import {
   type GuideSectionSlots,
 } from './ComponentGuideTemplate'
 import {
+  Anatomy,
   Readout,
   Segment,
-  SourceCards,
+  Sources,
+  Specimen as AnatomySpecimen,
+  SpecimenRow,
   Toggle,
   classes,
-  storyUrl,
-} from './GuideParts'
-import { Anatomy, Specimen as AnatomySpecimen, SpecimenRow } from './guide-kit'
+} from './guide-kit'
 
 const FIGMA_URL =
   'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=7522-7658'
 const STORYBOOK_URL =
   'https://jfs-components-storybook.vercel.app/?path=/docs/components-autoplaycontrol--docs'
 const STORIES = [
-  { label: 'Default story', url: storyUrl('components-autoplaycontrol--default') },
-  { label: 'Play story', url: storyUrl('components-autoplaycontrol--play') },
-  { label: 'Disabled story', url: storyUrl('components-autoplaycontrol--disabled') },
-  { label: 'Carousel · Numbered', url: storyUrl('components-carousel--numbered') },
+  { label: 'Default story', id: 'components-autoplaycontrol--default' },
+  { label: 'Play story', id: 'components-autoplaycontrol--play' },
+  { label: 'Disabled story', id: 'components-autoplaycontrol--disabled' },
+  { label: 'Carousel · Numbered', id: 'components-carousel--numbered' },
 ] as const
 
 type ControlState = 'pause' | 'play'
@@ -411,16 +412,16 @@ export function AutoplayControlGuide() {
       description:
         'The guide renders the public jfs-components AutoplayControl on its own and inside the public Carousel.',
       body: (
-        <SourceCards
+        <Sources
           figmaUrl={FIGMA_URL}
           figmaDescription="autoplay control set, node 7522:7658 · state pause and play, 36 × 36"
           storybookUrl={STORYBOOK_URL}
           storybookDescription="AutoplayControl docs and stories; Carousel Numbered story"
           stories={STORIES}
-          checked="Checked 24 September 2026"
+          checked="24 September 2026"
         >
           Declared, installed, and npm <code>latest</code> are all <code>jfs-components@0.1.60</code>. Figma’s state variants match the package’s <code>state</code> property. Storybook asks for an accessibility label, but this package accepts none, so the rendered button has no accessible name; report this before shipping the control on its own. The control has no timer: Carousel’s Numbered type owns autoplay, with a 4-second default interval.
-        </SourceCards>
+        </Sources>
       ),
     },
   }

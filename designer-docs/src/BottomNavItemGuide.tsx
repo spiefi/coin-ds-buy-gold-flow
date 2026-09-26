@@ -18,24 +18,24 @@ import {
   type GuideSectionSlots,
 } from './ComponentGuideTemplate'
 import {
+  Anatomy,
   Readout,
   Segment,
-  SourceCards,
+  Sources,
   Toggle,
+  byTestId,
   classes,
-  storyUrl,
-} from './GuideParts'
-import { Anatomy, byTestId } from './guide-kit'
+} from './guide-kit'
 
 const FIGMA_URL =
   'https://www.figma.com/design/3z7bmhA73Ls7j8Eu4qhYhE/Coin-Components-Library?node-id=306-92'
 const STORYBOOK_URL =
   'https://jfs-components-storybook.vercel.app/?path=/docs/components-bottomnavitem--docs'
 const STORIES = [
-  { label: 'Default story', url: storyUrl('components-bottomnavitem--default') },
-  { label: 'With custom icons', url: storyUrl('components-bottomnavitem--with-custom-icons') },
-  { label: 'Disabled state', url: storyUrl('components-bottomnavitem--disabled-state') },
-  { label: 'BottomNav composition', url: storyUrl('components-bottomnav--default') },
+  { label: 'Default story', id: 'components-bottomnavitem--default' },
+  { label: 'With custom icons', id: 'components-bottomnavitem--with-custom-icons' },
+  { label: 'Disabled state', id: 'components-bottomnavitem--disabled-state' },
+  { label: 'BottomNav composition', id: 'components-bottomnav--default' },
 ] as const
 
 type ItemState = 'Idle' | 'Active'
@@ -608,16 +608,16 @@ export function BottomNavItemGuide() {
       description:
         'The guide renders the public jfs-components BottomNavItem on its own and inside the public BottomNav.',
       body: (
-        <SourceCards
+        <Sources
           figmaUrl={FIGMA_URL}
           figmaDescription="BottomNavItem set, node 306:92 · State, icon, and label"
           storybookUrl={STORYBOOK_URL}
           storybookDescription="BottomNavItem docs and stories; BottomNav composition"
           stories={STORIES}
-          checked="Checked 24 September 2026"
+          checked="24 September 2026"
         >
           Declared, installed, and npm <code>latest</code> are all <code>jfs-components@0.1.60</code>. Figma’s State variant maps to the <code>BottomNavItem / State</code> mode in code; BottomNav sets it from <code>value</code>. The guide stays in Light mode, matching the Figma context, because the installed Dark tokens resolve the Idle label to orange. On the web, BottomNav ignores its accessibility label, and the Active tab is not exposed as selected.
-        </SourceCards>
+        </Sources>
       ),
     },
   }

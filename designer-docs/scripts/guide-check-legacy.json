@@ -1,5 +1,5 @@
 {
   "_comment": "Guides written before src/guide-kit and the rules they still break. Remove a file's entry once it is migrated. Lower stylesCssMaxLines when CSS is deleted.",
-  "stylesCssMaxLines": 5353,
+  "stylesCssMaxLines": 5195,
   "files": {}
 }

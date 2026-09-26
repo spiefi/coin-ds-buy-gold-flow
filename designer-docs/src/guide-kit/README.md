@@ -93,8 +93,9 @@ passed (self-check, pins match legend rows, no horizontal scroll).
 | --- | --- |
 | `Sources` | Figma + Storybook cards, story links (`{ label, id }`), and the verification note (`checked="26 September 2026"`, note as children). |
 | `storyUrl(id)`, `docsUrl(name)` | Canonical Storybook links. Never paste story URLs. |
-| `Segment`, `OnOff` | Playground controls. |
-| `Readout` | Live status text under a control or example. |
+| `Segment`, `OnOff`, `Toggle` | Playground controls. |
+| `Readout` | A labelled live value under playground controls (`title`, `value`, optional note). |
+| `classes` | Joins conditional class names. |
 | `ExampleCard` | One example with a title and optional description. |
 | `DoDont` | A Do/Don't pair with titles and captions. |
 
