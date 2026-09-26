@@ -1,4 +1,5 @@
 import './guide-kit.css'
+import './survey'
 
 export {
   Anatomy,

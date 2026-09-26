@@ -81,8 +81,10 @@ Reference guide: `src/BadgeGuide.tsx`.
 **Self-check:** in `npm run dev`, Anatomy warns in the console with a
 `[guide-kit]` prefix when a target matches nothing, pins overlap or are clipped,
 a size label is covered by a pin, or copy is too long. Read all results at once with `window.__guideKit`. An
-empty list for every diagram means the anatomy is correct at that width. Check
-1280 px and 390 px.
+empty list for every diagram means the anatomy is correct at that width. To
+check whole guides at 1280 px and 390 px in one call, run
+`await guideKitSurvey(['<slug>'])` on any dev page; `{}` means everything
+passed (self-check, pins match legend rows, no horizontal scroll).
 
 ## Other components
 

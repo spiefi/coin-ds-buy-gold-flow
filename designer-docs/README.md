@@ -1,31 +1,23 @@
 # Coin designer documentation
 
-An isolated documentation site for designers. The site covers the public Coin
-Button, Accordion Checkbox, Action Footer, Action Tile, Add Item, HStack,
-VStack, and Stack guides, plus a Breadcrumbs guide with code-rendered
-documentation references and links to the published Storybook stories.
+A documentation site for designers. Each guide explains one public Coin
+component with live `jfs-components` examples: overview and playground,
+anatomy, configuration, states, sizing, content, in-context use, Do & Don'ts,
+and sources.
 
-## Guides
+## How the site is built
 
-The component switcher is available in the desktop sidebar and the mobile
-header. Direct routes are:
+| Path | Role |
+| --- | --- |
+| `src/guides/<slug>.guide.tsx` | Registers one guide: slug, label, icon, page component. Navigation (alphabetical), routes (`/?component=<slug>`), and page titles come from these files. |
+| `src/guide-kit/` | Shared documentation chrome: `Anatomy`, `Sources`, `Segment`, `ExampleCard`, `DoDont`. Start with its [README](src/guide-kit/README.md). |
+| `src/ComponentGuideTemplate.tsx` | The page shell used by guides. |
+| `docs/evidence/<slug>.md` | Verified package, Figma, Storybook, API, and accessibility evidence per guide ([index](docs/evidence/README.md)). |
+| `scripts/check-guides.mjs` | Guardrails run by `npm run build`. |
 
-- `/#overview` — Button
-- `/?component=accordioncheckbox#overview` — Accordion Checkbox
-- `/?component=actionfooter#overview` — Action Footer
-- `/?component=actiontile#overview` — Action Tile
-- `/?component=additem#overview` — Add Item
-- `/?component=hstack#overview` — HStack
-- `/?component=vstack#overview` — VStack
-- `/?component=stack#overview` — Stack
-- `/?component=breadcrumbs#overview` — Breadcrumbs
-
-Each guide registers itself with one file, `src/guides/<slug>.guide.tsx`,
-which supplies its slug, label, icon, and page component. The navigation
-(alphabetical), routing, and page titles are derived from those files. To add a
-guide, follow [`src/guide-kit/README.md`](src/guide-kit/README.md); guides use
-the shared kit and add no CSS. `npm run build` runs `scripts/check-guides.mjs`
-to enforce this.
+Guides use the kit and add no CSS. The build fails if a guide adds CSS, draws
+its own anatomy, pastes Storybook story URLs, defines its own segmented
+control, or reads the route itself.
 
 ## Local development
 
@@ -34,37 +26,27 @@ npm install
 npm run dev
 ```
 
+In development, each anatomy diagram checks itself and warns in the console
+with a `[guide-kit]` prefix; `window.__guideKit` lists every diagram's issues.
+
 ## Checks
 
 ```sh
-npm run typecheck
 npm run build
 ```
 
-The implementation uses `jfs-components@0.1.60`, which matches the npm
-registry's current `latest` release as checked on 19 September 2026. No
-dependency upgrade is required for these guides.
+`build` runs the typecheck, the guide check, and the Vite build.
 
 ## Vercel
 
-Create a Vercel project with `designer-docs` as its root directory. The checked
-in `vercel.json` uses `npm run build` and publishes `dist`. No deployment is
-performed by this repository setup.
+The Vercel project uses `designer-docs` as its root directory. `vercel.json`
+runs `npm run build` and publishes `dist`.
 
 ## Source boundary
 
-Product examples import the public `Button`, `AccordionCheckbox`,
-`CheckboxGroup`, `CheckboxItem`, `ActionFooter`, `ActionTile`, `Additem`,
-`FormUpload`, `ButtonGroup`, `HStack`, `VStack`, and `Stack` exports from
-`jfs-components@0.1.60`. The Accordion Checkbox guide keeps selection and
-expansion independent and wires any select-all relationship in consumer state.
-The action guides use the shipped sizing, mode, slot, and interaction APIs;
-documentation frames and anatomy markers remain outside the public components.
-Breadcrumbs is not included in that released package, so its examples are clearly labelled code-rendered
-documentation references built from public leaf primitives, with links to the
-canonical published Storybook stories. Documentation controls, callouts,
-labels, and fixture shells use semantic HTML and are clearly separated from
-the component examples.
-
-The exact package, Figma, Storybook, API, and accessibility evidence is kept in
-[`docs/SOURCE_EVIDENCE.md`](docs/SOURCE_EVIDENCE.md).
+Examples use public `jfs-components` exports configured through supported
+props, variants, slots, and modes. Documentation chrome (stages, pins, marks,
+legends, controls) lives outside the components and never styles them.
+Breadcrumbs is not in the released package; its examples are labelled
+code-rendered documentation references built from public primitives, with
+links to the canonical Storybook stories.
